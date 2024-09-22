@@ -45,16 +45,16 @@ export class SidebarComponent implements OnInit {
       icon: 'bx-notepad',
       routerLink: '/student/to-do',
     },
-    // 'SPEECH LAB': {
-    //   redirect: '/student/speechlab',
-    //   icon: 'bx-notepad',
-    //   routerLink: '/student/speechlab',
-    // },
-    // "PERFORMANCE" :  {
-    //   redirect: 'student/performance',
-    //   icon : 'bx-line-chart',
-    //   routerLink: '/student/performance'
-    // },
+    'SPEECH LAB': {
+      redirect: '/student/speechlab',
+      icon: 'bx-notepad',
+      routerLink: '/student/speechlab',
+     },
+     "PERFORMANCE" :  {
+      redirect: 'student/performance',
+      icon : 'bx-line-chart',
+      routerLink: '/student/performance'
+    },
   };
 
   teacherDashboardItems = {
@@ -91,16 +91,16 @@ export class SidebarComponent implements OnInit {
     },
 
    
-    // 'SPEECH LAB': {
-    //   redirect: 'teacher/speechlab',
-    //   icon: 'bx-spreadsheet',
-    //   routerLink: '/teacher/speechlab',
-    // },
-    // "COMMUNICATION": {
-    //   redirect: 'teacher/communication',
-    //   icon : 'bx-message-rounded-detail',
-    //   routerLink:"/teacher/communication"
-    // },
+     'SPEECH LAB': {
+       redirect: 'teacher/speechlab',
+       icon: 'bx-spreadsheet',
+       routerLink: '/teacher/speechlab',
+     },
+     "COMMUNICATION": {
+       redirect: 'teacher/communication',
+       icon : 'bx-message-rounded-detail',
+       routerLink:"/teacher/communication"
+     },
   };
 
   adminDashboardItems = {
