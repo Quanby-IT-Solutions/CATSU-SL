@@ -1,0 +1,86 @@
+
+<div class="mx-4 h-fit mb-4">
+  <div class="flex flex-col sm:flex-row justify-between items-start">
+    <div class="w-full flex flex-row justify-between items-center mt-2.5 mb-4">
+      <div class="flex justify-end items-center h-auto rounded p-2 backgroundLesson">
+        <button (click)="openModal()" class="poppins text-center text-white">
+          Create Course
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid for responsive layout -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">  
+    
+    <!-- Check if courseData is empty -->
+    <ng-container *ngIf="courseData.length === 0">
+      <div class="flex justify-center items-center relative rounded overflow-hidden shadow-md bg-white py-4">
+        <!-- Placeholder message -->
+        <div class="text-gray-700 text-center px-4">
+          There are no courses available. Click the button above to add a course.
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngFor="let course of courseData">
+      <div *ngIf="languages.get(selectedLanguage) == null || course.lang == languages.get(selectedLanguage).id" 
+           class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+        <div class="relative">
+          <img *ngIf="course.image" [src]="getURL(course.image)" 
+               (click)="redirectToLessons(course.id)"
+               class="w-full h-48 object-cover cursor-pointer" 
+               alt="Course Image" />
+          <!-- <button (click)="showCertificateModal(course)" 
+                  class="absolute top-3 right-3 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors duration-200">
+            <i class="fas fa-certificate text-blue-500 text-xl"></i>
+          </button> -->
+        </div>
+        <div class="py-4 px-3">
+          <div class="flex w-full justify-center mb-2"> 
+            <div class="w-full rounded-3xl border-4 border-green-200 p-1">
+              <h2 class="font-bold text-2xl  text-center text-gray-800 uppercase">{{ course.title }}</h2>
+            </div>
+
+          </div>
+          <div class="space-y-2 mb-4">
+            <!-- <p class="text-sm text-gray-600">
+              <span class="font-semibold">Lessons: </span> 
+              <span class="text-green-600">{{ course.lessons }}</span>
+            </p> -->
+            <p class="text-sm text-gray-600">
+              <span class="font-semibold">Description: </span> 
+              <span class="text-green-600">{{ trimText(course.description, 10) }}</span>
+            </p>
+            <p class="text-sm text-gray-600">
+              <span class="font-semibold">Objectives: </span> 
+              <span class="text-green-600">{{ trimText(course.objectives, 10) }}</span>
+            </p>
+            <p class="text-sm text-gray-600">
+              <span class="font-semibold">Target Audience: </span> 
+              <span class="text-green-600">{{ course.targetAudience && course.targetAudience.length ? trimText(course.targetAudience.join(', '), 10) : '[NONE]' }}</span>
+            </p>
+            <p class="text-sm text-gray-600">
+              <span class="font-semibold">Tech Requirements: </span> 
+              <span class="text-green-600">{{ course.technicalRequirements && course.technicalRequirements.length ? trimText(course.technicalRequirements.join(', '), 10) : '[NONE]' }}</span>
+            </p>
+          </div>
+          <div class="flex justify-between items-center mt-4">
+            <button (click)="openEdit(course)" 
+                    class="flex-1 mr-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+              Edit
+            </button>
+            <button (click)="removeCourse(course.id)" 
+                    class="flex-1 ml-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    
+    
+    
+
+  </div>
+</div>

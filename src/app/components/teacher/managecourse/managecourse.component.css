@@ -1,0 +1,12 @@
+/* styles.css */
+.backgroundLesson {
+  background: linear-gradient(
+    to right,
+    var(--secondary-color) 0%,
+    var(--secondary-color) 100%
+  );
+}
+
+.wide-popup {
+  width: 800px;
+}

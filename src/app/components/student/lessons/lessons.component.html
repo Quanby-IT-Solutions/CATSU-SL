@@ -1,0 +1,67 @@
+<div class="p-6 bg-gray-100 min-h-screen">
+  <!-- Navigate Back Button -->
+  <div class="flex justify-start mb-6">
+    <button
+      class="bg-white shadow-md text-lg font-semibold rounded-lg px-4 py-2 text-green-700 border border-green-500 hover:bg-green-100 transition duration-300 ease-in-out"
+      (click)="navigateBack()"
+    >
+      Back
+    </button>
+  </div>
+
+  <!-- Display lessons and topics -->
+  <div *ngFor="let lesson of lessons; let i = index" class="bg-white p-6 mb-8 rounded-xl shadow-md border-l-4 border-green-600">
+    <div class="flex justify-between items-start mb-4">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+          <i class="fas fa-book text-3xl mr-3 text-green-600"></i>
+          Lesson #{{i + 1}}: {{lesson.title}}
+        </h2>
+        <div class="mt-2 text-gray-600 flex items-center">
+          <span>{{lesson.firstname}} {{lesson.lastname}}</span>
+          <span class="mx-2">•</span>
+          <span>{{parseTime(lesson.time)}}</span>
+        </div>
+      </div>
+      <div class="flex items-center">
+        <button *ngIf="!isDone(lesson) && !hideMarkAsDone" (click)="markAsDone(lesson)" class="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-md px-4 py-2 mr-2 transition duration-300">
+          Mark as done
+        </button>
+        <button *ngIf="isDone(lesson)" class="text-white bg-green-500 hover:bg-green-600 font-medium rounded-md px-4 py-2 mr-2 transition duration-300">
+          Done
+        </button>
+      </div>
+    </div>
+
+    <!-- Display lesson details -->
+    <p class="text-gray-700 mb-6 leading-relaxed">{{lesson.details}}</p>
+
+    <!-- Display topics for the lesson -->
+    <div>
+      <h4 class="text-lg font-semibold text-green-700 mb-4">Topics</h4>
+      <div *ngIf="lesson.topics && lesson.topics.length > 0; else noTopics">
+        <div *ngFor="let topic of lesson.topics; let idx = index" class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
+          <div class="flex justify-between items-center mb-2">
+            <h5 class="font-semibold text-lg text-green-700">Topic #{{ idx + 1 }}: {{ topic.title }}</h5>
+          </div>
+          <p class="text-gray-600 mb-4">{{ topic.details }}</p>
+
+          <!-- Display Attachments -->
+          <div *ngIf="topic.attachments && topic.attachments.length > 0" class="mt-2">
+            <h6 class="text-sm font-semibold text-green-500">Attachments:</h6>
+         
+            <ul class="list-disc ml-5">
+              <li *ngFor="let file of topic.attachments" (click)="handleFileClick(file, topic)" class="cursor-pointer text-blue-600 hover:underline">
+                {{ getFilenameFromPath(file.file) }} <!-- Access the 'file' property -->
+              </li>
+            </ul>
+            
+          </div>
+        </div>
+      </div>
+      <ng-template #noTopics>
+        <p class="text-gray-500">No topics available.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>
