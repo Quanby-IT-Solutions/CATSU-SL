@@ -1,0 +1,167 @@
+<div class="main-container">
+  <div class="small-container">
+     <button
+  class="flex items-center poppins-b shadow-sm text-lg rounded-lg px-3 py-1.5 bg-transparent gradient-green-purple-blue hover:scale-105 hover:ease-out duration-300"
+        (click)="navigateBack()"
+      >
+        Back
+      </button>
+    <!-- <div class="date-container">
+      <p class="date poppins-b">
+        Date: <span id="current-date" class="poppins">{{ currentDate }}</span>
+      </p>
+    </div> -->
+  </div>
+  <div class="main-content-container">
+    <div class="column-1">
+      <!-- <div class="analytics-container">
+        <div class="analytics">
+          <div class="analytics-label">
+            <h5 class="poppins">PENDING<br />TASKS</h5>
+          </div>
+          <div class="analytics-value"><h1 class="poppins-b">5</h1></div>
+        </div>
+        <div class="analytics">
+          <div class="analytics-label">
+            <h5 class="poppins">UPCOMING<br />DEADLINES</h5>
+          </div>
+          <div class="analytics-value"><h1 class="poppins-b">2</h1></div>
+        </div>
+        <div class="analytics">
+          <div class="analytics-label">
+            <h5 class="poppins">OVERDUE<br />TASKS</h5>
+          </div>
+          <div class="analytics-value"><h1 class="poppins-b">1</h1></div>
+        </div>
+      </div> -->
+      <div class="inbox-container">
+        <div class="inbox-title-container">
+          <p class="poppins-b">STUDENT SUBMISSIONS INBOX</p>
+        </div>
+
+        <div *ngFor="let submission of submissions" class="inbox-list mt-1">
+          <div class="submission-item">
+            <div class="submission-title">
+              <p class="poppins">
+                <span *ngIf="submission.grade" class="bg-green-500 text-white px-2 py-1 rounded text-xs mr-2">Graded</span>
+                <span class="font-semibold"
+                  >{{ submission.firstname + " " + submission.lastname }}
+                </span>
+                - Submitted
+                <span class="font-semibold">{{ submission.title }}</span>
+                
+              </p>
+              
+            </div>
+            <div class="submission-buttons">
+              <button
+                (click)="
+                  submission.attachments
+                    ? openFile(submission.attachments.split('>')[0])
+                    : null
+                "
+              >
+                <img
+                  class="download-icon"
+                  src="assets/download.png"
+                  alt="Download Icon"
+                />
+              </button>
+              <button class="grade-button" (click)="navigateToTeacherView(submission)">
+                <p class="poppins-b">VIEW</p>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="column-2">
+      <div class="title-list-container">
+        <p class="list-title poppins-b">TASK MANAGEMENT LIST</p>
+      </div>
+      <div class="dropxnew-container">
+        <!-- <button class="dropdown-button">
+          <p class="poppins-b">Filter: Course</p>
+        </button> -->
+        <div ngbDropdown>
+          <button
+            type="button"
+            id="dropdownBasic1"
+            ngbDropdownToggle
+            class="dropdown-button poppins"
+          >
+          <svg class="mr-2" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="7px" height="7px" viewBox="0 0 481.728 481.728" xml:space="preserve">
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--secondary-color);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:var(--secondary-color);stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+              <g>
+                <g>
+                  <path d="M10.467,146.592l198.857,252.903c17.417,30.532,45.661,30.532,63.085,0l198.839-252.867 c3.886-5.532,8.072-15.41,8.923-22.118c2.735-21.738,4.908-65.178-21.444-65.178H23.013c-26.353,0-24.192,43.415-21.463,65.147 C2.395,131.188,6.587,141.06,10.467,146.592z" fill="url(#gradient)"></path>
+                </g>
+              </g>
+            </g>
+          </svg>
+            <p>
+              Filter:
+              {{
+                filterCourse == "" ? "All" : courses.get(filterCourse).course
+              }}
+            </p>
+          </button>
+          <div ngbDropdownMenu class="toggle">
+            <button (click)="selectCourse('')" ngbDropdownItem>All</button>
+            <button
+              *ngFor="let coursel of courses | keyvalue"
+              (click)="selectCourse(coursel.value.id)"
+              ngbDropdownItem
+            >
+              {{ coursel.value.course }}
+            </button>
+          </div>
+        </div>
+        <button class="new-task-button" (click)="taskCreation()">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Define your gradient -->
+            <defs>
+              <linearGradient id="gradient-blue-gray" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:var(--secondary-color);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:var(--secondary-color);stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <!-- Apply the gradient to the path -->
+            <g id="SVGRepo_iconCarrier">
+              <path fill="url(#gradient-blue-gray)" fill-rule="evenodd" clip-rule="evenodd" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H11.25V15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75H15C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H12.75V9Z" />
+            </g>
+          </svg>          
+          <p class="poppins-b">NEW TASK</p>
+        </button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead class="poppins-b">
+            <tr>
+              <th>Task Title</th>
+              <th>Due Date</th>
+              <th>Course</th>
+            </tr>
+          </thead>
+          <tbody class="poppins">
+            <ng-container *ngFor="let task of tasks">
+              <tr *ngIf="task.courseid == filterCourse || filterCourse == ''">
+                <td>{{ task.title }}</td>
+                <td>{{ task.deadline }}</td>
+                <td>{{ task.course }}</td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

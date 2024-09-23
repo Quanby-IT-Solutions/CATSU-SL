@@ -1,0 +1,311 @@
+  <!-- Edit Course Modal -->
+  <div *ngIf="!showTopicModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
+    <div class="container mx-auto p-8 bg-white rounded-xl shadow-lg w-[1000px] max-w-full max-h-[90vh] overflow-y-auto">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-green-700">Edit Course</h1>
+      </div>
+
+      <!-- Image Upload Section -->
+      <div class="mb-8">
+        <h2 class="text-lg font-semibold text-green-600 mb-4">Course Image</h2>
+        <div class="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+          <div class="flex justify-center items-center h-64 bg-gray-50">
+            <img
+              *ngIf="courseImagePreview; else noImage"
+              [src]="courseImagePreview"
+              alt="Course Image"
+              class="w-full h-full object-cover"
+            />
+            <ng-template #noImage>
+              <button
+                (click)="uploadCourseImage()"
+                class="w-full h-full flex justify-center items-center text-green-600"
+              >
+                <span class="text-center">Please upload a Course Photo / Background</span>
+              </button>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Information Section -->
+      <div class="mb-8 p-6 bg-gray-50 border border-gray-200 rounded-xl shadow-sm">
+        <h2 class="text-lg font-semibold text-green-600 mb-4">Course Information</h2>
+        <!-- Course Title -->
+        <label class="text-sm font-semibold text-gray-600 mb-1 block">Course Title</label>
+        <input
+          type="text"
+          [(ngModel)]="courseTitle"
+          placeholder="Course Title"
+          class="w-full p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <!-- Course Description -->
+        <label class="text-sm font-semibold text-gray-600 mb-1 block">Course Description</label>
+        <textarea
+          [(ngModel)]="courseDesc"
+          placeholder="Course Description"
+          class="w-full h-24 p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        ></textarea>
+        <!-- Course Objectives -->
+        <label class="text-sm font-semibold text-gray-600 mb-1 block">Course Objectives</label>
+        <textarea
+          [(ngModel)]="courseObjective"
+          placeholder="Course Objectives"
+          class="w-full h-24 p-4 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        ></textarea>
+      </div>
+
+      <!-- Lessons Section -->
+      <div class="mb-8 p-6 bg-gray-50 border border-gray-200 rounded-xl shadow-sm">
+        <h2 class="text-lg font-semibold text-green-600 mb-4">Modules</h2>
+        <div class="space-y-6">
+          <div *ngFor="let lesson of lessons; let i = index" class="bg-white border-l-4 border-green-500 shadow-md p-6 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold text-green-700">Module {{ i + 1 }}</h3>
+              <button (click)="delete(lesson)" class="text-red-500 hover:text-red-700">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <!-- Lesson Name -->
+              <label class="col-span-2 text-sm font-semibold text-gray-600 mb-1 block">Module Name</label>
+              <input
+                type="text"
+                [(ngModel)]="lesson.lessonName"
+                placeholder="Lesson Name"
+                class="col-span-2 w-full p-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <!-- Lesson Complexity -->
+              <label class="col-span-2 text-sm font-semibold text-gray-600 mb-1 block">Complexity</label>
+              <select
+                [(ngModel)]="lesson.complexity"
+                class="col-span-2 w-full p-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option *ngFor="let complex of complexityOptions; let j = index" [value]="j">
+                  {{ complex }}
+                </option>
+              </select>
+              <!-- Lesson Description -->
+              <label class="col-span-2 text-sm font-semibold text-gray-600 mb-1 block">Description</label>
+              <textarea
+                [(ngModel)]="lesson.description"
+                placeholder="Description"
+                class="col-span-2 w-full h-24 p-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              ></textarea>
+            </div>
+
+            <!-- Topics Section -->
+            <div class="mt-4">
+              <h4 class="text-xl font-bold text-green-600 mb-2">Topics</h4>
+              <div *ngIf="lesson.topics && lesson.topics.length > 0; else noTopics">
+                <!-- Enhanced topic display -->
+                <div *ngFor="let topic of lesson.topics; let idx = index" class="bg-white border border-gray-200 rounded-lg p-4 mb-3 shadow-sm">
+                  <div class="flex justify-between items-center mb-2">
+                    <strong class="text-green-700">Topic #{{ idx + 1 }}: {{ topic.title }}</strong>
+                    <button class="text-green-500 text-sm hover:text-green-700" (click)="openTopicModal(true, topic, lesson.id)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                  <p class="text-gray-700">{{ topic.details }}</p>
+
+      
+                <!-- Display Attachments -->
+            <div *ngIf="topic.attachments && topic.attachments.length > 0" class="mt-2 border-t border-gray-200 pt-2">
+              <h5 class="text-sm font-semibold text-green-500">Attachments:</h5>
+              <ul class="list-disc ml-5">
+                <li *ngFor="let file of topic.attachments" (click)="openFile(isFile(file) ? file.name : file)" class="cursor-pointer text-blue-600 hover:underline">
+                  {{ isFile(file) ? file.name : (isString(file) ? getFilenameFromPath(file) : file) }}
+                </li>
+              </ul>
+            </div>
+
+
+                </div>
+
+                <!-- Add Topic Button -->
+                <button class="mt-4 px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400" (click)="openTopicModal(false, null, lesson.id)">
+                  <i class="fas fa-plus mr-2"></i>Add Another Topic
+                </button>
+              </div>
+              <ng-template #noTopics>
+                <p class="text-gray-500">No topics available.</p>
+                <button class="mt-2 px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400" (click)="openTopicModal(false, null, lesson.id)">
+                  <i class="fas fa-plus mr-2"></i>Add a Topic
+                </button>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Lesson Button -->
+      <div class="text-right mb-8">
+        <button class="px-6 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400" (click)="addLesson()">
+          <i class="fas fa-plus mr-2"></i>Add Lesson
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-center space-x-4">
+        <button class="px-8 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400" (click)="submit()">
+          Save Changes
+        </button>
+        <button class="px-8 py-3 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400" (click)="closeModal()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Add/Edit Topic Modal -->
+  <div *ngIf="showTopicModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
+    <div class="bg-white p-10 rounded-2xl shadow-xl relative w-[700px] max-w-full">
+      <!-- Close Button -->
+      <button (click)="closeTopicModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times text-2xl"></i>
+      </button>
+
+      <!-- Modal Title -->
+      <h2 class="text-2xl font-bold mb-8 text-center text-green-700">{{ editingTopic ? 'Edit Topic' : 'Add Topic' }}</h2>
+
+      <!-- Input Fields for Title and Details -->
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-600 mb-2">Topic Title</label>
+        <input 
+          type="text" 
+          [(ngModel)]="newTopic.title" 
+          placeholder="Enter topic title" 
+          class="w-full p-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
+      <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-600 mb-2">Topic Details</label>
+        <textarea 
+          [(ngModel)]="newTopic.details" 
+          placeholder="Enter topic details" 
+          class="w-full p-4 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          rows="4"
+        ></textarea>
+      </div>
+
+                <!-- Display Attached Files (conditionally hidden if no files) -->
+          <div *ngIf="newTopic.attachments.length > 0" class="mb-6">
+            <h3 class="font-semibold text-lg mb-4 text-green-600">Attached Files:</h3>
+            <ul class="list-disc ml-5 space-y-2">
+              <li *ngFor="let file of newTopic.attachments" class="bg-gray-100 p-3 rounded-lg shadow-inner">
+                <!-- Regular File Display -->
+                <span *ngIf="isFile(file)" class="text-gray-700">number 1 {{ file.name }}</span>
+                <span *ngIf="isString(file)" class="text-gray-700">number 2 {{ getFilenameFromPath(file) }}</span>
+
+                <!-- Interactive Video Display -->
+                <div *ngIf="!isFile(file) && !isString(file)" class="text-gray-700">
+                  <p>{{ file.file.name }}</p>
+                
+                </div>
+              </li>
+            </ul>
+          </div>
+
+
+      <!-- Attach Files Notice -->
+      <div *ngIf="!editingTopic" class="flex justify-center space-x-4 mt-8">
+        <h1 class="block text-sm font-medium text-red-500 mb-2">Save the topic first to attach a file</h1>
+      </div>
+
+     <!-- File Attachments Section -->
+<div *ngIf="editingTopic" class="mb-6">
+  <label class="flex justify-center text-sm font-semibold text-gray-600 mb-4">Attach Files</label>
+  <div class="flex justify-between space-x-4">
+      <!-- Attach Files Buttons -->
+    <button class="w-full max-w-[140px] p-4 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-lg hover:from-green-600 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300" (click)="attachFile('mp4')">
+      <i class="fas fa-video mr-2"></i>Video
+    </button>
+    <button class="w-full max-w-[140px] p-4 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-lg hover:from-green-600 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300" (click)="attachFile('pdf')">
+      <i class="fas fa-file-pdf mr-2"></i>PDF
+    </button>
+    <button class="w-full max-w-[140px] p-4 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-lg hover:from-green-600 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300" (click)="attachFile('any')">
+      <i class="fas fa-paperclip mr-2"></i>Other
+    </button>
+
+  </div>
+</div>
+
+
+      <!-- Action Buttons -->
+      <div class="flex justify-center space-x-6 mt-8">
+        <button (click)="closeTopicModal()" class="px-8 py-3 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-lg shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-400 transition duration-300">
+          <i class="fas fa-times mr-2"></i>Cancel
+        </button>
+        <button (click)="saveTopic()" class="px-8 py-3 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300">
+          <i class="fas fa-save mr-2"></i>Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Video Options Modal -->
+<div *ngIf="showVideoOptionsModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
+  <div class="bg-white p-8 rounded-xl shadow-lg relative w-[400px] max-w-full">
+    <h2 class="text-xl font-semibold mb-6 text-center text-green-700">Choose Video Type</h2>
+    <div class="flex justify-between space-x-4">
+      <button (click)="handleVideoOption('video')" class="w-full py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400">
+        Video only
+      </button>
+      <button (click)="handleVideoOption('interactive')" class="w-full py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400">
+        Interactive Video
+      </button>
+    </div>
+    <button (click)="showVideoOptionsModal = false" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</div>
+
+
+  <!-- Interactive Video Modal -->
+  <div *ngIf="showInteractiveVideoModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
+    <div class="bg-white p-8 rounded-xl shadow-lg relative w-[500px] max-w-full">
+      <h2 class="text-xl font-semibold mb-6 text-center text-green-700">Interactive Video Settings</h2>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Video Upload</label>
+        <input type="file" accept=".mp4" (change)="onInteractiveVideoSelected($event)" class="w-full p-2 border border-gray-300 rounded-lg">
+      </div>
+      
+  
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Quiz</label>
+        <select [(ngModel)]="selectedQuiz" class="w-full p-2 border border-gray-300 rounded-lg">
+          <option value="">Select a quiz</option>
+          <option *ngFor="let quiz of quizOptions" [ngValue]="quiz">{{ quiz.title }}</option> <!-- Bind the entire quiz object -->
+        </select>
+      </div>
+      
+      
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Timestamp (in seconds)</label>
+        <input type="number" [(ngModel)]="videoTimestamp" class="w-full p-2 border border-gray-300 rounded-lg">
+      </div>
+      
+      <div class="flex justify-end space-x-4">
+        <button (click)="saveInteractiveVideo()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400">
+          Save
+        </button>
+        <button (click)="showInteractiveVideoModal = false" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">
+          Cancel
+        </button>
+      </div>
+      
+      <button (click)="showInteractiveVideoModal = false" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+

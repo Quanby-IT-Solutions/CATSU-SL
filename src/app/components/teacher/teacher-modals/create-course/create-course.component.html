@@ -1,0 +1,236 @@
+
+
+<div class="bg-white rounded-lg shadow-lg p-8 w-[880px] mx-auto">
+
+
+  <!-- Header -->
+  <div class="flex justify-center items-center mb-8">
+    <h1 class="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent text-center">CREATE COURSE</h1>
+  </div>
+
+  
+  <!-- Image Upload Section -->
+<div class="w-full h-64 mb-6">
+  <div class="flex justify-center items-center h-full">
+    <img
+      *ngIf="courseImagePreview; else noImage"
+      [src]="courseImagePreview"
+      alt="Course Image"
+      class="w-full h-full object-cover rounded-lg shadow-md"
+    />
+    <ng-template #noImage>
+      <button
+        (click)="uploadCourseImage()"
+        class="w-full h-full flex justify-center items-center bg-gray-100 border border-dashed border-gray-300 rounded-lg"
+      >
+        <span class="text-gray-500">Please upload a Course Photo / Background</span>
+      </button>
+    </ng-template>
+  </div>
+</div>
+
+
+
+  <!-- Form Fields -->
+  <div class="grid grid-cols-2 gap-4 mb-8">
+    <input
+      type="text"
+      [(ngModel)]="courseTitle"
+      placeholder="Course Title :"
+      class="col-span-2 w-full p-3 bg-blue-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+    <textarea
+      [(ngModel)]="courseDesc"
+      placeholder="Description :"
+      class="col-span-2 w-full h-24 p-3 bg-blue-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+    ></textarea>
+  
+    <textarea
+      [(ngModel)]="courseObjective"
+      placeholder="Objectives :"
+      class="col-span-2 w-full h-24 p-3 bg-blue-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+    ></textarea>
+
+   
+
+      <div class="relative">
+        <button (click)="toggleDropdown('audience')" class="w-full p-3 bg-blue-100 border border-gray-300 rounded-lg shadow-sm text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <span>Select Target Audience</span>
+          <svg class="w-5 h-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        <div *ngIf="showAudienceDropdown" class="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+          <label *ngFor="let option of audienceOptions" class="block px-4 py-2 hover:bg-gray-100">
+            <input type="checkbox" [checked]="selectedAudience.includes(option)" (change)="onSelectAudience(option)" class="mr-2" />
+            {{ option }}
+          </label>
+        </div>
+      </div>
+  
+      <div class="relative">
+        <button (click)="toggleDropdown('requirements')" class="w-full p-3 bg-blue-100 border border-gray-300 rounded-lg shadow-sm text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <span>Define Technical Requirements</span>
+          <svg class="w-5 h-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        
+        <div *ngIf="showRequirementsDropdown" class="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+          <label *ngFor="let option of requirementsOptions" class="block px-4 py-2 hover:bg-gray-100">
+            <input type="checkbox" [checked]="selectedRequirements.includes(option)" (change)="onSelectRequirement(option)" class="mr-2" />
+            {{ option }}
+          </label>
+        </div>
+      </div>
+  </div>
+
+  <!-- Lessons Section -->
+  <div class="overflow-y-auto max-h-[430px] space-y-6 mb-8">
+    <div *ngFor="let lesson of lessons; let i = index" class="bg-white rounded-lg border-2 border-transparent p-4 shadow-lg w-full">
+      <div class="bg-gradient-to-r from-green-500 to-blue-500 rounded-t-lg py-2 text-white text-center mb-4">
+        <h1 class="text-lg font-bold">LESSON {{ i + 1 }}</h1>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <input
+          type="text"
+          [(ngModel)]="lesson.lessonName"
+          placeholder="Lesson Name :"
+          class="col-span-1 w-full p-3 bg-blue-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <select
+          [(ngModel)]="lesson.complexity"
+          (change)="setComplexity(lesson.complexity, lesson)"
+          class="col-span-1 w-full p-3 bg-blue-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="" disabled selected hidden>Complexity: Beginner</option>
+          <option *ngFor="let complex of complexityOptions; let j = index" [value]="j">
+            {{ complex }}
+          </option>
+        </select>
+        <textarea
+          [(ngModel)]="lesson.description"
+          placeholder="Description"
+          class="col-span-2 w-full h-24 p-3 bg-blue-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Lesson Button -->
+  <div class="flex justify-end mb-8">
+    <button class="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400" (click)="thisLesson()">ADD LESSON</button>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex justify-center space-x-4">
+    <button class="px-6 py-2 bg-gradient-to-r from-blue-500 to-green-500 text-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400" (click)="submit()">PUBLISH COURSE</button>
+    <button class="px-6 py-2 bg-red-500 text-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-400" (click)="closeModal()">Cancel</button>
+  </div>
+</div>
+
+
+<!-- Enhanced Modal for Video Options -->
+<div *ngIf="showVideoModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
+  <div class="bg-white p-6 rounded-xl shadow-lg relative w-[400px]">
+    <!-- Close Button (only for non-interactive mode) -->
+    <button (click)="showVideoModal = false" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Modal Title (only for non-interactive mode) -->
+    <h2 *ngIf="!isInteractiveVideoMode" class="text-lg font-semibold mb-4 text-center text-gray-800">Upload Video</h2>
+
+    <!-- Buttons for Video Options -->
+    <div *ngIf="!isInteractiveVideoMode" class="flex justify-between space-x-4">
+      <button 
+        (click)="handleVideoOption('video')" 
+        class="futuristic-btn-green w-full py-1 px-4 rounded-md transition-all duration-300">
+        Video Only
+      </button>
+      <button 
+      
+      class="futuristic-btn-blue w-full py-1 px-4 rounded-md transition-all duration-300 
+             bg-blue-300 text-gray-200 cursor-not-allowed opacity-75 
+             hover:bg-blue-300 hover:text-gray-200"
+      [innerHTML]="hovering ? 'Publish this Course First' : 'Interactive Video'"
+      (mouseenter)="hovering = true"
+      (mouseleave)="hovering = false"
+    >
+    </button>
+    </div>
+
+    <!-- Content for Interactive Video -->
+    <div *ngIf="isInteractiveVideoMode" >
+      <!-- Title -->
+      <h2 class="text-lg font-semibold mb-4 text-center text-gray-800">Interactive Video</h2>
+    
+      <!-- Video Attachment Section -->
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2">
+          Video Attachment: <span class="font-bold">{{ interactiveVideoFileName || 'No video uploaded' }}</span>
+        </label>
+    
+        <!-- Conditional Buttons: Upload or Preview -->
+        <div *ngIf="interactiveVideoFile; else uploadButtonTemplate">
+          <!-- Preview Button -->
+          <button 
+            (click)="previewVideo()" 
+            class="futuristic-btn w-full py-1 px-6 rounded-md transition-all duration-300">
+            Preview Video
+          </button>
+        </div>
+        <!-- Upload Button Template -->
+        <ng-template #uploadButtonTemplate>
+          <!-- Upload Video Button -->
+          <button 
+            (click)="openFileSelector(currentLesson!, 'mp4', true)" 
+            class="futuristic-btn w-full py-1 px-6 rounded-md transition-all duration-300">
+            Upload Video
+          </button>
+        </ng-template>
+      </div>
+    
+      <!-- Select Quiz Dropdown -->
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2">Select a quiz to display:</label>
+        <select 
+          [(ngModel)]="selectedQuiz" 
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none">
+          <option *ngFor="let quiz of quizOptions" [value]="quiz">{{ quiz }}</option>
+        </select>
+      </div>
+    
+      <!-- Video Timestamp Input -->
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2">Video Timestamp for Popup Quiz (in seconds):</label>
+        <input 
+          type="number" 
+          [(ngModel)]="videoTimestamp" 
+          class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none" 
+          placeholder="Input seconds">
+      </div>
+    
+      <!-- Action Buttons -->
+      <div class="flex justify-between">
+        <button 
+          (click)="handleVideoOption('video')" 
+          class="futuristic-btn w-[140px] py-1 px-6 rounded-md transition-all duration-300">
+          Back
+        </button>
+        <button 
+          (click)="saveInteractiveVideoSettings()" 
+          class="futuristic-btn w-[140px] py-1 px-6 rounded-md transition-all duration-300">
+          Save
+        </button>
+      </div>
+    </div>
+    
+    
+  </div>
+</div>

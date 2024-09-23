@@ -1,0 +1,429 @@
+<div class="modal-content custom-modal-content " [ngClass]="myCustomClass">
+  <div class="modal-header  ">
+    <div class="titlehead poppins-b">
+      <h1>CREATE QUIZ</h1>
+    </div>
+  </div>
+
+  <div class="w-full p-4">
+    <div class="flex gap-2">
+      <div class="flex-1 flex flex-col gap-2">
+        <input class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1" [(ngModel)]="title" type="text" placeholder="Quiz Title :" />
+        <textarea
+          class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1"
+          [(ngModel)]="description"
+          name=""
+          id=""
+          cols="30"
+          rows="4"
+          placeholder="Description :"
+        ></textarea>
+      </div>
+      <div class="flex-1 flex flex-col gap-2">
+        <input
+          class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1"
+          [(ngModel)]="timelimit"
+          type="number"
+          placeholder="Time Limit :"
+          min="1"
+          required
+        />
+        <input
+          class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1"
+          type="text"
+          [(ngModel)]="deadline"
+          name="deadline"
+          id="deadline"
+          placeholder="Deadline:"
+          onfocus="this.type='date'"
+          onblur="this.type='text'"
+          required
+          style="padding-left: 10px"
+        />
+        <select
+        class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1"
+        [(ngModel)]="course" name="course">
+          <option value="" disabled selected hidden>Select Course</option>
+          <option *ngFor="let _course of courses" value="{{ _course.id }}">
+            {{ _course.title }}
+          </option>
+        </select>
+
+      </div>
+      <div class="rightwrap">
+        <h3 class="poppins font-bold mb-2">Quiz Settings</h3>
+        <div class="poppins">
+          <input [(ngModel)]="settings.random_question" type="checkbox" /><span
+            class="ml-2"
+            >Randomize Question</span
+          >
+        </div>
+        <div class="poppins">
+          <input [(ngModel)]="settings.allow_backtrack" type="checkbox" /><span
+          class="ml-2"
+            >Allow Backtracking</span
+          >
+        </div>
+        <div class="poppins">
+          <input [(ngModel)]="settings.allow_review" type="checkbox" /><span
+          class="ml-2"
+            >Allow Review After Submission</span
+          >
+        </div>
+
+        <!-- palitan nalang ngModel-->
+        <div class="poppins"> 
+          <input [(ngModel)]="settings.popup_quiz" type="checkbox" /><span
+            class="ml-2"
+            >Video Pop-up Quiz</span
+          >
+        </div>
+        <!-- palitan nalang ngModel-->
+
+      </div>
+    </div>
+
+    <div class="questions">
+      <div class="flexwrap">
+        <div class="leftwrap">
+          <div
+            *ngFor="let question of questions; let i = index"
+            class="flex mt-3 w-full gap-2"
+          >
+            <div class="flex-[2_2_1%]">
+              <div class="flex items-center">
+                <h1 class="font-bold text-lg font-poppins">Question # {{ i + 1 }}</h1>
+                <select
+                  class="ml-4 rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 text-xs"
+                  [(ngModel)]="question.type"
+                  (change)="setType(question)"
+                  name="language"
+                  id="language"
+                >
+                  <option
+                    class="placeholder poppins-b"
+                    value=""
+                    disabled
+                    selected
+                    hidden
+                  >
+                    Select Type
+                  </option>
+                  <option
+                    *ngFor="let type of types; let val = index"
+                    [value]="val"
+                  >
+                    {{ types[val] }}
+                  </option>
+                </select>
+                <button *ngIf="question.type == '3'" class="futuristic-ai-button ml-4 text-xs px-3 py-2 rounded-md" (click)="showAIModal = true">AI</button>
+
+                <button class="  hover:scale-105  bg-red-500 text-white ml-4 text-xs px-3 py-2 rounded-md" (click)="removeQuestion(i)">Remove</button>
+              </div>
+              <div  *ngIf="question.type == '1' || question.type =='0'" class="flex w-full flex-col gap-2">
+                <textarea
+                class="mt-2 rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 flex-[2_2_1%]"
+                 
+                  [(ngModel)]="question.question.value"
+                  name=""
+                  id=""
+                  cols="30"
+                  rows="4"
+                  placeholder="Enter Question :"
+                ></textarea>
+                <div class="border-slate-500 hover:bg-green-50 border-2 px-2 py-2 rounded flex flex-col justify-center items-center gap-2 ">
+                  <div class="flex flex-col"  *ngFor="let file of question.question.attachments; let j = index">
+                    <img [src]="file" class="w-auto max-h-36">
+                    <button (click)="removeQuestionAttachment(question.question, j )" class="px-3 py-1 text-xs bg-red-500 text-white hover:bg-red-400"> Remove</button>
+                  </div>
+                  <input (change)="questionOnFileSelected($event, question.question)" class="hidden" type="file" accept="image/*" #questionUpload>
+                  <button class=" bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-400" (click)="questionUpload.click()" >Add Image</button>
+                </div>
+              </div>
+              <div *ngIf="question.type == '2'" class="flex w-full mt-2 gap-2">
+                <div class="flex-1 flex flex-col gap-2">
+                  <textarea
+                  class=" rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 flex-1"
+                  [(ngModel)]="question.question.value"
+                  name=""
+                  id=""
+                  rows="4"
+                  placeholder="Enter Question :"
+                ></textarea>
+                <div class="border-slate-500 hover:bg-green-50 border-2 px-2 py-2 rounded flex flex-col justify-center items-center gap-2 ">
+                  <div class="flex flex-col"  *ngFor="let file of question.question.attachments;let j = index">
+                    <img [src]="file" class="w-auto max-h-36">
+                    <button (click)="removeQuestionAttachment(question.question, j )" class="px-3 py-1 text-xs bg-red-500 text-white hover:bg-red-400"> Remove</button>
+                  </div>
+                  <input (change)="questionOnFileSelected($event, question.question)" class="hidden" type="file" accept="image/*" #question2Upload>
+                  <button class=" bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-400" (click)="question2Upload.click()" >Add Image</button>
+                </div>
+                </div>
+                <textarea
+                  class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 flex-1"
+                  [(ngModel)]="question.answer"
+                  name=""
+                  id=""
+                  rows="4"
+                  placeholder="Enter Answer "
+                ></textarea>
+              </div>
+
+
+
+
+
+              <div *ngIf="question.type == '3'" class="flex w-full mt-2 gap-2">
+                <div class="flex-1 flex flex-col gap-2">
+                  <textarea
+                  class=" rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 flex-1"
+                  [(ngModel)]="question.question.value"
+                  name=""
+                  id=""
+                  rows="4"
+                  placeholder="Enter Question :"
+                ></textarea>
+              
+            
+                <div class="border-slate-500 hover:bg-green-50 border-2 px-2 py-2 rounded flex flex-col justify-center items-center gap-2 ">
+                  <div class="flex flex-col"  *ngFor="let file of question.question.attachments;let j = index">
+                    <img [src]="file" class="w-auto max-h-36">
+                    <button (click)="removeQuestionAttachment(question.question, j )" class="px-3 py-1 text-xs bg-red-500 text-white hover:bg-red-400"> Remove</button>
+                  </div>
+                  <input (change)="questionOnFileSelected($event, question.question)" class="hidden" type="file" accept="image/*" #question2Upload>
+                  <button class=" bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-400" (click)="question2Upload.click()" >Add Image</button>
+                </div>
+                </div>
+                <div class="rounded-lg p-4 bg-slate-50 border-2 border-dashed border-green-600 outline-green-400 px-2 py-1 flex-1 flex justify-center items-center ">
+                  Answers will automatically analyzed and checked
+                </div>
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              
+            </div>
+
+            <div *ngIf="question.type == '0'" class="options flex-[3_3_1%] mt-3 ">
+              <h1 class="poppins-b">Options</h1>
+              <!-- Container 1 -->
+              <div class="flex mt-2 gap-3"> 
+                <!-- Item 1 -->
+                <div class="flex-1 flex flex-col gap-3">
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                      <input
+                      class=" rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 flex-1"
+                        [(ngModel)]="question.options[0].value"
+                        type="text"
+                        placeholder="Option #1:"
+                      />
+                      <input
+                      [(ngModel)]="question.options[0].active"
+                        class="w-5 h-5"
+                        (change)="setMultipleAnswer('0', question)"
+                        type="checkbox"
+                      />
+                    </div>
+                    <div class="border-slate-500 hover:bg-green-50 border-2 px-1 py-1 mr-6 rounded flex flex-col justify-center items-center gap-2 ">
+                      
+                      <div class="flex flex-col"  *ngIf="question.options[0].attachment" >
+                        <img [src]="question.options[0].attachment" class="w-auto max-h-36">
+                        <button (click)="removeOptionAttachment(question.options[0])" class="px-3 py-1 text-xs bg-red-500 text-white hover:bg-red-400"> Remove</button>
+                      </div>
+                      <input (change)="optionOnFileSelected($event, question.options[0])" class="hidden" type="file" accept="image/*" #item1Upload>
+                      <button class=" bg-green-500 text-white px-6 py-2 rounded-md text-xs  hover:bg-green-400" (click)="item1Upload.click()" >Upload Image</button>
+                    </div>
+                  </div>
+                  <!-- Item 2 -->
+                  <div  class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                      <input
+                      class=" rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 flex-1"
+                        [(ngModel)]="question.options[1].value"
+                        type="text"
+                        placeholder="Option #2:"
+                      />
+                      <input
+                      [(ngModel)]="question.options[1].active"
+                        (change)="setMultipleAnswer('1', question)"
+                        class="w-5 h-5"
+                        type="checkbox"
+                      />
+                    </div>
+  
+                    <div class="border-slate-500 hover:bg-green-50 border-2 px-1 py-1 mr-6 rounded flex flex-col justify-center items-center gap-2 ">
+                      <div class="flex flex-col"  *ngIf="question.options[1].attachment" >
+                        <img [src]="question.options[1].attachment" class="w-auto max-h-36">
+                        <button (click)="removeOptionAttachment(question.options[1])" class="px-3 py-1 text-xs bg-red-500 text-white hover:bg-red-400"> Remove</button>
+                      </div>
+                      <input (change)="optionOnFileSelected($event, question.options[1])" class="hidden" type="file" accept="image/*" #item2Upload>
+                      <button class=" bg-green-500 text-white px-6 py-2 rounded-md text-xs  hover:bg-green-400" (click)="item2Upload.click()" >Upload Image</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Container 2 -->
+                <div class="flex-1 flex flex-col gap-3">
+                  <!-- Item 3 -->
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                      <input
+                      class=" rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 flex-1"
+                        [(ngModel)]="question.options[2].value"
+                        type="text"
+                        placeholder="Option #3:"
+                      />
+                      <input
+                      [(ngModel)]="question.options[2].active"
+                        (change)="setMultipleAnswer('2', question)"
+                        class="w-5 h-5"
+                        type="checkbox"
+                      />
+                    </div>
+                    <div class="border-slate-500 hover:bg-green-50 border-2 px-1 py-1 mr-6 rounded flex flex-col justify-center items-center gap-2 ">
+                      <div class="flex flex-col"  *ngIf="question.options[2].attachment" >
+                        <img [src]="question.options[2].attachment" class="w-auto max-h-36">
+                        <button (click)="removeOptionAttachment(question.options[2])" class="px-3 py-1 text-xs bg-red-500 text-white hover:bg-red-400"> Remove</button>
+                      </div>
+                      <input (change)="optionOnFileSelected($event, question.options[2])" class="hidden" type="file" accept="image/*" #item3Upload>
+                      <button class=" bg-green-500 text-white px-6 py-2 rounded-md text-xs  hover:bg-green-400" (click)="item3Upload.click()" >Upload Image</button>
+                    </div>
+                  </div>
+                  <!-- Item 4 -->
+                 <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-2">
+                    <input
+                    class=" rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1 flex-1"
+                      [(ngModel)]="question.options[3].value"
+                      type="text"
+                      placeholder="Option #4:"
+                    />
+                    <input
+                    [(ngModel)]="question.options[3].active"
+                      (change)="setMultipleAnswer('3', question)"
+                      class="w-5 h-5"
+                      type="checkbox"
+                    />
+                  </div>
+                  <div class="border-slate-500 hover:bg-green-50 border-2 px-1 py-1 mr-6 rounded flex flex-col justify-center items-center gap-2 ">
+                    <div class="flex flex-col"  *ngIf="question.options[3].attachment" >
+                      <img [src]="question.options[3].attachment" class="w-auto max-h-36">
+                      <button (click)="removeOptionAttachment(question.options[3])" class="px-3 py-1 text-xs bg-red-500 text-white hover:bg-red-400"> Remove</button>
+                    </div>
+                    <input (change)="optionOnFileSelected($event, question.options[3])" class="hidden" type="file" accept="image/*" #item4Upload>
+                    <button class=" bg-green-500 text-white px-6 py-2 rounded-md text-xs  hover:bg-green-400" (click)="item4Upload.click()" >Upload Image</button>
+                  </div>
+                 </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              *ngIf="question.type == '1'"
+              class="options flex-[2_2_1%] flex justify-center flex-col"
+            >
+              <div class="type2">
+                <div class="mt-3">
+                  <h1 class="poppins-b">TRUE/FALSE</h1>
+                  <div class="flex gap-2 mt-2">
+                    <button
+                      class=" hover:bg-green-500 
+                      {{question.answer == 'T' ? 'bg-green-500 text-white' : 'bg-green-50'}}
+                      border-solid border-2 border-green-600 hover:text-white flex-1 rounded-lg h-24 font-bold text-lg"
+                      (click)="setTFAnswer('T', question)"
+                      [ngClass]="{ active: question.answer == 'T' }"
+                    >
+                      TRUE
+                    </button>
+                    <button
+                      class=" hover:bg-green-500
+                      {{question.answer == 'F' ? 'bg-green-500 text-white' : 'bg-green-50'}}
+                      border-solid border-2 border-green-600 hover:text-white flex-1 rounded-lg h-24 font-bold text-lg"
+                      (click)="setTFAnswer('F', question)"
+                      [ngClass]="{ active: question.answer == 'F' }"
+                    >
+                      FALSE
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-start flex-col px-6">
+    <button (click)="addNewItem()" class="add hover:scale-105 poppins-b gradient-text shadow-sm border-[1px] border-green-600 px-4 py-2 rounded-md ">ADD NEW QUESTION</button>
+    <div class="w-full flex justify-end gap-3">
+      <button
+        (click)="submit()"
+        class="save  hover:scale-105 font-bold bg-green-500 text-white px-10 py-2 rounded-md"
+        [disabled]="loading"
+      >
+        Save
+      </button>
+      <button class="cancel  hover:scale-105  bg-red-500 text-white px-6 py-2 rounded-md" (click)="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="showAIModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
+  <div class="bg-white p-6 rounded-xl shadow-lg relative w-[400px]">
+    <!-- Close Button -->
+    <button (click)="showAIModal = false" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Modal Title -->
+    <h2 class="text-xl font-semibold mb-4 text-center text-gray-800">AI-Powered Essay Question Generator</h2>
+
+    <!-- Input Field -->
+    <input 
+    *ngIf="!aiGeneratedQuestion" 
+      type="text" 
+      class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4" 
+      [(ngModel)]="aiPrompt" 
+      placeholder="Enter topic for essay question"
+    />
+
+    <!-- Generated Question -->
+    <div *ngIf="aiGeneratedQuestion" class="mt-4 p-3 border border-gray-200 rounded-md bg-gray-50 text-gray-700">
+      <p>{{ aiGeneratedQuestion }}</p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-end space-x-4 mt-4">
+      <button 
+        (click)="generateEssayQuestion()" 
+        class="futuristic-btn px-4 py-2 rounded-lg">
+        {{ isGenerated ? 'Re-generate' : 'Generate' }}
+      </button>
+      <button 
+        *ngIf="isGenerated" 
+        (click)="useGeneratedQuestion()" 
+        class="futuristic-btn-green px-4 py-2 rounded-lg">
+        Use this question
+      </button>
+    </div>
+  </div>
+</div>
+
