@@ -4,26 +4,30 @@ import Swal from 'sweetalert2';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProblemreportComponent } from 'src/app/components/general-modals/problemreport/problemreport.component';
 import { Router } from '@angular/router';
+// Define the type for sidebar items
+interface SidebarItem {
+  redirect: string;
+  icon: string;
+  routerLink: string;
+}
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit {
+  title: string = 'CATSU SpeechLab'; // Dynamically set title
   isSidebarMinimized: boolean = false;
-  isStudent = this.API.getUserType() == '0';
-  constructor(
-    private API: APIService,
-    private elRef: ElementRef,
-    private renderer: Renderer2,
-    private modalService: NgbModal,
-    private router: Router
-  ) {}
-  openModal() {
-    const modalRef = this.modalService.open(ProblemreportComponent);
-  }
-  // Insert here sidenav content specific to teacher, student, etc
-  studentDashboardItems = {
+  isStudent: boolean = this.API.getUserType() === '0';
+  progress: number = 0;
+
+  // Specify types for displayedItems, mainItemKeys, and specialItemKeys
+  displayedItems!: { [key: string]: SidebarItem };
+  mainItemKeys: string[] = []; // For items before the separator
+  specialItemKeys: string[] = []; // For items after the separator
+
+  // Sidebar items for students
+  studentDashboardItems: { [key: string]: SidebarItem } = {
     DASHBOARD: {
       redirect: 'student/dashboard',
       icon: 'bx-border-all',
@@ -39,35 +43,45 @@ export class SidebarComponent implements OnInit {
       icon: 'bx-video',
       routerLink: '/student/quanhub',
     },
-
     TASKS: {
       redirect: '/student/to-do',
       icon: 'bx-notepad',
       routerLink: '/student/to-do',
     },
-    // 'SPEECH LAB': {
-    //   redirect: '/student/speechlab',
-    //   icon: 'bx-notepad',
-    //   routerLink: '/student/speechlab',
-    // },
-    // "PERFORMANCE" :  {
-    //   redirect: 'student/performance',
-    //   icon : 'bx-line-chart',
-    //   routerLink: '/student/performance'
-    // },
+    'SPEECH LAB': {
+      redirect: '/student/speechlab',
+      icon: 'bx-notepad',
+      routerLink: '/student/speechlab',
+    },
+    PERFORMANCE: {
+      redirect: 'student/performance',
+      icon: 'bx-line-chart',
+      routerLink: '/student/performance',
+    },
+    DICTIONARY: {
+      redirect: 'student/dictionary',
+      icon: 'bx-book-bookmark',
+      routerLink: '/student/dictionary',
+    },
+    'TEXT TO SPEECH': {
+      redirect: 'student/texttospeech',
+      icon: 'bx-user-voice',
+      routerLink: '/student/texttospeech',
+    },
+    'SPEECH ANALYZER': {
+      redirect: 'student/speech-analyzer/record-speech',
+      icon: 'bx-user-voice',
+      routerLink: '/student/speech-analyzer/record-speech',
+    },
   };
 
-  teacherDashboardItems = {
+  // Sidebar items for teachers
+  teacherDashboardItems: { [key: string]: SidebarItem } = {
     DASHBOARD: {
       redirect: 'teacher/dashboard',
       icon: 'bx-border-all',
       routerLink: '/teacher/dashboard',
     },
-    // "MANAGE QUIZZES" :  {
-    //   redirect: "teacher/quiz-management",
-    //   icon : 'bx-extension',
-    //   routerLink:"/teacher/quiz-management"
-    // },
     'MANAGE COURSES': {
       redirect: 'teacher/managecourse',
       icon: 'bx-book-reader',
@@ -83,24 +97,31 @@ export class SidebarComponent implements OnInit {
       icon: 'bx-video',
       routerLink: '/teacher/quanhub',
     },
-
     GRADES: {
       redirect: 'teacher/grade-list',
       icon: 'bx-spreadsheet',
       routerLink: '/teacher/grade-list',
     },
-
-
-    // 'SPEECH LAB': {
-    //   redirect: 'teacher/speechlab',
-    //   icon: 'bx-spreadsheet',
-    //   routerLink: '/teacher/speechlab',
-    // },
-    // "COMMUNICATION": {
-    //   redirect: 'teacher/communication',
-    //   icon : 'bx-message-rounded-detail',
-    //   routerLink:"/teacher/communication"
-    // },
+    'SPEECH LAB': {
+      redirect: 'teacher/speechlab',
+      icon: 'bx-spreadsheet',
+      routerLink: '/teacher/speechlab',
+    },
+    DICTIONARY: {
+      redirect: 'teacher/dictionary',
+      icon: 'bx-book-bookmark',
+      routerLink: '/teacher/dictionary',
+    },
+    'TEXT TO SPEECH': {
+      redirect: 'teacher/texttospeech',
+      icon: 'bx-user-voice',
+      routerLink: '/teacher/texttospeech',
+    },
+    'SPEECH ANALYZER': {
+      redirect: 'teacher/speech-analyzer/record-speech',
+      icon: 'bx-user-voice',
+      routerLink: '/teacher/speech-analyzer/record-speech',
+    },
   };
 
   adminDashboardItems = {
@@ -119,14 +140,12 @@ export class SidebarComponent implements OnInit {
       icon: 'bxs-time-five',
       routerLink: '/admin/count',
     },
-    // SPEECHLAB: {
-    //   redirect: 'admin/speechlab',
-    //   icon: 'bxs-time-five',
-    //   routerLink: '/admin/speechlab',
-    // },
+    SPEECHLAB: {
+      redirect: 'admin/speechlab',
+      icon: 'bxs-time-five',
+      routerLink: '/admin/speechlab',
+    },
   };
-
-
 
   principalDashboardItems = {
     DASHBOARD: {
@@ -144,31 +163,36 @@ export class SidebarComponent implements OnInit {
       icon: 'bxs-time-five',
       routerLink: '/admin/count',
     },
-    // SPEECHLAB: {
-    //   redirect: 'admin/speechlab',
-    //   icon: 'bxs-time-five',
-    //   routerLink: '/admin/speechlab',
-    // },
   };
 
-  displayedItems: any;
-  itemKeys: any;
+  constructor(
+    private API: APIService,
+    private elRef: ElementRef,
+    private renderer: Renderer2,
+    private modalService: NgbModal,
+    private router: Router
+  ) {}
+  openModal() {
+    const modalRef = this.modalService.open(ProblemreportComponent);
+  }
 
   checkAccount() {
     return this.API.getUserType();
   }
 
   ngOnInit(): void {
-    this.API.downloadCourses();
-    this.API.downloadProgress$.subscribe((progress) => {
-      this.progress = progress;
-    });
-    switch (this.API.getUserData().accountType) {
-      case 0:
+
+    const accountType = this.API.getUserData().accountType;
+    switch (accountType) {
+      case 0: // Student
         this.displayedItems = this.studentDashboardItems;
+        this.mainItemKeys = ['DASHBOARD', 'LAB', 'MEET', 'TASKS', 'SPEECH LAB']; // Main items
+        this.specialItemKeys = ['DICTIONARY', 'TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
         break;
-      case 1:
+      case 1: // Teacher
         this.displayedItems = this.teacherDashboardItems;
+        this.mainItemKeys = ['DASHBOARD', 'MANAGE COURSES', 'MANAGE CLASS', 'MEET', 'GRADES', 'SPEECH LAB']; // Main items
+        this.specialItemKeys = ['DICTIONARY', 'TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
         break;
       case 2:
         this.displayedItems = this.adminDashboardItems;
@@ -176,12 +200,16 @@ export class SidebarComponent implements OnInit {
         case 3:
         this.displayedItems = this.principalDashboardItems
         break;
-      default:
-        this.API.failedSnackbar('System Error');
+        default:
+          this.API.failedSnackbar('System Error');
+          return;
     }
-    this.itemKeys = Object.keys(this.displayedItems);
 
-    // Retrieving elements from the DOM using ElementRef
+    this.initializeSidebarToggle();
+  }
+
+  initializeSidebarToggle() {
+
     const body: HTMLElement = this.elRef.nativeElement;
     const sidebar: HTMLElement = body.querySelector('nav') as HTMLElement;
     const toggle: HTMLElement = body.querySelector('.toggle') as HTMLElement;
@@ -250,8 +278,6 @@ export class SidebarComponent implements OnInit {
       }
     });
   }
-
-  progress: number = 0;
   navigate(location: string) {
     this.router.navigate([location]);
   }
