@@ -38,7 +38,8 @@ export class LessonsComponent implements OnInit {
 
   // Define Lottie options
   lottieOptions: AnimationOptions = {
-    path: 'https://lottie.host/bd0cc3e3-bf04-4189-95d5-5f2141550864/OmuS6c5GpK.json', // Lottie animation URL
+    // path: 'https://lottie.host/bd0cc3e3-bf04-4189-95d5-5f2141550864/OmuS6c5GpK.json', // Lottie animation URL
+    path: 'https://lottie.host/e4f3816a-6637-4932-bf1a-c9b995936748/4ZuGelrs5m.json',
     autoplay: true,
     loop: true
   };
