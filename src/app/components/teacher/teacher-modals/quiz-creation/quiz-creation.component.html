@@ -14,7 +14,7 @@
           [(ngModel)]="description"
           name=""
           id=""
-          cols="30"
+          cols="32"
           rows="4"
           placeholder="Description :"
         ></textarea>
@@ -42,12 +42,35 @@
         />
         <select
         class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1"
-        [(ngModel)]="course" name="course">
-          <option value="" disabled selected hidden>Select Course</option>
-          <option *ngFor="let _course of courses" value="{{ _course.id }}">
-            {{ _course.title }}
-          </option>
-        </select>
+        [(ngModel)]="course" 
+        (ngModelChange)="onCourseChange()" 
+        name="course">
+        <option value="" disabled selected hidden>Select Course</option>
+        <option *ngFor="let _course of courses" [value]="_course.id">
+          {{ _course.title }}
+        </option>
+      </select>
+      
+      <select
+        class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1"
+        [(ngModel)]="lesson" 
+        (ngModelChange)="onLessonChange()" 
+        name="lesson">
+        <option value="" selected>Select Lesson</option>
+        <option *ngFor="let _lesson of lessons" [value]="_lesson.id">
+          {{ _lesson.title }}
+        </option>
+      </select>
+      
+      <select
+        class="rounded-lg bg-slate-50 border-2 border-solid border-green-600 outline-green-400 px-2 py-1"
+        [(ngModel)]="topic" 
+        name="topic">
+        <option value="" selected>Select Topic</option>
+        <option *ngFor="let _topic of topics" [value]="_topic.id">
+          {{ _topic.title }}
+        </option>
+      </select>
 
       </div>
       <div class="rightwrap">

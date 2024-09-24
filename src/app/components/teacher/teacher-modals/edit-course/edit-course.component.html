@@ -163,7 +163,7 @@
 
   <!-- Add/Edit Topic Modal -->
   <div *ngIf="showTopicModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
-    <div class="bg-white p-10 rounded-2xl shadow-xl relative w-[700px] max-w-full">
+    <div class="bg-white p-10 rounded-2xl shadow-xl relative w-[700px] max-w-full max-h-[90vh] overflow-y-auto">
       <!-- Close Button -->
       <button (click)="closeTopicModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
         <i class="fas fa-times text-2xl"></i>
@@ -192,24 +192,29 @@
         ></textarea>
       </div>
 
-                <!-- Display Attached Files (conditionally hidden if no files) -->
-          <div *ngIf="newTopic.attachments.length > 0" class="mb-6">
-            <h3 class="font-semibold text-lg mb-4 text-green-600">Attached Files:</h3>
-            <ul class="list-disc ml-5 space-y-2">
-              <li *ngFor="let file of newTopic.attachments" class="bg-gray-100 p-3 rounded-lg shadow-inner">
-                <!-- Regular File Display -->
-                <span *ngIf="isFile(file)" class="text-gray-700">number 1 {{ file.name }}</span>
-                <span *ngIf="isString(file)" class="text-gray-700">number 2 {{ getFilenameFromPath(file) }}</span>
-
-                <!-- Interactive Video Display -->
-                <div *ngIf="!isFile(file) && !isString(file)" class="text-gray-700">
-                  <p>{{ file.file.name }}</p>
-                
-                </div>
-              </li>
-            </ul>
-          </div>
-
+          
+      <div *ngIf="newTopic.attachments.length > 0" class="mb-6">
+        <h3 class="font-semibold text-lg mb-4 text-green-600">Attached Files:</h3>
+        <ul class="list-disc ml-5 space-y-2">
+          <li *ngFor="let file of newTopic.attachments; let i = index" class="bg-gray-100 p-3 rounded-lg shadow-inner flex justify-between items-center">
+            <div class="flex-grow">
+              <!-- Regular File Display -->
+              <span *ngIf="isFile(file)" class="text-gray-700">{{ file.name }}</span>
+              <span *ngIf="isString(file)" class="text-gray-700">{{ getFilenameFromPath(file) }}</span>
+  
+              <!-- Interactive Video Display -->
+              <div *ngIf="!isFile(file) && !isString(file)" class="text-gray-700">
+                <p>{{ file.file.name }}</p>
+              </div>
+            </div>
+            
+            <!-- Delete Button -->
+            <button (click)="deleteAttachment(i)" class="text-red-500 hover:text-red-700 ml-2">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
 
       <!-- Attach Files Notice -->
       <div *ngIf="!editingTopic" class="flex justify-center space-x-4 mt-8">

@@ -5,6 +5,10 @@ import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { SharedService } from 'src/app/services/API/services-includes/shared.service';
 import {provideStorage, getStorage } from '@angular/fire/storage';
+import { LottieModule } from 'ngx-lottie';
+import player from 'lottie-web'; 
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyDAd8uGtbwzUvEqiOeC2TW_kRHFEGtw38Q",
   authDomain: "quanbylms-b4b15.firebaseapp.com",
@@ -135,6 +139,9 @@ import { EssayAnalyserComponent } from './unused-components/essay-analyser/essay
 import { PopupQuizPageComponent } from './components/student/popup-quiz-page/popup-quiz-page.component';
 
 
+export function playerFactory() {
+  return player;
+}
 
 
 @NgModule({
@@ -259,9 +266,12 @@ import { PopupQuizPageComponent } from './components/student/popup-quiz-page/pop
     BrowserAnimationsModule,
     DragDropModule,
     PdfViewerModule,
+    LottieModule.forRoot({ player: playerFactory }),
+
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
+    
   ],
   providers: [SharedService],
   bootstrap: [AppComponent],

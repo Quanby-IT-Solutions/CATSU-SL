@@ -3852,6 +3852,104 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
+  // createQuiz(
+  //   CourseID: string,
+  //   ID: string,
+  //   title: string,
+  //   details: string,
+  //   timelimit: number,
+  //   deadline: string,
+  //   attachments?: string,
+  //   settings?: string,
+  // ) {
+  //   var attach = {};
+  //   if (attachments != undefined) {
+  //     attach = { Attachments: attachments };
+  //   }
+
+  //   var det = '[NONE]';
+  //   if (details.trim() != '') {
+  //     det = details;
+  //   }
+
+  //   var sett = {};
+  //   if (settings != undefined) {
+  //     sett = { Settings: settings };
+  //   }
+
+  //   const postObject = {
+  //     tables: 'assessments',
+  //     values: Object.assign(
+  //       {},
+  //       {
+  //         CourseID: CourseID,
+  //         ID: ID,
+  //         Title: title,
+  //         Details: det,
+  //         Timelimit: timelimit,
+  //         Deadline: deadline,
+  //       },
+  //       attach,
+  //       sett
+  //     ),
+  //   };
+  //   return this.post('create_entry', {
+  //     data: JSON.stringify(postObject),
+  //   });
+  // }
+
+  // updateQuiz(
+  //   CourseID: string,
+  //   ID: string,
+  //   title: string,
+  //   details: string,
+  //   timelimit: number,
+  //   deadline: string,
+  //   attachments?: string,
+  //   settings?: string
+  // ) {
+  //   var attach = {};
+  //   if (attachments != undefined) {
+  //     attach = { Attachments: attachments };
+  //   }
+
+  //   var det = '[NONE]';
+  //   if (details.trim() != '') {
+  //     det = details;
+  //   }
+
+  //   var sett = {};
+  //   if (settings != undefined) {
+  //     sett = { Settings: settings };
+  //   }
+
+  //   const postObject = {
+  //     tables: 'assessments',
+  //     values: Object.assign(
+  //       {},
+  //       {
+  //         CourseID: CourseID,
+  //         ID: ID,
+  //         Title: title,
+  //         Details: det,
+  //         Timelimit: timelimit,
+  //         Deadline: deadline,
+  //       },
+  //       attach,
+  //       sett
+  //     ),
+  //     conditions:{
+  //       WHERE:{
+  //         ID: ID,
+  //       }
+  //     }
+  //   };
+  //   return this.post('update_entry', {
+  //     data: JSON.stringify(postObject),
+  //   });
+  // }
+
+
   createQuiz(
     CourseID: string,
     ID: string,
@@ -3860,23 +3958,25 @@ export class APIService implements OnDestroy, OnInit {
     timelimit: number,
     deadline: string,
     attachments?: string,
-    settings?: string
+    settings?: string,
+    lessonid?: string,  // New parameter
+    topicid?: string    // New parameter
   ) {
     var attach = {};
     if (attachments != undefined) {
       attach = { Attachments: attachments };
     }
-
+  
     var det = '[NONE]';
     if (details.trim() != '') {
       det = details;
     }
-
+  
     var sett = {};
     if (settings != undefined) {
       sett = { Settings: settings };
     }
-
+  
     const postObject = {
       tables: 'assessments',
       values: Object.assign(
@@ -3888,6 +3988,8 @@ export class APIService implements OnDestroy, OnInit {
           Details: det,
           Timelimit: timelimit,
           Deadline: deadline,
+          lessonid: lessonid,  // Add lessonid
+          topicid: topicid     // Add topicid
         },
         attach,
         sett
@@ -3897,7 +3999,7 @@ export class APIService implements OnDestroy, OnInit {
       data: JSON.stringify(postObject),
     });
   }
-
+  
   updateQuiz(
     CourseID: string,
     ID: string,
@@ -3906,23 +4008,25 @@ export class APIService implements OnDestroy, OnInit {
     timelimit: number,
     deadline: string,
     attachments?: string,
-    settings?: string
+    settings?: string,
+    lessonid?: string,  // New parameter
+    topicid?: string    // New parameter
   ) {
     var attach = {};
     if (attachments != undefined) {
       attach = { Attachments: attachments };
     }
-
+  
     var det = '[NONE]';
     if (details.trim() != '') {
       det = details;
     }
-
+  
     var sett = {};
     if (settings != undefined) {
       sett = { Settings: settings };
     }
-
+  
     const postObject = {
       tables: 'assessments',
       values: Object.assign(
@@ -3934,6 +4038,8 @@ export class APIService implements OnDestroy, OnInit {
           Details: det,
           Timelimit: timelimit,
           Deadline: deadline,
+          lessonid: lessonid,  // Add lessonid
+          topicid: topicid     // Add topicid
         },
         attach,
         sett
@@ -3948,6 +4054,7 @@ export class APIService implements OnDestroy, OnInit {
       data: JSON.stringify(postObject),
     });
   }
+  
 
   updateQuizItem(
     ID: string,

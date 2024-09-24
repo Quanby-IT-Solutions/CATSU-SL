@@ -14,7 +14,12 @@ export class QuizCreationComponent implements OnInit {
   @Input() myCustomClass: string = '';
   @Input() quiz: any = null;
   @Input() courses: any = [];
+
+
+
   course: string = '';
+  lesson: string = '';
+  topic: string = '';
   title: string = '';
   description: string = '';
   timelimit?: number;
@@ -28,6 +33,8 @@ export class QuizCreationComponent implements OnInit {
   };
 
   loading:boolean = false;
+  lessons: any[] = [];
+  topics: any[] = [];
 
   types: Array<string> = ['Multiple Choice', 'True/False', 'Identification', 'Essay'];
   removeList:string[] = [];
@@ -42,68 +49,215 @@ export class QuizCreationComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal, private API: APIService) {}
 
+  // ngOnInit(): void {
+  //   if(this.quiz){
+  //     this.API.showSnackbar('Loading items, please wait....', undefined, 999999999);
+  //     this.loading= true;
+
+
+  //     this.questions = [];
+  //     this.course = this.quiz.courseid;
+  //     this.title = this.quiz.title;
+  //     this.description = this.quiz.details;
+  //     this.timelimit = this.quiz.timelimit;
+  //     this.deadline = this.quiz.deadline;
+  //     this.attachments = this.quiz.attachments;
+  //     this.quiz.settings = this.quiz.settings ?? ''
+      
+  //     this.settings ={
+  //       random_question: this.quiz.settings.includes('random_question'),
+  //       allow_backtrack: this.quiz.settings.includes('allow_backtrack'),
+  //       allow_review: this.quiz.settings.includes('allow_review'),
+  //       popup_quiz: this.quiz.settings.includes('popup_quiz'),
+  //     }
+      
+
+  //     // load the items;
+  //     const items$ =  this.API.teacherGetQuizItems(this.quiz.id).subscribe(data=>{
+  //       if(data.success){
+  //         this.questions = data.output.reduce((acc:any,curr:any)=>{
+  //           const [question, attachments] = curr.question.split('::::');
+  //           let optCounter = -1;
+  //           let options
+  //           if(Number(curr.type <= 1)){
+  //            options = curr.options.split('\\n\\n').reduce((oacc:any,ocurr:any)=>{
+  //               const [option, attachment] = ocurr.split('::::');
+  //               optCounter +=1;
+  //               if(optCounter > 3){
+  //                 return oacc
+  //               }
+  //               return [...oacc, {
+  //                 value: option,
+  //                 attachment: attachment == '' ? null : this.API.getURL(attachment),
+  //                 active: curr.answer.includes(optCounter)
+  //               }]
+  //             },[]);
+  //           }
+  //           return [...acc, {
+  //             id: curr.id,
+  //             type: curr.type,
+  //             question: {value:question, attachments: attachments.split('\\n\\n').reduce((acc:any, curr:any)=>{
+  //               if(curr.trim() == ''){
+  //                 return acc;
+  //               }
+  //               return [...acc, this.API.getURL(curr)]
+  //             },[])},
+  //             options: options,
+  //             answer: curr.answer,
+  //           }]
+  //         },[]);
+  //         this.API.successSnackbar('Items loaded!')
+  //       }else{
+  //         this.API.failedSnackbar('Error getting quiz items, refrain from editing quiz.')
+  //       }
+  //       this.loading = false;
+  //       items$.unsubscribe();
+  //     })
+  //   }
+  // }
+
   ngOnInit(): void {
-    if(this.quiz){
-      this.API.showSnackbar('Loading items, please wait....', undefined, 999999999);
-      this.loading= true;
-      this.questions = [];
+    if (this.quiz) {
+      // Editing an existing quiz
+      this.API.showSnackbar('Loading quiz details, please wait...', undefined, 999999999);
+      this.loading = true;
+      
+      // Initialize quiz details
       this.course = this.quiz.courseid;
       this.title = this.quiz.title;
       this.description = this.quiz.details;
       this.timelimit = this.quiz.timelimit;
       this.deadline = this.quiz.deadline;
       this.attachments = this.quiz.attachments;
-      this.quiz.settings = this.quiz.settings ?? ''
-      this.settings ={
+      
+      // Initialize settings
+      this.quiz.settings = this.quiz.settings ?? '';
+      this.settings = {
         random_question: this.quiz.settings.includes('random_question'),
         allow_backtrack: this.quiz.settings.includes('allow_backtrack'),
         allow_review: this.quiz.settings.includes('allow_review'),
         popup_quiz: this.quiz.settings.includes('popup_quiz'),
-      }
-      
-
-      // load the items;
-      const items$ =  this.API.teacherGetQuizItems(this.quiz.id).subscribe(data=>{
-        if(data.success){
-          this.questions = data.output.reduce((acc:any,curr:any)=>{
-            const [question, attachments] = curr.question.split('::::');
-            let optCounter = -1;
-            let options
-            if(Number(curr.type <= 1)){
-             options = curr.options.split('\\n\\n').reduce((oacc:any,ocurr:any)=>{
-                const [option, attachment] = ocurr.split('::::');
-                optCounter +=1;
-                if(optCounter > 3){
-                  return oacc
-                }
-                return [...oacc, {
-                  value: option,
-                  attachment: attachment == '' ? null : this.API.getURL(attachment),
-                  active: curr.answer.includes(optCounter)
-                }]
-              },[]);
+      };
+  
+      // Load lessons, topics, and quiz items
+      this.loadLessonsAndTopics().then(() => {
+        this.loadQuizItems();
+      });
+    } else {
+      // Creating a new quiz
+      this.questions = [this.createNewQuestion()];
+    }
+  
+    // Load all courses (this might be needed for both new and existing quizzes)
+    this.loadCourses();
+  }
+  
+  private async loadLessonsAndTopics(): Promise<void> {
+    if (this.course) {
+      try {
+        // Load lessons for the selected course
+        const lessonData = await this.API.teacherCourseLessons(this.course).toPromise();
+        this.lessons = lessonData.output;
+        
+        // Set the lesson if it exists in the quiz
+        if (this.quiz.lessonid) {
+          this.lesson = this.quiz.lessonid;
+          
+          // Load topics for the selected lesson
+          if (this.lesson) {
+            const topicData = await this.API.getTopics(this.lesson).toPromise();
+            this.topics = topicData.output;
+            
+            // Set the topic if it exists in the quiz
+            if (this.quiz.topicid) {
+              this.topic = this.quiz.topicid;
             }
-            return [...acc, {
-              id: curr.id,
-              type: curr.type,
-              question: {value:question, attachments: attachments.split('\\n\\n').reduce((acc:any, curr:any)=>{
-                if(curr.trim() == ''){
-                  return acc;
-                }
-                return [...acc, this.API.getURL(curr)]
-              },[])},
+          }
+        }
+      } catch (error) {
+        console.error('Error loading lessons and topics:', error);
+        this.API.failedSnackbar('Failed to load lessons and topics. Please try again.');
+      }
+    }
+  }
+  
+  private loadQuizItems(): void {
+    this.API.teacherGetQuizItems(this.quiz.id).subscribe(
+      data => {
+        if (data.success) {
+          this.questions = data.output.map((item: any) => {
+            const [question, attachments] = item.question.split('::::');
+            let options;
+            
+            if (Number(item.type) <= 1) {
+              options = item.options.split('\\n\\n').map((option: string, index: number) => {
+                const [value, attachment] = option.split('::::');
+                return {
+                  value: value,
+                  attachment: attachment ? this.API.getURL(attachment) : null,
+                  active: item.answer.includes(index.toString())
+                };
+              }).slice(0, 4);  // Ensure we only have 4 options
+            }
+  
+            return {
+              id: item.id,
+              type: item.type,
+              question: {
+                value: question,
+                attachments: attachments.split('\\n\\n').filter((url: string) => url.trim() !== '').map((url: string) => this.API.getURL(url))
+              },
               options: options,
-              answer: curr.answer,
-            }]
-          },[]);
-          this.API.successSnackbar('Items loaded!')
-        }else{
-          this.API.failedSnackbar('Error getting quiz items, refrain from editing quiz.')
+              answer: item.answer,
+            };
+          });
+          
+          this.API.successSnackbar('Quiz items loaded successfully!');
+        } else {
+          this.API.failedSnackbar('Error loading quiz items. Some data may be missing.');
         }
         this.loading = false;
-        items$.unsubscribe();
-      })
-    }
+      },
+      error => {
+        console.error('Error fetching quiz items:', error);
+        this.API.failedSnackbar('Failed to load quiz items. Please try again.');
+        this.loading = false;
+      }
+    );
+  }
+  
+  private loadCourses(): void {
+    this.API.teacherAllCourses().subscribe(
+      data => {
+        if (data.success) {
+          this.courses = data.output.map((course: any) => ({
+            id: course.id,
+            title: course.course,
+            // Add any other necessary course properties
+          }));
+        } else {
+          this.API.failedSnackbar('Failed to load courses. Please refresh the page.');
+        }
+      },
+      error => {
+        console.error('Error fetching courses:', error);
+        this.API.failedSnackbar('Failed to load courses. Please check your connection and try again.');
+      }
+    );
+  }
+  
+  private createNewQuestion(): any {
+    return {
+      type: '0',
+      question: { value: '', attachments: [] },
+      options: [
+        { value: '', attachment: null, active: false },
+        { value: '', attachment: null, active: false },
+        { value: '', attachment: null, active: false },
+        { value: '', attachment: null, active: false }
+      ],
+      answer: '',
+    };
   }
 
   selectedFileName: string | undefined;
@@ -198,6 +352,44 @@ export class QuizCreationComponent implements OnInit {
   }
 
   uploading: boolean = false;
+
+  onCourseChange() {
+    this.lesson = '';
+    this.topic = '';
+    this.topics = [];
+    if (this.course) {
+      this.API.teacherCourseLessons(this.course).subscribe(
+        (data) => {
+          this.lessons = data.output;
+        },
+        (error) => {
+          console.error('Error fetching lessons:', error);
+          this.API.failedSnackbar('Failed to fetch lessons for the selected course.');
+        }
+      );
+    } else {
+      this.lessons = [];
+    }
+  }
+
+  onLessonChange() {
+    this.topic = '';
+    if (this.lesson) {
+      this.API.getTopics(this.lesson).subscribe(
+        (data) => {
+          this.topics = data.output;
+        },
+        (error) => {
+          console.error('Error fetching topics:', error);
+          this.API.failedSnackbar('Failed to fetch topics for the selected lesson.');
+        }
+      );
+    } else {
+      this.topics = [];
+    }
+  }
+
+
   submit() {
     if (this.uploading) return;
     this.uploading = true;
@@ -243,7 +435,7 @@ export class QuizCreationComponent implements OnInit {
         this.deadline,
       ])
     ) {
-      this.API.failedSnackbar('Please fill out all the header fields!');
+      this.API.failedSnackbar('Please fill out all the required fields!');
       this.uploading = false;
       return;
     }
@@ -280,7 +472,9 @@ export class QuizCreationComponent implements OnInit {
         this.timelimit!,
         this.deadline,
         attachments,
-        settings
+        settings,
+        this.lesson || undefined,  // Add lesson ID
+        this.topic || undefined    // Add topic ID
       ).subscribe(async () => {
         for (let item of this.questions) {
           var options: any = undefined;
@@ -354,7 +548,9 @@ export class QuizCreationComponent implements OnInit {
         this.timelimit!,
         this.deadline,
         attachments,
-        settings
+        settings,
+        this.lesson || undefined,  
+        this.topic || undefined    
       ).subscribe(async () => {
         for (let item of this.questions) {
           var options: any = undefined;

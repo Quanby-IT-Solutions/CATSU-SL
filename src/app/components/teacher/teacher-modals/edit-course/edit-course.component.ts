@@ -194,99 +194,6 @@ export class EditCourseComponent implements OnInit {
 
 
 
-// async saveTopic(): Promise<void> {
-//   if (this.newTopic.title.trim() === '' || this.newTopic.details.trim() === '') {
-//     this.API.failedSnackbar('Title and Details are required.');
-//     return;
-//   }
-
-//   try {
-//     const attachments: any[] = [];
-//     let uploadCount = 0;
-
-//     for (const attachment of this.newTopic.attachments) {
-//       if (attachment instanceof File) {
-//         const serverLocation = uuidv4() + '-' + attachment.name;
-//         await this.API.uploadFile(attachment, serverLocation);
-//         attachments.push({
-//           filePath: 'files/' + serverLocation,
-//           type: 'normal',
-//           metadata: null
-//         });
-//       } else if (typeof attachment === 'object' && 'file' in attachment) {
-//         const serverLocation = uuidv4() + '-' + attachment.file.name;
-//         await this.API.uploadFile(attachment.file, serverLocation);
-//         if (attachment.metadata.type === 'interactive') {
-//           attachments.push({
-//             filePath: 'files/' + serverLocation,
-//             type: 'interactive',
-//             metadata: {
-//               quiz_id: attachment.metadata.quiz_id,
-//               timestamp: attachment.metadata.timestamp
-//             }
-//           });
-//         } else {
-//           attachments.push({
-//             filePath: 'files/' + serverLocation,
-//             type: 'normal',
-//             metadata: null
-//           });
-//         }
-//       } else if (typeof attachment === 'string') {
-//         attachments.push({
-//           filePath: attachment,
-//           type: 'normal',
-//           metadata: null
-//         });
-//       }
-//       uploadCount++;
-//     }
-
-//     console.log(`All files uploaded: ${uploadCount}/${this.newTopic.attachments.length}`);
-
-//     if (this.editingTopic && this.currentLessonId && this.newTopic.topicId) {
-//       const updateResult = await firstValueFrom(
-//         this.API.updateTopic(
-//           this.currentLessonId,
-//           this.newTopic.topicId,
-//           this.newTopic.title,
-//           this.newTopic.details
-//         )
-//       );
-
-//       if (updateResult.success) {
-//         await this.updateTopicAttachments(this.newTopic.topicId, attachments);
-//         this.API.successSnackbar('Topic and attachments updated successfully!');
-//         this.updateTopicsList();
-//         this.closeTopicModal();
-//       } else {
-//         throw new Error('Failed to update topic');
-//       }
-//     } else if (this.currentLessonId) {
-//       const result = await firstValueFrom(
-//         this.API.createTopicWithAttachments(
-//           this.currentLessonId,
-//           this.newTopic.title,
-//           this.newTopic.details,
-//           attachments
-//         )
-//       );
-
-//       if (result.success) {
-//         console.log('Topic and attachments created successfully!', result);
-//         this.API.successSnackbar('Topic and attachments created successfully!');
-//         this.updateTopicsList();
-//         this.closeTopicModal();
-//       } else {
-//         throw new Error(result.error || 'Failed to create topic with attachments');
-//       }
-//     }
-//   } catch (error) {
-//     console.error('Error saving topic:', error);
-//     this.API.failedSnackbar(`Failed to ${this.editingTopic ? 'update' : 'create'} topic. Please try again.`);
-//   }
-// }
-
 getFileProgress(){
   return this.API.uploadProgress;
 }
@@ -317,24 +224,10 @@ async saveTopic(): Promise<void> {
       if (attachment instanceof File) {
         const serverLocation = uuidv4() + '-' + attachment.name;
 
-        // // Reset progress for each file upload
-        // this.uploadProgress = 0;
-        // this.uploadInProgress = true;
-
-        // Show the snackbar with 0% progress
+     
         this.API.justSnackbar(`Uploading file`, this.uploadProgress);
 
-        // Upload the file and track progress
-        // await lastValueFrom(
-        //   this.API.uploadFileLoading(attachment, serverLocation).pipe(
-        //     tap((progress: number) => {
-        //       this.uploadProgress = progress; // Update the progress value
-
-        //       // Update the snackbar with current progress
-        //       this.API.justSnackbar(`Uploading file... ${progress}%`, 99999999999999);
-        //     })
-        //   )
-        // );
+      
         await this.API.uploadFileWithProgress(attachment, serverLocation);
         attachments.push({
           filePath: 'files/' + serverLocation,
@@ -351,14 +244,6 @@ async saveTopic(): Promise<void> {
         this.uploadInProgress = true;
        
 
-        // await lastValueFrom(
-        //   this.API.uploadFileWithProgress(attachment.file, serverLocation).pipe(
-        //     tap((progress: number) => {
-        //       this.uploadProgress = progress;
-        //       this.API.justSnackbar(`Uploading interactive file... ${progress}%`, 99999999999999);
-        //     })
-        //   )
-        // );
         await this.API.uploadFileWithProgress(attachment.file,serverLocation);
         if (attachment.metadata.type === 'interactive') {
           attachments.push({
@@ -559,6 +444,39 @@ saveNonInteractiveFile(): void {
 }
 
 
+deleteAttachment(index: number): void {
+  if (this.editingTopic && this.newTopic.topicId) {
+    // If we're editing an existing topic, we need to delete the attachment from the server
+    const attachmentToDelete = this.newTopic.attachments[index];
+    
+    if (typeof attachmentToDelete === 'string') {
+      // It's an existing file path, so we need to delete it from the server
+      this.API.deleteTopicAttachments(this.newTopic.topicId).subscribe(
+        (response) => {
+          if (response.success) {
+            this.newTopic.attachments.splice(index, 1);
+            this.API.successSnackbar('Attachment deleted successfully!');
+          } else {
+            this.API.failedSnackbar('Failed to delete attachment. Please try again.');
+          }
+        },
+        (error) => {
+          console.error('Error deleting attachment:', error);
+          this.API.failedSnackbar('Failed to delete attachment. Please try again.');
+        }
+      );
+    } else if (attachmentToDelete && typeof attachmentToDelete === 'object' && 'file' in attachmentToDelete) {
+      // It's a newly added file that hasn't been saved to the server yet
+      this.newTopic.attachments.splice(index, 1);
+      this.API.successSnackbar('Attachment removed successfully!');
+    }
+  } else {
+    // If we're adding a new topic or the topic hasn't been saved yet,
+    // we can simply remove the attachment from the array
+    this.newTopic.attachments.splice(index, 1);
+    this.API.successSnackbar('Attachment removed successfully!');
+  }
+}
 
 
 handleVideoOption(option: 'video' | 'interactive'): void {
