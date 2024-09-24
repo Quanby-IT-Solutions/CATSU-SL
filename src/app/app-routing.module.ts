@@ -69,8 +69,11 @@ import { Practice1Component } from './speechlab/student/practice/practice1/pract
 import { DrillsComponent } from './components/admin/speechlab/drills/drills.component';
 import {PracticeParentComponent } from './speechlab/student/practice/practice-parent/practice-parent.component'
 import { QuizTemplateComponent } from './speechlab/student/module/quiz-template/quiz-template.component';
-import { ModuleComponent } from './teacher/module/module.component';
 import { EssayAnalyserComponent } from './unused-components/essay-analyser/essay-analyser.component';
+import { SpeechAnalyzerComponent } from './components/speech-analyzer/speech-analyzer.component';
+import { RecordSpeechComponent } from './components/speech-analyzer/record-speech/record-speech.component';
+import { RecordListComponent } from './components/speech-analyzer/record-list/record-list.component';
+import { RecordReportComponent } from './components/speech-analyzer/record-report/record-report.component';
 const routes: Routes = [
   { path: 'loader', component: LoaderComponent },
   {
@@ -137,6 +140,7 @@ const routes: Routes = [
       { path: 'performance', component: PerformanceComponent },
       { path: 'texttospeech', component: TexttospeechComponent },
       { path: 'dictionary', component: DictionaryComponent },
+      { path: 'speechanalyzer', component: SpeechAnalyzerComponent },
       {
         path: 'quiz-page',
         component: QuizPageComponent,
@@ -179,8 +183,18 @@ const routes: Routes = [
         {path: 'quiz-template', component: QuizTemplateComponent}
         ]
       },
+      {
+        path: 'speech-analyzer',
+        children: [
+          { path: 'record-speech', component: RecordSpeechComponent },
+          { path: 'record-list', component: RecordListComponent },
+          { path: 'record-report', component: RecordReportComponent },
+        ],
+      },
     ],
   },
+
+
   {
     path: 'teacher',
     component: DashboardComponent,
@@ -202,8 +216,8 @@ const routes: Routes = [
       { path: 'communication', component: CommunicationComponent },
       { path: 'managecourse', component: ManageCourseComponent },
       { path: 'quiz-management', component: QuizManagementComponent },
-      { path: 'manage-module', component: ModuleComponent },
       { path: 'lessons', component: LessonsComponent },
+      { path: 'speechanalyzer', component: SpeechAnalyzerComponent },
       {
         path: 'teacher-view',
         canActivate: [TeacherViewGuardGuard],
@@ -225,6 +239,14 @@ const routes: Routes = [
           {path: 'quiztemplate', component: QuizTemplateComponent},
 
         ]
+      },
+      {
+        path: 'speech-analyzer',
+        children: [
+          { path: 'record-speech', component: RecordSpeechComponent },
+          { path: 'record-list', component: RecordListComponent },
+          { path: 'record-report', component: RecordReportComponent },
+        ],
       },
     ],
   },

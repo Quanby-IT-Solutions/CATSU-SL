@@ -130,9 +130,12 @@ import { GroupComponent } from './speechlab/components/group/group.component';
 import { QuizAnalyticsComponent } from './components/teacher/quiz-analytics/quiz-analytics.component';
 import { AddPrincipalComponent } from './components/admin/admin-modals/add-principal/add-principal.component';
 import { SurveyCertComponent } from './components/student/student-modals/survey-cert/survey-cert.component';
-import { ModuleComponent } from './teacher/module/module.component';
 import { EssayAnalyserComponent } from './unused-components/essay-analyser/essay-analyser.component';
 import { PopupQuizPageComponent } from './components/student/popup-quiz-page/popup-quiz-page.component';
+import { SpeechAnalyzerComponent } from './components/speech-analyzer/speech-analyzer.component';
+import { RecordListComponent } from './components/speech-analyzer/record-list/record-list.component';
+import { RecordReportComponent } from './components/speech-analyzer/record-report/record-report.component';
+import { RecordSpeechComponent } from './components/speech-analyzer/record-speech/record-speech.component';
 
 
 
@@ -236,9 +239,12 @@ import { PopupQuizPageComponent } from './components/student/popup-quiz-page/pop
     AddPrincipalComponent,
     QuizAnalyticsComponent,
     SurveyCertComponent,
-    ModuleComponent,
     EssayAnalyserComponent,
-    PopupQuizPageComponent
+    PopupQuizPageComponent,
+    SpeechAnalyzerComponent,
+    RecordListComponent,
+    RecordReportComponent,
+    RecordSpeechComponent
   ],
 
   imports: [

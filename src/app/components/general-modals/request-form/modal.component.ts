@@ -22,6 +22,7 @@ export class ModalComponent {
   password: string = '';
   confirmpassword: string = '';
   host: string = new URL(window.location.href).origin;
+
   inputErrors = {
     firstname: false,
     lastname: false,
@@ -33,7 +34,22 @@ export class ModalComponent {
     password: false,
     confirmpassword: false,
   };
+
   registrationSuccessful = false;
+
+  // Dynamic content for the modal
+  modalTitle: string = 'Request Form';
+  firstNamePlaceholder: string = 'First Name';
+  lastNamePlaceholder: string = 'Last Name';
+  addressPlaceholder: string = 'Address';
+  emailPlaceholder: string = 'Email';
+  nationalityPlaceholder: string = 'Nationality';
+  birthdayLabel: string = 'Birthday';
+  genderLabel: string = 'Gender';
+  passwordPlaceholder: string = 'Password';
+  confirmPasswordPlaceholder: string = 'Confirm Password';
+  requestButtonText: string = 'Request';
+  genderOptions: string[] = ['Male', 'Female', 'Other'];
 
   constructor(
     private API: APIService,
