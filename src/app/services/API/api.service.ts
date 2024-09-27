@@ -148,6 +148,35 @@ export class APIService implements OnDestroy, OnInit {
     }
   }
 
+  
+  async analyzeSpeech(prompt: string): Promise<string> {
+    try {
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = await response.text();
+  
+      return text.trim();
+    } catch (error) {
+      console.error('Error generating content from speech:', error);
+      throw new Error('Error generating content from speech. Please try again.');
+    }
+  }
+
+  async generateSpeechToRead(prompt: string): Promise<string> {
+    try {
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = await response.text();
+  
+      return text.trim();
+    } catch (error) {
+      console.error('Error generating content from speech:', error);
+      throw new Error('Error generating content from speech. Please try again.');
+    }
+  }
+  
+
+
   getAttendanceHistory() {
     const id = this.getUserData().id;
     const postObject = {
@@ -1244,6 +1273,9 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
+
+  
+  
 
 
 
@@ -3852,102 +3884,107 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
-  // createQuiz(
-  //   CourseID: string,
-  //   ID: string,
-  //   title: string,
-  //   details: string,
-  //   timelimit: number,
-  //   deadline: string,
-  //   attachments?: string,
-  //   settings?: string,
-  // ) {
-  //   var attach = {};
-  //   if (attachments != undefined) {
-  //     attach = { Attachments: attachments };
-  //   }
+  createAudioFile(
+    audioFile: string,
+    details?: string
+  ): Observable<any> {
+    const postObject = {
+      tables: 'audio_files',
+      values: {
+        audio_file: audioFile,
+        details: details || '[NONE]'
+      }
+    };
 
-  //   var det = '[NONE]';
-  //   if (details.trim() != '') {
-  //     det = details;
-  //   }
+    console.log('Creating audio file with data:', postObject);
 
-  //   var sett = {};
-  //   if (settings != undefined) {
-  //     sett = { Settings: settings };
-  //   }
+    return this.post('create_entry', {
+      data: JSON.stringify(postObject),
+    }).pipe(
+      tap(response => console.log('Create audio file response:', response)),
+      catchError(this.handleError)
+    );
+  }
 
-  //   const postObject = {
-  //     tables: 'assessments',
-  //     values: Object.assign(
-  //       {},
-  //       {
-  //         CourseID: CourseID,
-  //         ID: ID,
-  //         Title: title,
-  //         Details: det,
-  //         Timelimit: timelimit,
-  //         Deadline: deadline,
-  //       },
-  //       attach,
-  //       sett
-  //     ),
-  //   };
-  //   return this.post('create_entry', {
-  //     data: JSON.stringify(postObject),
-  //   });
-  // }
+  getAudioFiles(): Observable<any> {
+    const postObject = {
+      selectors: ['*'],
+      tables: 'audio_files',
+      conditions: {
+        'ORDER BY': 'id DESC'
+      }
+    };
 
-  // updateQuiz(
-  //   CourseID: string,
-  //   ID: string,
-  //   title: string,
-  //   details: string,
-  //   timelimit: number,
-  //   deadline: string,
-  //   attachments?: string,
-  //   settings?: string
-  // ) {
-  //   var attach = {};
-  //   if (attachments != undefined) {
-  //     attach = { Attachments: attachments };
-  //   }
+    return this.post('get_entries', {
+      data: JSON.stringify(postObject),
+    }).pipe(
+      tap(response => console.log('Get audio files response:', response)),
+      catchError(this.handleError)
+    );
+  }
 
-  //   var det = '[NONE]';
-  //   if (details.trim() != '') {
-  //     det = details;
-  //   }
+  createSpeechAnalyzerResult(
+    audioId: number,
+    fluency: number,
+    pronunciation: number,
+    pacing: number,
+    intonation_and_stress: number,
+    correct_wordings: number,
+    confidence_and_expression: number
+  ): Observable<any> {
+    const postObject = {
+      tables: 'result_speech_analyzer',
+      values: {
+        audio_id: audioId,
+        fluency,
+        pronunciation,
+        pacing,
+        intonation_and_stress,
+        correct_wordings,
+        confidence_and_expression
+      },
+    };
 
-  //   var sett = {};
-  //   if (settings != undefined) {
-  //     sett = { Settings: settings };
-  //   }
+    console.log('Creating speech analyzer result with data:', postObject);
 
-  //   const postObject = {
-  //     tables: 'assessments',
-  //     values: Object.assign(
-  //       {},
-  //       {
-  //         CourseID: CourseID,
-  //         ID: ID,
-  //         Title: title,
-  //         Details: det,
-  //         Timelimit: timelimit,
-  //         Deadline: deadline,
-  //       },
-  //       attach,
-  //       sett
-  //     ),
-  //     conditions:{
-  //       WHERE:{
-  //         ID: ID,
-  //       }
-  //     }
-  //   };
-  //   return this.post('update_entry', {
-  //     data: JSON.stringify(postObject),
-  //   });
-  // }
+    return this.post('create_entry', {
+      data: JSON.stringify(postObject),
+    }).pipe(
+      tap(response => console.log('Create speech analyzer result response:', response)),
+      catchError(this.handleError)
+    );
+  }
+
+  getSpeechAnalyzerResults(): Observable<any> {
+    const postObject = {
+      selectors: ['*'],
+      tables: 'result_speech_analyzer',
+      conditions: {
+        'ORDER BY': 'id DESC'
+      }
+    };
+
+    return this.post('get_entries', {
+      data: JSON.stringify(postObject),
+    }).pipe(
+      tap(response => console.log('Get speech analyzer results response:', response)),
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'An error occurred';
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // Server-side error
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    console.error(errorMessage);
+    return throwError(errorMessage);
+  }
+
 
 
   createQuiz(
