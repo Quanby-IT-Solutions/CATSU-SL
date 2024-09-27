@@ -1,14 +1,3 @@
-/* Google Font Import - Poppins */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-::selection {
-  background-color: var(--primary-color);
-  color: #fff;
-}
-
 /* ===== Sidebar ===== */
 .sidebar {
   position: fixed;
@@ -58,7 +47,7 @@
 
 .sidebar li.active .text,
 .sidebar li.active .icon {
-  color: white;
+  color: var(--text-color-light);
 }
 
 .sidebar .text {
@@ -109,7 +98,7 @@ header .image-text .profession {
 }
 .bx-chevron-left.toggle.rotate {
   transform: translateY(-50%) rotate(180deg) !important;
-  transition: var(--tran-05);
+  transition: var(--tran-02);
 }
 
 .sidebar header .toggle {
@@ -127,32 +116,13 @@ header .image-text .profession {
   justify-content: center;
   font-size: 22px;
   cursor: pointer;
-  transition: var(--tran-05);
+  transition: var(--tran-02);
 }
 
 .sidebar .menu {
   margin-top: 26px;
 }
 
-.sidebar li.search-box {
-  border-radius: 6px;
-  background-color: var(--primary-color-light);
-  cursor: pointer;
-  transition: var(--tran-05);
-}
-
-.sidebar li.search-box input {
-  height: 100%;
-  width: 100%;
-  outline: none;
-  border: none;
-  background-color: var(--primary-color-light);
-  color: var(--text-color);
-  border-radius: 6px;
-  font-size: 17px;
-  font-weight: 500;
-  transition: var(--tran-05);
-}
 .sidebar li a {
   list-style: none;
   height: 100%;
@@ -170,7 +140,7 @@ header .image-text .profession {
 }
 
 .sidebar li a:active {
-  color: #fff;
+  color: var(--text-color-light);
 }
 
 .sidebar li .report:hover {
@@ -182,7 +152,7 @@ header .image-text .profession {
 }
 .sidebar li a:hover .icon,
 .sidebar li a:hover .text {
-  color: var(--sidebar-color);
+  color: var(--text-color-light);
 }
 
 .sidebar .menu-bar {
@@ -195,23 +165,12 @@ header .image-text .profession {
 .menu-bar::-webkit-scrollbar {
   display: none;
 }
-.menu-bar .bottom-content .toggle-switch {
-  position: absolute;
-  right: 0;
-  height: 100%;
-  min-width: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  cursor: pointer;
-}
 
 button {
   transition: font-size 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 button:hover {
-  color: white;
+  color: var(--text-color-light);
 }
 .smaller-text {
   font-size: 12px;

@@ -10,7 +10,11 @@ import { parse } from 'uuid';
 import { environment } from 'src/environments/environment';
 import { SurveyCertComponent } from 'src/app/components/student/student-modals/survey-cert/survey-cert.component';
 
-
+interface SidebarItem {
+  redirect: string;
+  icon: string;
+  routerLink: string;
+}
 
 
 @Component({
@@ -36,7 +40,7 @@ import { SurveyCertComponent } from 'src/app/components/student/student-modals/s
 
 })
 export class HeaderzComponent implements OnInit, OnDestroy {
-
+  title: string = 'CATSU SpeechLab'; // Dynamically set title
   isMenuVisible: boolean = false;
   profile?:string;
   search:string='';
@@ -46,14 +50,11 @@ export class HeaderzComponent implements OnInit, OnDestroy {
     return this.API.userData.firstname + " " + this.API.userData.lastname
   }
 
-
-
   reflectProfile(){
     return this.API.getURL(this.API.userData.profile) ??this.API.noProfile();
   }
 
   toggleMenu(): void {
-
    this.isMenuVisible = !this.isMenuVisible;
   }
 
@@ -129,21 +130,28 @@ export class HeaderzComponent implements OnInit, OnDestroy {
 
     this.API.userData = this.API.getUserData();
     this.getNotifications();
-    switch (this.API.getUserData().accountType) {
-      case 0:
+    const accountType = this.API.getUserData().accountType;
+    switch (accountType) {
+      case 0: // Student
         this.displayedItems = this.studentDashboardItems;
+        this.mainItemKeys = ['DASHBOARD', 'LAB', 'MEET', 'TASKS']; // Main items
+        this.specialItemKeys = ['DICTIONARY', 'TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
         break;
-      case 1:
+      case 1: // Teacher
         this.displayedItems = this.teacherDashboardItems;
+        this.mainItemKeys = ['DASHBOARD', 'MANAGE COURSES', 'MANAGE CLASS', 'MEET', 'GRADES']; // Main items
+        this.specialItemKeys = ['DICTIONARY', 'TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
         break;
       case 2:
         this.displayedItems = this.adminDashboardItems;
         break;
-      default:
-        this.API.failedSnackbar('System Error');
+        case 3:
+        this.displayedItems = this.principalDashboardItems
+        break;
+        default:
+          this.API.failedSnackbar('System Error');
+          return;
     }
-
-    this.itemKeys = Object.keys(this.displayedItems);
 
     const body: HTMLElement = this.elRef.nativeElement;
     const sidebar: HTMLElement = body.querySelector('nav') as HTMLElement;
@@ -217,11 +225,11 @@ export class HeaderzComponent implements OnInit, OnDestroy {
           title: 'Logout Successfully!',
           text: 'Thank you for your time. :)',
           icon: 'success',
-          confirmButtonColor: '#0172AF', // Replace 'yourColor' with your preferred color
+          confirmButtonColor: '#0172AF',
         }).then(() => {
           this.logout();
-          this.renderer.removeClass(document.body,'custom:ml-20');
-          this.renderer.removeClass(document.body,'custom:ml-64'); // Remove the margin-left style
+          this.renderer.removeClass(document.body, 'custom:ml-20');
+          this.renderer.removeClass(document.body, 'custom:ml-64'); // Remove the margin-left style
         });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire({
@@ -258,74 +266,157 @@ export class HeaderzComponent implements OnInit, OnDestroy {
     this.API.logout(); // Call the logout method from your API service
   }
 
-
   openModal() {
     const modalRef = this.modalService.open(ProblemreportComponent);
     // You might pass data or perform any other operations here.
   }
 
-  studentDashboardItems = {
-    DASHBOARD: {
-      redirect: 'student/dashboard',
-      icon: 'bx-border-all',
-    },
-    LAB: {
-      redirect: 'student/lab',
-      icon: 'bx-extension',
-    },
-    MEET: {
-      redirect: 'student/quanhub',
-      icon: 'bx-video',
-    },
 
-    TASKS: {
-      redirect: '/student/to-do',
-      icon: 'bx-notepad',
-    }
-  };
-
-  teacherDashboardItems = {
-    'DASHBOARD' : {
-      redirect: "teacher/dashboard",
-      icon : 'bx-border-all',
-      routerLink:"/teacher/dashboard"
-    },
-
-    "MANAGE COURSES" : {
-      redirect: "teacher/managecourse",
-      icon : 'bx-book-reader',
-      routerLink:"/teacher/managecourse"
-    },
-    "MANAGE CLASS" : {
-      redirect: "teacher/manageclass",
-      icon : 'bx-chalkboard',
-      routerLink:"/teacher/manageclass"
-    },
-    "MEET": {
-      redirect: 'teacher/quanhub',
-      icon : 'bx-video',
-      routerLink: '/teacher/quanhub'
-    },
-    GRADES: {
-      redirect: 'teacher/grade-list',
-      icon: 'bx-spreadsheet',
-      routerLink: '/teacher/grade-list',
-    }
-  }
-
-  adminDashboardItems = {
-    'DASHBOARD' : {
-      redirect: "admin/dashboard",
-      icon : 'bx-border-all'
-    },
-    'USERS':{
-      redirect: 'admin/users',
-      icon : 'bx-user'
-    }
-  }
+    // Specify types for displayedItems, mainItemKeys, and specialItemKeys
+    displayedItems!: { [key: string]: SidebarItem };
+    mainItemKeys: string[] = []; // For items before the separator
+    specialItemKeys: string[] = []; // For items after the separator
 
 
-  displayedItems: any;
+studentDashboardItems: { [key: string]: SidebarItem } = {
+  DASHBOARD: {
+    redirect: 'student/dashboard',
+    icon: 'bx-border-all',
+    routerLink: '/student/dashboard',
+  },
+  LAB: {
+    redirect: 'student/lab',
+    icon: 'bx-extension',
+    routerLink: '/student/lab',
+  },
+  MEET: {
+    redirect: 'student/quanhub',
+    icon: 'bx-video',
+    routerLink: '/student/quanhub',
+  },
+  TASKS: {
+    redirect: '/student/to-do',
+    icon: 'bx-notepad',
+    routerLink: '/student/to-do',
+  },
+  'SPEECH LAB': {
+    redirect: '/student/speechlab',
+    icon: 'bx-notepad',
+    routerLink: '/student/speechlab',
+  },
+  PERFORMANCE: {
+    redirect: 'student/performance',
+    icon: 'bx-line-chart',
+    routerLink: '/student/performance',
+  },
+  DICTIONARY: {
+    redirect: 'student/dictionary',
+    icon: 'bx-book-bookmark',
+    routerLink: '/student/dictionary',
+  },
+  'TEXT TO SPEECH': {
+    redirect: 'student/texttospeech',
+    icon: 'bx-user-voice',
+    routerLink: '/student/texttospeech',
+  },
+  'SPEECH ANALYZER': {
+    redirect: 'student/speech-analyzer/record-speech',
+    icon: 'bx-user-voice',
+    routerLink: '/student/speech-analyzer/record-speech',
+  },
+};
+
+// Sidebar items for teachers
+teacherDashboardItems: { [key: string]: SidebarItem } = {
+  DASHBOARD: {
+    redirect: 'teacher/dashboard',
+    icon: 'bx-border-all',
+    routerLink: '/teacher/dashboard',
+  },
+  'MANAGE COURSES': {
+    redirect: 'teacher/managecourse',
+    icon: 'bx-book-reader',
+    routerLink: '/teacher/managecourse',
+  },
+  'MANAGE CLASS': {
+    redirect: 'teacher/manageclass',
+    icon: 'bx-chalkboard',
+    routerLink: '/teacher/manageclass',
+  },
+  MEET: {
+    redirect: 'teacher/quanhub',
+    icon: 'bx-video',
+    routerLink: '/teacher/quanhub',
+  },
+  GRADES: {
+    redirect: 'teacher/grade-list',
+    icon: 'bx-spreadsheet',
+    routerLink: '/teacher/grade-list',
+  },
+  'SPEECH LAB': {
+    redirect: 'teacher/speechlab',
+    icon: 'bx-spreadsheet',
+    routerLink: '/teacher/speechlab',
+  },
+  DICTIONARY: {
+    redirect: 'teacher/dictionary',
+    icon: 'bx-book-bookmark',
+    routerLink: '/teacher/dictionary',
+  },
+  'TEXT TO SPEECH': {
+    redirect: 'teacher/texttospeech',
+    icon: 'bx-user-voice',
+    routerLink: '/teacher/texttospeech',
+  },
+  'SPEECH ANALYZER': {
+    redirect: 'teacher/speech-analyzer/record-speech',
+    icon: 'bx-user-voice',
+    routerLink: '/teacher/speech-analyzer/record-speech',
+  },
+};
+
+adminDashboardItems = {
+  DASHBOARD: {
+    redirect: 'admin/dashboard',
+    icon: 'bx-border-all',
+    routerLink: '/admin/dashboard',
+  },
+  USERS: {
+    redirect: 'admin/users',
+    icon: 'bx-user',
+    routerLink: '/admin/users',
+  },
+  COUNT: {
+    redirect: 'admin/count',
+    icon: 'bxs-time-five',
+    routerLink: '/admin/count',
+  },
+  SPEECHLAB: {
+    redirect: 'admin/speechlab',
+    icon: 'bxs-time-five',
+    routerLink: '/admin/speechlab',
+  },
+};
+
+principalDashboardItems = {
+  DASHBOARD: {
+    redirect: 'admin/dashboard',
+    icon: 'bx-border-all',
+    routerLink: '/admin/dashboard',
+  },
+  USERS: {
+    redirect: 'admin/users',
+    icon: 'bx-user',
+    routerLink: '/admin/users',
+  },
+  COUNT: {
+    redirect: 'admin/count',
+    icon: 'bxs-time-five',
+    routerLink: '/admin/count',
+  },
+};
+
+
   itemKeys: any;
 
   checkAccount(){

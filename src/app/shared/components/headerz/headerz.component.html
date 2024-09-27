@@ -1,8 +1,8 @@
 
 <header class="gradient-color rounded-xl text-white mt-3 mb-3.5 mx-4 px-1 py-2.5">
-  <div class="lg:px-4 md:px-4 pl-2 pr-6 mx-auto flex justify-between items-center">
+  <div class="flex items-center justify-between pl-2 pr-6 mx-auto lg:px-4 md:px-4">
     <!-- Responsive Welcome Message -->
-    <div class=" text-lg font-semibold whitespace-nowrap sm:inline-block">
+    <div class="text-lg font-semibold whitespace-nowrap sm:inline-block">
       <!-- <span class="hidden custom1020:inline">Welcome, {{ reflectFullName() }}! 🎉</span> -->
       <span class="hidden custom1020:inline">Welcome, E-Learning Explorer! 🎉</span>
 
@@ -11,105 +11,118 @@
 
     <!-- Hamburger Menu Button for Mobile -->
     <div class="md:hidden">
-      <button class="burger-button nav text-white font-bold py-2 px-2" (click)="toggleMenu()">
+      <button class="px-2 py-2 font-bold text-white burger-button nav" (click)="toggleMenu()">
         <span class="burger-icon">&#9776;</span>
       </button>
     </div>
-    
+
     <!-- sidenav content start  -->
 
-    <nav  *ngIf="isMenuVisible" [@openClose] class="sidebar poppins-b sm:hidden " > 
+    <nav  *ngIf="isMenuVisible" [@openClose] class="sidebar poppins-b sm:hidden " >
       <header>
         <div class="image-text">
           <span class="image">
-            <img src="assets/login/school.png" alt="QLab Logo" />
+            <img src="assets/login/catsu.png" alt="QLab Logo" />
           </span>
-    
-          <div class="text logo-text overlock-b items-center">
-            <span class="name">Language Lab</span>
-            <span class="profession">Classroom</span>
+          <div class="items-center text logo-text overlock-b">
+            <span class="name">{{ title }}</span>
           </div>
         </div>
-    
-        <i class="bx bx-chevron-right toggle"  (click)="hideSidebar()"></i>
+        <i class="bx bx-chevron-left toggle" (click)="hideSidebar()"></i>
       </header>
-    
+
       <div class="menu-bar">
         <div class="menu">
+          <!-- Main Sidebar Items (before the separator) -->
           <ul class="menu-links">
-            <li *ngFor="let itemKey of itemKeys" class="nav-link cursor-pointer select-none">
-              <a (click)="navigate(displayedItems[itemKey].redirect)">
-                <i class="bx {{displayedItems[itemKey].icon}} icon"></i>
-                <span class="text nav-text"> {{ itemKey }}</span>
+            <li
+              *ngFor="let itemKey of mainItemKeys"
+              class="cursor-pointer select-none nav-link"
+              routerLinkActive="active"
+            >
+              <a
+                (click)="navigate(displayedItems[itemKey].redirect)"
+                [routerLink]="displayedItems[itemKey].routerLink"
+              >
+                <i class="bx {{ displayedItems[itemKey].icon }} icon"></i>
+                <span class="text nav-text">{{ itemKey }}</span>
               </a>
             </li>
-            <div class="linyaa"> </div>
-            <hr>
-             <div *ngIf="checkAccount() == '0'">
-              <li class="nav-link">
-                <a (click)="navigate('student/dictionary')">
-                  <i class="bx bx-book-bookmark  icon"></i>
-                  <span class="text nav-text">DICTIONARY</span>
-                </a>
-              </li>
-              <li class="nav-link cursor-pointer select-none">
-                <a (click)="navigate('student/texttospeech')">
-                  <i class="bx bx-user-voice icon"></i>
-                  <span class="text nav-text">TEXT TO SPEECH</span>
-                </a>
-              </li>
-             </div>
-             <div *ngIf="checkAccount() == '1'">
-              <li class="nav-link">
-                <a (click)="navigate('teacher/dictionary')">
-                  <i class="bx bx-book-bookmark icon"></i>
-                  <span class="text nav-text">DICTIONARY</span>
-                </a>
-              </li>
-              <li class="nav-link cursor-pointer select-none">
-                <a (click)="navigate('teacher/texttospeech')">
-                  <i class="bx bx-user-voice icon"></i>
-                  <span class="text nav-text">TEXT TO SPEECH</span>
-                </a>
-              </li>
-             </div>
+          </ul>
+
+          <!-- Separator -->
+          <br />
+          <hr />
+
+          <!-- Special Sidebar Items (after the separator) -->
+          <ul class="menu-links">
+            <li
+              *ngFor="let itemKey of specialItemKeys"
+              class="cursor-pointer select-none nav-link"
+              routerLinkActive="active"
+            >
+              <a
+                (click)="navigate(displayedItems[itemKey].redirect)"
+                [routerLink]="displayedItems[itemKey].routerLink"
+              >
+                <i class="bx {{ displayedItems[itemKey].icon }} icon"></i>
+                <span class="text nav-text">{{ itemKey }}</span>
+              </a>
+            </li>
           </ul>
         </div>
-    
-        <div class="bottom-content">
-          <li class="">
+
+        <div class="mb-3 bottom-content">
+          <li>
             <a class="report">
               <button
                 (click)="openModal()"
-                [ngClass]="{ 'none1': isSidebarMinimized }"
-                class="h-10 mb-2 w-full font-bold poppins-b rounded-lg text-gray-500 focus:outline-none mt-2"
+                [ngClass]="{ 'smaller-text': isSidebarMinimized }"
+                class="w-full h-10 mt-2 mb-2 font-bold text-gray-500 rounded-lg poppins-b focus:outline-none"
               >
                 {{ isSidebarMinimized ? "REPORT" : "REPORT A PROBLEM" }}
               </button>
             </a>
           </li>
-    
+
+          <!-- <li *ngIf="isStudent">
+            <button
+              *ngIf="progress"
+              (click)="goOffline()"
+              [ngStyle]="{ width: progress + '%' }"
+              class="flex items-center justify-center w-full h-10 mt-2 mb-2 font-bold text-white bg-blue-400 rounded-lg hover:bg-blue-500 poppins-b"
+            >
+              <span *ngIf="progress < 100">Downloading</span>
+              <span *ngIf="progress >= 100">Offline Available</span>
+            </button>
+            <button
+              *ngIf="!progress"
+              class="flex items-center justify-center w-full h-10 mt-2 mb-2 font-bold text-white rounded-lg hover:bg-slate-400 bg-slate-300 poppins-b"
+            >
+              Loading
+            </button>
+          </li> -->
+
           <li class="cursor-pointer select-none">
             <a (click)="confirmBox()">
-              
-              <i class="bx bx-log-out icon " ></i>
+              <i class="bx bx-log-out icon"></i>
               <span class="text nav-text">Logout</span>
             </a>
           </li>
         </div>
       </div>
     </nav>
-    
+
 
     <!-- sidenav content end -->
-    
+
 
 
     <div
       class="w-2/3 lg:w-1/2 md:w-1/2 flex items-center p-0.5 h-7 bg-white rounded-xl shadow-md relative"
     >
       <input
-        class="appearance-none bg-transparent border-none w-full poppins ml-2 mr-3 py-1 px-2 leading-tight focus:outline-none text-black"
+        class="w-full px-2 py-1 ml-2 mr-3 leading-tight text-black bg-transparent border-none appearance-none poppins focus:outline-none"
         type="text"
         placeholder="Search"
         aria-label="Search"
@@ -124,23 +137,23 @@
         <img
           src="assets/search.png"
           alt="Search Icon"
-          class="search-icon w-5 h-5"
+          class="w-5 h-5 search-icon"
         />
-       
+
       </button>
 
-      <div *ngIf="searchbar.trim()!=''" class="absolute rounded z-50 w-full h-auto mt-8 top-0 bg-white">
+      <div *ngIf="searchbar.trim()!=''" class="absolute top-0 z-50 w-full h-auto mt-8 bg-white rounded">
         <ul>
           <ng-container *ngFor="let route of routes" >
             <li (click)="goTo(route.link)"
-              *ngIf="userType == route.for && has(route.name, searchbar)" 
-            class="py-1 cursor-pointer hover:bg-slate-100 text-gray-500" ><span class="ml-4">{{route.name}}</span></li>
+              *ngIf="userType == route.for && has(route.name, searchbar)"
+            class="py-1 text-gray-500 cursor-pointer hover:bg-slate-100" ><span class="ml-4">{{route.name}}</span></li>
           </ng-container>
         </ul>
       </div>
     </div>
     <div class="flex items-center notifwrap">
-      
+
 
       <button class="relative search-button1 notification sm:inline-block" (click)="toggleNotificationBox()">
         <img
@@ -149,22 +162,22 @@
           class="md:mr-10 lg:mr-10 mr-2 w-3.5 h-4.5 md:w-4 md:h-5 lg:w-4 lg:h-5"
         />
         <div *ngIf="getInbox()>0" class="absolute top-[-10px] left-[10px]">
-          <i class='bx bxs-circle text-red-500 text-sm'></i>
+          <i class='text-sm text-red-500 bx bxs-circle'></i>
         </div>
       </button>
 
       <button>
-      
-      <img (click)="gotoProfile()" 
+
+      <img (click)="gotoProfile()"
         src="{{ reflectProfile() }}"
         alt="Profile Logo"
-        class="object-cover cursor-pointer lg:h-10 md:w-10 h-9 w-9 border border-white border-solid border-1 rounded-full"
+        class="object-cover border border-white border-solid rounded-full cursor-pointer lg:h-10 md:w-10 h-9 w-9 border-1"
       />
       </button>
     </div>
   </div>
 
-  
+
 </header>
 
 <app-notificationbox *ngIf="showNotificationBox" [notifications]="notifications"></app-notificationbox>

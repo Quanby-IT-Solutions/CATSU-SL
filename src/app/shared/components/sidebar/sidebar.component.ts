@@ -18,8 +18,8 @@ interface SidebarItem {
 export class SidebarComponent implements OnInit {
   title: string = 'CATSU SpeechLab'; // Dynamically set title
   isSidebarMinimized: boolean = false;
-  isStudent: boolean = this.API.getUserType() === '0';
-  progress: number = 0;
+  // isStudent: boolean = this.API.getUserType() === '0';
+  // progress: number = 0;
 
   // Specify types for displayedItems, mainItemKeys, and specialItemKeys
   displayedItems!: { [key: string]: SidebarItem };
@@ -280,10 +280,6 @@ export class SidebarComponent implements OnInit {
   }
   navigate(location: string) {
     this.router.navigate([location]);
-  }
-
-  goOffline() {
-    this.API.goOffline();
   }
   logout() {
     this.renderer.removeClass(document.body, 'min-[768px]:ml-64'); // Remove the margin-left style

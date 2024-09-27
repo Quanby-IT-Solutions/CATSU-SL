@@ -2,6 +2,7 @@
   --snackbar-color: white;
   --snackbar-color-text: rgb(35, 53, 80);
   --tw-border-opacity: 1;
+
   --primary-color: #212529;
   --secondary-color: #1f2e4d;
   --tertiary-color: #f5a425;
@@ -14,12 +15,12 @@
   --toggle-color: #ddd;
   --sidebar-color: #fff;
   --text-color: #7f7f7f;
-  --white-color: #ffffff;
+  --text-color-light: #ffffff;
   /* ====== Transition ====== */
-  --tran-03: all 0.2s ease;
+  --tran-02: all 0.2s ease;
   --tran-03: all 0.3s ease;
-  --tran-04: all 0.3s ease;
-  --tran-05: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
 }
 
 .futuristic-btn-blue {
@@ -468,7 +469,7 @@ html {
   /* --tw-gradient-to: #040454 var(--tw-gradient-to-position); */
   background-size: 300% 100%;
   border-radius: 100%; /* Makes the div circular */
-  color: var(--white-color);
+  color: var(--text-color-light);
 }
 
 .calendar-days div.current-date {
