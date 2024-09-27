@@ -171,11 +171,6 @@ export class SpeechAnalyzerComponent implements OnInit {
         "feedback": "brief explanation for the score"
       },
       {
-        "area": "correct_wordings",
-        "score": 1-100,
-        "feedback": "brief explanation for the score"
-      },
-      {
         "area": "confidence_and_expression",
         "score": 1-100,
         "feedback": "brief explanation for the score"
