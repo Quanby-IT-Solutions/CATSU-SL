@@ -4,6 +4,7 @@ import { AssemblyAI } from 'assemblyai';
 import { APIService } from '../../services/API/api.service';
 import { lastValueFrom } from 'rxjs';
 
+// Initialize AssemblyAI client
 const client = new AssemblyAI({
   apiKey: '1b9759691ec9459182d10a47606a1309',
 });
@@ -28,6 +29,7 @@ export class SpeechAnalyzerComponent implements OnInit {
   uploadProgress: number = 0;
   isAnalyzing: boolean = false;
   speechSample: string = '';
+  transcriptText: string = '';  // This will store the transcription text
 
   constructor(private apiService: APIService, private http: HttpClient) {}
 
@@ -36,7 +38,7 @@ export class SpeechAnalyzerComponent implements OnInit {
   }
 
   async generateNewSpeechSample() {
-    const prompt = "Create a different simple sentence for a speech practice exercise. The sentence should be between 10 to 20 words and include basic sounds.";
+    const prompt = "Do not include the name. Generate a unique quote from a famous person, philosopher, author, or leader from anywhere in the world. The quote should be between 10 to 20 words long and should be suitable for speech practice.";
     try {
       this.speechSample = await this.apiService.generateSpeechToRead(prompt);
     } catch (error) {
@@ -86,25 +88,40 @@ export class SpeechAnalyzerComponent implements OnInit {
     }
   }
 
+  // Generate a random ID for manual insertion
+  generateManualId(): number {
+    return Math.floor(Math.random() * 1000000); // Generate a 6-digit random ID
+  }
+
   async processAudio(audioFile: File) {
     this.isAnalyzing = true;
     try {
       const filename = `speech_${Date.now()}.wav`;
       await this.apiService.uploadFileWithProgress(audioFile, filename);
-      
+
       const fileUrl = `files/${filename}`;
 
-      const audioFileResponse = await lastValueFrom(this.apiService.createAudioFile(fileUrl));
-      const audioId = audioFileResponse.id;
-      console.log('Audio file created with ID:', audioId);
+      // Generate a manual ID for the audio file
+      const manualId = this.generateManualId();
+      
+      // Create audio file in the database with a manual ID
+      const audioFileResponse = await lastValueFrom(this.apiService.createAudioFileWithId(manualId, fileUrl));
+      
+      console.log('Audio file created with manual ID:', manualId);
 
+      // Proceed with speech analysis
       const fullUrl = this.apiService.getURL(fileUrl);
       const transcript = await this.analyzeSpeech(fullUrl);
+
+      // Set transcriptText to display the transcription
+      this.transcriptText = transcript.text || 'No transcription available';  // Store transcription here
+
       const analysisJson = await this.processTranscript(transcript);
-      
+
+      // Parse analysis results
       this.parseAnalysisResult(analysisJson);
       if (this.analysisResult) {
-        await this.createSpeechAnalyzerResultEntry(audioId, this.analysisResult);
+        await this.createSpeechAnalyzerResultEntry(manualId, this.analysisResult);
       }
 
       console.log('Audio processing complete');
@@ -182,7 +199,6 @@ export class SpeechAnalyzerComponent implements OnInit {
 
   parseAnalysisResult(analysisJson: string) {
     try {
-      // Remove markdown code block syntax
       const cleanJson = analysisJson.replace(/```json\n|\n```/g, '').trim();
       const parsedResult = JSON.parse(cleanJson);
       if (Array.isArray(parsedResult)) {

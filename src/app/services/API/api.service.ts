@@ -3884,27 +3884,32 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
-  createAudioFile(
-    audioFile: string,
-    details?: string
+
+  createAudioFileWithId(
+    id: number,
+    audioFile: string
   ): Observable<any> {
     const postObject = {
       tables: 'audio_files',
       values: {
+        id: id,
         audio_file: audioFile,
-        details: details || '[NONE]'
       }
     };
-
-    console.log('Creating audio file with data:', postObject);
-
+  
+    console.log('Creating audio file with manual ID:', postObject);
+  
     return this.post('create_entry', {
       data: JSON.stringify(postObject),
     }).pipe(
-      tap(response => console.log('Create audio file response:', response)),
+      tap(response => {
+        console.log('Create audio file response:', response);
+      }),
       catchError(this.handleError)
     );
   }
+  
+  
 
   getAudioFiles(): Observable<any> {
     const postObject = {

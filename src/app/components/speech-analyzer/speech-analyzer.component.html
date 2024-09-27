@@ -18,7 +18,6 @@
   </nav>
 </div> -->
 
-
 <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
   <h1 class="text-3xl font-bold mb-6 text-center">Speech Analyzer</h1>
 
@@ -59,6 +58,12 @@
   <div *ngIf="isAnalyzing" class="mb-6">
     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
     <p class="mt-2 text-sm text-gray-600">Analyzing speech...</p>
+  </div>
+
+  <!-- Display the transcript text -->
+  <div *ngIf="transcriptText" class="w-full max-w-2xl bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-2">Transcription</h2>
+    <p class="text-gray-700 mb-4">{{ transcriptText }}</p>
   </div>
 
   <!-- Display the analysis result if available -->
