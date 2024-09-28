@@ -30,14 +30,15 @@ export class SpeechAnalyzerComponent implements OnInit {
   isAnalyzing: boolean = false;
   speechSample: string = '';
   transcriptText: string = '';  
+  averageScore: number = 0;
+  currentDate: string = new Date().toDateString();
+  averageScoreLabel: string = '';
 
   constructor(private apiService: APIService, private http: HttpClient) {}
 
   async ngOnInit() {
     await this.generateNewSpeechSample();
   }
-
-  // For SpeechSample
 
   async generateNewSpeechSample() {
     const prompt = "Generate a unique and inspiring statement for speech practice, between 10 and 20 words. Do not include the name of the author, and do not enclose the sentence in quotation marks.";
@@ -47,15 +48,13 @@ export class SpeechAnalyzerComponent implements OnInit {
       generatedSample = generatedSample.replace(/^"|"$/g, '').trim();
       this.speechSample = generatedSample;
       if (this.speechSample.toLowerCase() === "the quick brown fox jumps over the lazy dog." || !this.speechSample.trim()) {
-      throw new Error("Invalid or default sentence generated.");
+        throw new Error("Invalid or default sentence generated.");
       }
     } catch (error) {
       console.error('Error generating speech sample:', error);
       this.speechSample = "The quick brown fox jumps over the lazy dog."; 
     }
   }
-  
-  
 
   toggleRecording() {
     if (this.recording) {
@@ -74,7 +73,6 @@ export class SpeechAnalyzerComponent implements OnInit {
       this.mediaRecorder.ondataavailable = (event: any) => {
         this.audioChunks.push(event.data);
       };
-
     }).catch((err) => console.error('Microphone access denied:', err));
   }
 
@@ -96,13 +94,11 @@ export class SpeechAnalyzerComponent implements OnInit {
     } 
   }
 
-  
-
   async processAudio(audioFile: File) {
     this.isAnalyzing = true;  
     try {
       const filename = `speech_${Date.now()}.wav`;
-      await this.apiService.uploadFileWithProgress(audioFile, filename);
+      await this.apiService.uploadFileWithProgressNoSnackbar(audioFile, filename);
 
       const fileUrl = `files/${filename}`;
       const audioId = this.apiService.generateManualId();
@@ -117,6 +113,7 @@ export class SpeechAnalyzerComponent implements OnInit {
       this.parseAnalysisResult(analysisJson);
       if (this.analysisResult) {
         await this.createSpeechAnalyzerResultEntry(audioId, this.analysisResult);
+        this.calculateAverageScore();
       }
 
     } catch (error) {
@@ -135,9 +132,7 @@ export class SpeechAnalyzerComponent implements OnInit {
   }
 
   async processTranscript(transcript: any): Promise<string> {
-    const transcriptText = transcript.text || 'No transcription available';
-
-    const prompt = `The following is a transcription of the student's reading: "${transcriptText}". 
+    const prompt = `The following is a transcription of the student's reading: "${transcript.text}". 
     The original sentence to be read was: "${this.speechSample}".
     Please analyze the reading and provide a JSON output with the following format for each aspect:
     
@@ -148,32 +143,34 @@ export class SpeechAnalyzerComponent implements OnInit {
         "feedback": "brief explanation for the score"
       },
       {
+        "area": "intonation",
+        "score": 1-100,
+        "feedback": "brief explanation for the score"
+      },
+      {
         "area": "fluency",
         "score": 1-100,
         "feedback": "brief explanation for the score"
       },
       {
-        "area": "pacing",
+        "area": "grammar",
         "score": 1-100,
         "feedback": "brief explanation for the score"
       },
       {
-        "area": "intonation_and_stress",
+        "area": "vocabulary",
         "score": 1-100,
         "feedback": "brief explanation for the score"
       },
       {
-        "area": "confidence_and_expression",
-        "score": 1-100,
-        "feedback": "brief explanation for the score"
-      },
-      {
-        "area": "summary",
-        "score": null,
-        "feedback": "overall evaluation of the student's reading performance"
+        "summary": {
+          "areas_for_improvement": "Provide areas for improvement in bullet points",
+          "overall_score": "average of the scores above"
+        }
       }
     ]`;
-
+    
+    
     try {
       const analysisResult = await this.apiService.analyzeSpeech(prompt);
       return analysisResult;
@@ -183,25 +180,84 @@ export class SpeechAnalyzerComponent implements OnInit {
     }
   }
 
+
   parseAnalysisResult(analysisJson: string) {
     try {
-      const cleanJson = analysisJson.replace(/```json\n|\n```/g, '').trim();
-      const parsedResult = JSON.parse(cleanJson);
-      if (Array.isArray(parsedResult)) {
-        this.analysisResult = parsedResult.filter(item => item.area !== 'summary');
-        const summaryItem = parsedResult.find(item => item.area === 'summary');
-        this.summary = summaryItem ? summaryItem.feedback : '';
-      } else {
-        throw new Error('Parsed result is not an array');
-      }
+        // Clean the JSON to ensure there are no unwanted characters
+        const cleanJson = analysisJson.replace(/```json\n|\n```/g, '').trim();
+        const parsedResult = JSON.parse(cleanJson);
+
+        if (Array.isArray(parsedResult)) {
+            // Extract actual analysis results and exclude summary
+            this.analysisResult = parsedResult.filter(item => item.area && item.area !== 'summary');
+
+            // Extract summary and set the summary and overall score
+            const summaryItem = parsedResult.find(item => item.summary);
+            if (summaryItem) {
+                this.summary = summaryItem.summary.areas_for_improvement;
+                // Clean the summary points and split them into an array
+                this.improvementPoints = this.summary.split('-')
+                    .map(point => point.replace(/\*\*/g, '').trim())
+                    .filter(point => point.length > 0);
+                this.averageScore = summaryItem.summary.overall_score;
+                this.averageScoreLabel = this.getLabel(this.averageScore);
+            } else {
+                throw new Error('Summary not found in parsed result');
+            }
+        } else {
+            throw new Error('Parsed result is not an array');
+        }
     } catch (error) {
-      console.error('Error parsing analysis result:', error);
-      this.analysisResult = null;
-      this.summary = 'Error parsing analysis result.';
+        console.error('Error parsing analysis result:', error);
+        this.analysisResult = null;
+        this.summary = 'Error parsing analysis result.';
     }
+}
+
+
+
+  improvementPoints: string[] = [];
+  parseImprovementPoints(summary: string): string[] {
+    return summary
+      .split('-')
+      .map(point => point.trim())
+      .filter(point => point.length > 0);
   }
 
-  async createSpeechAnalyzerResultEntry(audioId: number, results: AnalysisResult[]): Promise<void> {
+  
+  calculateAverageScore() {
+    if (this.analysisResult && this.analysisResult.length > 0) {
+      const totalScore = this.analysisResult.reduce((sum, result) => sum + (result.score || 0), 0);
+      this.averageScore = Math.round(totalScore / this.analysisResult.length);
+    } else {
+      this.averageScore = 0;
+    }
+  
+    // Set the average score label based on the calculated value
+    this.averageScoreLabel = this.getLabel(this.averageScore);
+  }
+  
+  getLabel(score: number): string {
+    if (isNaN(score) || score < 0) {
+      return 'Unknown';
+    } else if (score >= 80) {
+      return 'Advanced';
+    } else if (score >= 40) {
+      return 'Intermediate';
+    } else {
+      return 'Beginner';
+    }
+  }
+  
+  
+
+ 
+  isScoreInvalid(score: number): boolean {
+    return isNaN(score) || score < 0;
+  }
+  
+
+ async createSpeechAnalyzerResultEntry(audioId: number, results: AnalysisResult[]): Promise<void> {
     const scores = results.reduce((acc, result) => {
       acc[result.area] = result.score;
       return acc;
@@ -212,10 +268,10 @@ export class SpeechAnalyzerComponent implements OnInit {
         audioId,
         scores['fluency'] || 0,
         scores['pronunciation'] || 0,
-        scores['pacing'] || 0,
-        scores['intonation_and_stress'] || 0,
-        scores['correct_wordings'] || 0,
-        scores['confidence_and_expression'] || 0
+        scores['intonation'] || 0,
+        scores['grammar'] || 0,
+        scores['vocabulary'] || 0,
+        this.summary 
       ));
       console.log('Speech analyzer result created:', response);
     } catch (error) {
