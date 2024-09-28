@@ -1278,6 +1278,56 @@ export class APIService implements OnDestroy, OnInit {
   }
 
 
+  uploadFileWithProgressNoSnackbar(file: File, filename: string, chunkSize: number = 1024 * 1024): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const totalChunks = Math.ceil(file.size / chunkSize);
+      let uploadedChunks = 0; // Track uploaded chunks
+
+      const uploadChunk = (chunkIndex: number) => {
+        const start = chunkIndex * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = (reader.result as string).split(',')[1];
+
+          this.http
+            .post(environment.nodeserver + '/filehandler-progress', {
+              key: environment.socketKey,
+              method: 'create_url',
+              chunk: base64String,
+              fileName: 'files/' + filename,
+              chunkIndex: chunkIndex,
+              totalChunks: totalChunks,
+            })
+            .subscribe({
+              next: () => {
+                uploadedChunks++;
+                this.uploadProgress = Math.round((uploadedChunks / totalChunks) * 100);
+
+                if (chunkIndex + 1 < totalChunks) {
+                  uploadChunk(chunkIndex + 1);
+                } else {
+                  console.log(`File upload complete: ${filename}`);
+                  resolve(); 
+                }
+              },
+              error: (err) => {
+                console.error('Error uploading chunk', err);
+                reject(err); // Reject the promise on error
+              },
+            });
+        };
+
+        reader.readAsDataURL(chunk);
+      };
+
+      // Start uploading the first chunk
+      uploadChunk(0);
+    });
+  }
+
   
   
 
@@ -3932,14 +3982,47 @@ export class APIService implements OnDestroy, OnInit {
     );
   }
 
+  // createSpeechAnalyzerResult(
+  //   audioId: number,
+  //   fluency: number,
+  //   pronunciation: number,
+  //   pacing: number,
+  //   intonation_and_stress: number,
+  //   correct_wordings: number,
+  //   confidence_and_expression: number
+  // ): Observable<any> {
+  //   const postObject = {
+  //     tables: 'result_speech_analyzer',
+  //     values: {
+  //       audio_id: audioId,
+  //       fluency,
+  //       pronunciation,
+  //       pacing,
+  //       intonation_and_stress,
+  //       correct_wordings,
+  //       confidence_and_expression
+  //     },
+  //   };
+
+  //   console.log('Creating speech analyzer result with data:', postObject);
+
+  //   return this.post('create_entry', {
+  //     data: JSON.stringify(postObject),
+  //   }).pipe(
+  //     tap(response => console.log('Create speech analyzer result response:', response)),
+  //     catchError(this.handleError)
+  //   );
+  // }
+
+ 
   createSpeechAnalyzerResult(
     audioId: number,
     fluency: number,
     pronunciation: number,
-    pacing: number,
-    intonation_and_stress: number,
-    correct_wordings: number,
-    confidence_and_expression: number
+    intonation: number,
+    grammar: number,
+    vocabulary: number,
+    areasForImprovement: string
   ): Observable<any> {
     const postObject = {
       tables: 'result_speech_analyzer',
@@ -3947,15 +4030,15 @@ export class APIService implements OnDestroy, OnInit {
         audio_id: audioId,
         fluency,
         pronunciation,
-        pacing,
-        intonation_and_stress,
-        correct_wordings,
-        confidence_and_expression
+        intonation,
+        grammar,
+        vocabulary,
+        areas_for_improvement: areasForImprovement,
       },
     };
-
+  
     console.log('Creating speech analyzer result with data:', postObject);
-
+  
     return this.post('create_entry', {
       data: JSON.stringify(postObject),
     }).pipe(
@@ -3963,6 +4046,8 @@ export class APIService implements OnDestroy, OnInit {
       catchError(this.handleError)
     );
   }
+  
+  
 
   getSpeechAnalyzerResults(): Observable<any> {
     const postObject = {
