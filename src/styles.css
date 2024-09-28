@@ -23,6 +23,47 @@
   --tran-05: all 0.5s ease;
 }
 
+.futuristic-btn-red {
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(255, 75, 43, 0.3);
+  transition: all 0.3s ease;
+}
+
+.futuristic-btn-violet {
+  background: linear-gradient(to right, #8e2de2, #4a00e0);
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(255, 75, 43, 0.3);
+  transition: all 0.3s ease;
+}
+
+.futuristic-btn-red:hover {
+  background: linear-gradient(to right, #ff4b2b, #ff416c);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(255, 75, 43, 0.5);
+}
+
+.futuristic-btn-violet:hover {
+  background: linear-gradient(to right, #8e2de2, #4a00e0);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(255, 75, 43, 0.5);
+}
+.futuristic-btn-amber {
+  background: linear-gradient(to right, #f5a425, #ff7e00);
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(245, 164, 37, 0.3);
+  transition: all 0.3s ease;
+}
+
+.futuristic-btn-amber:hover {
+  background: linear-gradient(to right, #ff7e00, #f5a425);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(245, 164, 37, 0.5);
+}
+
 .futuristic-btn-blue {
   background: linear-gradient(135deg, #3b82f6, #6366f1);
   color: white;
@@ -93,7 +134,7 @@
   background-image: none;
   color: var(--secondary-color);
 }
-c .hide {
+.hide {
   display: none !important;
 }
 
@@ -268,7 +309,7 @@ html {
 }
 
 .tertiary-color {
-  background-color: #248a60;
+  background-color: var(--tertiary-color);
 }
 
 .logo-color {
@@ -297,18 +338,13 @@ html {
     var(--tw-gradient-color),
     var(--tw-gradient-color)
   );
-  /* --tw-gradient-stops:  #0474AC, #040454; */
-  /* --tw-gradient-from: #0474AC var(--tw-gradient-from-position); */
-  /* --tw-gradient-to: rgb(6 182 212 / 0) var(--tw-gradient-to-position); */
-  /* --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); */
-  /* --tw-gradient-to: #040454 var(--tw-gradient-to-position); */
   background-size: 300% 100%;
 }
 
 .gradient-color-updown {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
   --tw-gradient-from: var(--secondary-color) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(6 182 212 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-to: rgb(6 182 212, 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
   --tw-gradient-to: var(--primary-color) var(--tw-gradient-to-position);
 }
@@ -347,11 +383,6 @@ html {
   width: calc(100% - 250px);
   background-color: var(--body-color);
 }
-.sidebar.close ~ .home {
-  left: 78px;
-  height: 100vh;
-  width: calc(100% - 78px);
-}
 
 /* body, html {
       overflow: hidden;
@@ -372,7 +403,7 @@ html {
 .calendar-header {
   background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
   --tw-gradient-from: var(--secondary-color) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(6 182 212 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-to: rgb(6 182 212, 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
   --tw-gradient-to: var(--primary-color) var(--tw-gradient-to-position);
   display: flex;
@@ -428,7 +459,7 @@ html {
 .calendar-week-days div {
   display: grid;
   place-items: center;
-  color: var(--bg-second);
+  color: var(--secondary-color);
   height: 50px;
 }
 .calendar-days {
@@ -451,6 +482,7 @@ html {
   animation: to-top 1s forwards;
   margin-left: 10px;
 }
+
 .calendar-days div span {
   position: absolute;
 }
@@ -462,20 +494,15 @@ html {
     var(--tw-gradient-color),
     var(--tw-gradient-color)
   );
-  /* --tw-gradient-stops:  #0474AC, #040454; */
-  /* --tw-gradient-from: #0474AC var(--tw-gradient-from-position); */
-  /* --tw-gradient-to: rgb(6 182 212 / 0) var(--tw-gradient-to-position); */
-  /* --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); */
-  /* --tw-gradient-to: #040454 var(--tw-gradient-to-position); */
   background-size: 300% 100%;
-  border-radius: 100%; /* Makes the div circular */
+  border-radius: 100%;
   color: var(--text-color-light);
 }
 
 .calendar-days div.current-date {
   color: var(--dark-text);
   background-color: var(--light-btn);
-  border-radius: 100%; /* Makes the div circular */
+  border-radius: 100%;
 }
 
 @keyframes to-top {

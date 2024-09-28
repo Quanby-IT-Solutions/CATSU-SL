@@ -214,7 +214,7 @@ export class HeaderzComponent implements OnInit, OnDestroy {
       title: 'Are you sure want to Logout?',
       text: 'You will be redirected to login',
       icon: 'warning',
-      confirmButtonColor: 'rgb(116, 254, 189)',
+      confirmButtonColor: 'var(--tertiary-color)',
       cancelButtonColor: '#7F7F7F',
       showCancelButton: true,
       confirmButtonText: 'Logout!',
@@ -225,7 +225,7 @@ export class HeaderzComponent implements OnInit, OnDestroy {
           title: 'Logout Successfully!',
           text: 'Thank you for your time. :)',
           icon: 'success',
-          confirmButtonColor: '#0172AF',
+          confirmButtonColor: 'var(--secondary-color)',
         }).then(() => {
           this.logout();
           this.renderer.removeClass(document.body, 'custom:ml-20');
@@ -236,7 +236,7 @@ export class HeaderzComponent implements OnInit, OnDestroy {
           title: 'Cancelled',
           text: 'We are happy you stayed :)',
           icon: 'error',
-          confirmButtonColor: '#0172AF', // Replace 'yourColor' with your preferred color
+          confirmButtonColor: 'var(--secondary-color)', // Replace 'yourColor' with your preferred color
         });
       }
     });
@@ -570,43 +570,6 @@ principalDashboardItems = {
           }
         )
       }
-      // for(let interest of parsedMessage.interests){
-      //   if(this.API.interests.length <=0) break;
-      //   if(this.API.interests.includes(interest)){
-
-      //     break;
-      //   }
-      // }
     }
-
-
-
-
-
-
-
-    // if(parsedMessage.to != null ){
-    //   if( parsedMessage.to == this.API.getUserData().id){
-    //     this.audio.play();
-    //     this.API.successSnackbar(parsedMessage.message, 5000);
-    //   }
-    //   return;
-    // }
-
-    // if(parsedMessage.color!=null){
-    //   const colors = ['red', '#508D69','#0172AF', '#F3B664','#bccdd6','rgb(233, 150, 164)'];
-    //   const colorscomplement = ['orange', '#9ADE7B','#74FEBD','#FAEF9B', '#FAEED1', 'pink']
-    //   document.documentElement.style.setProperty('--primary-color', colorscomplement[parsedMessage.color]);
-    //   document.documentElement.style.setProperty('--secondary-color', colors[parsedMessage.color]);
-    //   document.documentElement.style.setProperty('--snackbar-color', colors[parsedMessage.color]);
-    //   document.documentElement.style.setProperty('--snackbar-color-text', 'white');
-    //   this.API.justSnackbar(parsedMessage.message);
-    //   this.audio.play();
-    //   return;
-    // }
-    // if(parsedMessage.message == null){
-    //   return;
-    // }
-
   }
 }

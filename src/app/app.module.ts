@@ -6,7 +6,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { SharedService } from 'src/app/services/API/services-includes/shared.service';
 import {provideStorage, getStorage } from '@angular/fire/storage';
 import { LottieModule } from 'ngx-lottie';
-import player from 'lottie-web'; 
+import player from 'lottie-web';
 
 
 const firebaseConfig = {
@@ -19,7 +19,7 @@ const firebaseConfig = {
   // measurementId: "G-9C89V814XJ"
 };
 
-
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/auth/login.component';
@@ -99,7 +99,7 @@ import { QuizSpeakingComponent } from './components/student/quiz-speaking/quiz-s
 import { GradeListComponent } from './components/teacher/grade-list/grade-list.component';
 import { LessonPageComponent } from './offlineModules/lesson-page/lesson-page.component';
 
-import { TdashboardComponent } from './speechlab/teacher/tdashboard/tdashboard.component';
+import { TdashboardComponent } from './speechlab/teacher/teacher-main/tdashboard.component';
 import { LabContainerTeacherComponent } from './speechlab/teacher/lab/lab-container-teacher/lab-container-teacher.component';
 import { LabLaptopTeacherComponent } from './speechlab/teacher/lab/lab-laptop-teacher/lab-laptop-teacher.component';
 import { ActiveBarComponent } from './speechlab/student/lab/active-bar/active-bar.component';
@@ -109,7 +109,7 @@ import { LabLaptopComponent } from './speechlab/student/lab/lab-laptop/lab-lapto
 import { LearningModulesComponent } from './speechlab/student/module/learning-modules/learning-modules.component';
 import { ModuleContainerComponent } from './speechlab/student/module/module-container/module-container.component';
 import { PracticeContainerComponent } from './speechlab/student/practice/practice-container/practice-container.component';
-import { TsdashboardComponent } from './speechlab/student/tsdashboard/tsdashboard.component';
+import { TsdashboardComponent } from './speechlab/student/student-main/tsdashboard.component';
 import { ModalsComponent } from './speechlab/components/modals/modals.component';
 import { ModulePlaceholderComponent } from './speechlab/components/module-placeholder/module-placeholder.component';
 import { Module1Component } from './speechlab/student/module/module1/module1.component';
@@ -255,6 +255,7 @@ export function playerFactory() {
   ],
 
   imports: [
+    MatPaginatorModule,
     MatDatepickerModule,
     MatNativeDateModule,
     BrowserModule,
@@ -277,7 +278,7 @@ export function playerFactory() {
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
-    
+
   ],
   providers: [SharedService],
   bootstrap: [AppComponent],

@@ -51,13 +51,13 @@ import { TeacherViewComponent } from './components/teacher/teacher-view/teacher-
 import { TeacherViewGuardGuard } from './services/guard/teacher-view-guard/teacher-view-guard.guard';
 import { GradeListComponent } from './components/teacher/grade-list/grade-list.component';
 import { LessonPageComponent } from './offlineModules/lesson-page/lesson-page.component';
-import { TdashboardComponent } from './speechlab/teacher/tdashboard/tdashboard.component';
+import { TdashboardComponent } from './speechlab/teacher/teacher-main/tdashboard.component';
 import { PracticeContainerComponent } from './speechlab/student/practice/practice-container/practice-container.component';
 import { LabContainerComponent } from './speechlab/student/lab/lab-container/lab-container.component';
 import { ModuleContainerComponent } from './speechlab/student/module/module-container/module-container.component';
 import { LearningModulesComponent } from './speechlab/student/module/learning-modules/learning-modules.component';
 import { LabContainerTeacherComponent } from './speechlab/teacher/lab/lab-container-teacher/lab-container-teacher.component';
-import { TsdashboardComponent } from './speechlab/student/tsdashboard/tsdashboard.component';
+import { TsdashboardComponent } from './speechlab/student/student-main/tsdashboard.component';
 import { Module1Component } from './speechlab/student/module/module1/module1.component';
 import { LabVidsComponent } from './speechlab/teacher/lab/lab-vids/lab-vids.component';
 import { ModuleParentComponent } from './speechlab/student/module/module-parent/module-parent.component';

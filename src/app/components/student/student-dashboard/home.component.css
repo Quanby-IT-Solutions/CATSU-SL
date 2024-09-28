@@ -1,24 +1,22 @@
 .cut-diagonal {
-    clip-path: polygon(35% 0, 100% 0, 100% 100%, 0% 100%);
-  }
+  clip-path: polygon(35% 0, 100% 0, 100% 100%, 0% 100%);
+}
 
-  @media only screen and (max-width: 975px) {
-    .contianerflex{
-      display: block;
-    }
-    .boxes{
-      width: 100%;
-    }
-  } 
-
-  
-  .animate-bounce {
-    animation: bounce 3s ease-in-out infinite;
+@media only screen and (max-width: 975px) {
+  .contianerflex {
+    display: block;
   }
-  .animate-bounce:hover {
-    filter: drop-shadow(0 0 2em #24f0ffaa);
+  .boxes {
+    width: 100%;
   }
+}
 
+.animate-bounce {
+  animation: bounce 3s ease-in-out infinite;
+}
+.animate-bounce:hover {
+  filter: drop-shadow(0 0 2em var(--tertiary-color));
+}
 
 .modal-overlayzz {
   position: fixed;
@@ -30,14 +28,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999; 
+  z-index: 9999;
 }
 
 .modal-contentzz {
   background: white;
   border-radius: 8px;
   animation: fadeInOut 0.3s ease-in-out;
-  z-index: 9999; 
+  z-index: 9999;
 }
 
 @keyframes fadeInOut {
@@ -49,18 +47,14 @@
   }
 }
 
-
-
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: transparent; 
-  
+  background-color: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background-color: transparent; 
-
+  background-color: transparent;
 }

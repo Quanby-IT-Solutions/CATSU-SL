@@ -1,15 +1,12 @@
-.border-gradient1 { 
-  
-  background-image: linear-gradient(white, white), 
-                    linear-gradient(to right, var(--tw-gradient-color));
+.border-gradient1 {
+  background-image: linear-gradient(white, white),
+    linear-gradient(to right, var(--tw-gradient-color));
   background-origin: border-box;
-  background-clip: content-box, border-box; 
+  background-clip: content-box, border-box;
   box-decoration-break: clone;
 }
 
-
-
-.kontint{
+.kontint {
   margin-right: -120px;
 }
 
@@ -33,7 +30,7 @@
 }
 
 [title]::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: calc(100% + 5px);
   left: 50%;
@@ -53,7 +50,7 @@
   padding: 6px 10px;
   border-radius: 4px;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 14jpx;
   font-weight: 500;
 }
 
@@ -61,71 +58,106 @@
 .curclas {
   overflow: visible; /* Ensure the tooltip is not clipped */
 }
-.overvview{
-  display: flex; justify-content: space-between; align-items: center; margin-top:-1px;
+.overvview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -1px;
 }
 
-.textover{
-  display: flex; align-items: center;
+.textover {
+  display: flex;
+  align-items: center;
 }
 
-.enrol{
-  margin: 0;font-size: 10px;color: #7F7F7F;
+.enrol {
+  margin: 0;
+  font-size: 10px;
+  color: #7f7f7f;
 }
-.comple{
-  margin: 0;font-size: 10px; color: #7F7F7F;
-}
-
-.courseover{
-  flex-shrink: 0; width: 300px;
-}
-.curclas{
-  flex-shrink: 0; width: 180px;
+.comple {
+  margin: 0;
+  font-size: 10px;
+  color: #7f7f7f;
 }
 
-.misij{
-  margin-top: -100px; background-color: #E1F3FD;
+.courseover {
+  flex-shrink: 0;
+  width: 300px;
 }
-.directmisij{
-  display: flex; justify-content: space-between; align-items: center;
-}
-.textmisij{
-  margin: 0;font-size: 10px; margin-left:8px;color: #7F7F7F;
-}
-
-.propayl{
-  overflow-y: auto; max-height: 200px;
+.curclas {
+  flex-shrink: 0;
+  width: 180px;
 }
 
-.loobpropayl{
-  display: flex; justify-content: space-between; align-items: center; margin-top:10px;
+.misij {
+  margin-top: -100px;
+  background-color: #e1f3fd;
+}
+.directmisij {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.textmisij {
+  margin: 0;
+  font-size: 10px;
+  margin-left: 8px;
+  color: #7f7f7f;
 }
 
-.ayuspropayl{
-  display: flex; align-items: center;
+.propayl {
+  overflow-y: auto;
+  max-height: 200px;
 }
 
-.piktur{
-  height: 30px; width: 30px; border-radius: 50%; margin-left: 10px; margin-right: 10px;
+.loobpropayl {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
 }
 
-.ngaran{
-  margin: 0;font-size: 13px;
+.ayuspropayl {
+  display: flex;
+  align-items: center;
 }
 
-.directmessage{
-  margin: 0;font-size: 9px; color: #7F7F7F;
+.piktur {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
-.taym{
-  margin: 0; font-size: 9px; margin-right: 10px; color: #7F7F7F;
+.ngaran {
+  margin: 0;
+  font-size: 13px;
 }
 
-.misijno{
-  color: white; border-radius: 50%; width: 10px; height: 10px; font-size: 6px; text-align: center;
+.directmessage {
+  margin: 0;
+  font-size: 9px;
+  color: #7f7f7f;
+}
+
+.taym {
+  margin: 0;
+  font-size: 9px;
+  margin-right: 10px;
+  color: #7f7f7f;
+}
+
+.misijno {
+  color: white;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  font-size: 6px;
+  text-align: center;
 }
 /* Add this CSS to style the horizontal layout */
-
 
 @keyframes slideIn {
   0% {
@@ -145,9 +177,8 @@
   animation: slideIn 3s ease forwards;
 }
 
-
-.greyniclei{
-  color:#7F7F7F;
+.greyniclei {
+  color: #7f7f7f;
 }
 
 .floating {

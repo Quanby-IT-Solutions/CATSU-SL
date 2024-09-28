@@ -5,17 +5,17 @@
     padding-top: 1%;
     padding-bottom: 5%;
   }
-  
-  .custom-modal {   
+
+  .custom-modal {
     margin: auto;
     margin-left: -200px;
   }
-  
+
   .modal-header {
     justify-content: center;
     align-items: center;
   }
-  
+
   .titlehead h1 {
     background-image: linear-gradient(to right, var(--secondary-color), var(--primary-color));
     -webkit-background-clip: text;
@@ -24,16 +24,16 @@
     font-size: 20px;
     text-align: center;
   }
-  
+
   .topwrap {
     width: 500px;
     display: flex;
   }
-  
+
   .container {
     padding: 20px;
   }
-  
+
   .topwrap1 input {
     width: 600px;
     height: 40px;
@@ -44,7 +44,7 @@
     padding: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   }
-  
+
   .topwrap1 textarea {
     margin-top: 10px;
     width: 600px;
@@ -56,7 +56,7 @@
     padding: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   }
-  
+
   .topwrap2 select {
     background-color: #e1f3fd;
     height: 40px;
@@ -65,20 +65,20 @@
     border-radius: 8px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   }
-  
+
   .topwrap2 select option {
     color: black;
     text-align: center;
     background-color: white;
   }
-  
+
   .topwrap2 select .placeholder span {
     background-image: linear-gradient(to right, var(--secondary-color), var(--secondary-color));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  
+
   .mode {
     margin-top: 10px;
     background-color: #e1f3fd;
@@ -91,18 +91,18 @@
     padding-top: 5px;
     padding-left: 24px;
   }
-  
+
   .mode input {
     margin-left: 5px;
   }
-  
+
   .mode div h1 {
     background-image: linear-gradient(to right, var(--secondary-color), var(--secondary-color));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  
+
   .midtop {
     margin-top: 10px;
     width: 790px;
@@ -112,7 +112,7 @@
     border: 2px solid transparent;
     border-image: linear-gradient(to right, var(--primary-color), var(--secondary-color)) 1;
   }
-  
+
   .midtop .midtopwrap {
     background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     height: 40px;
@@ -120,7 +120,7 @@
     padding-top: 5px;
 
   }
-  
+
   .midtop .midtopwrap h1 {
     color: white;
     font-size: 25px;
@@ -132,15 +132,15 @@
     margin-left: 40%;
 
   }
-  
+
   .topinput {
     display: flex;
   }
-  
+
   .midtopcontents {
     padding: 10px;
   }
-  
+
   .midtopcontents .topinput input[type="text"] {
     width: 370px;
     height: 40px;
@@ -151,13 +151,13 @@
     padding: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   }
-  
+
   .topinput .file {
     position: relative;
     display: inline-block;
     margin-left: 10px;
   }
-  
+
   .topinput .file-label {
     display: flex;
     cursor: pointer;
@@ -170,23 +170,23 @@
     padding: 13px;
     padding-top: -20px;
   }
-  
+
   .topinput .file-label img {
     height: 50px;
     width: 50px;
     margin-right: 8px;
     margin-top: -15px;
   }
-  
+
   .topinput .file-label span {
     vertical-align: middle;
     margin-top: -5px;
   }
-  
+
   .topinput input[type="file"] {
     display: none;
   }
-  
+
   .topinput .text select {
     margin-left: 10px;
     width: 220px;
@@ -198,7 +198,7 @@
     padding: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   }
-  
+
   .topinput .text select option {
     text-align: center;
   }
@@ -208,8 +208,8 @@
     margin-left: 10px;
   }
 
-  
-  
+
+
   .buttom .buttomwrap .file-label {
     display: flex;
     cursor: pointer;
@@ -223,14 +223,14 @@
     padding-top: 40px;
     padding-left: 50px;
   }
-  
+
   .buttom .buttomwrap .file-label img {
     height: 50px;
     width: 50px;
     margin-right: 8px;
     margin-top: -15px;
   }
-  
+
   .buttom .buttomwrap .file-label span {
     vertical-align: middle;
     background-image: linear-gradient(to right, var(--secondary-color), var(--primary-color));
@@ -240,21 +240,21 @@
     margin-top: -20px;
     font-size: 20px;
   }
-  
+
   .buttom .buttomwrap input[type="file"] {
     display: none;
   }
-  
+
   .buttom {
     display: flex;
   }
-  
+
   .buttonwrap {
     justify-content: center;
     text-align: center;
     align-items: center;
   }
-  
+
   .buttonwrap .save {
     height: 40px;
     width: 180px;
@@ -264,10 +264,10 @@
     color: white;
     margin-left: 50px;
   }
-  
+
   .buttonwrap .save:hover{
     cursor: pointer;
-    background: var(--secondary-color); 
+    background: var(--secondary-color);
   }
   .buttonwrap .cancel {
     height: 40px;
@@ -278,7 +278,7 @@
     color: white;
     margin-left: 20px;
   }
-  
+
   .addlesson .lesson {
     height: 30px;
     width: 100px;
@@ -292,24 +292,24 @@
     border-bottom-right-radius: 18px;
     font-size: 13px;
   }
-  
+
   .scrollables {
     overflow-y: auto;
     max-height: 430px;
     margin-top: 10px;
   }
-  
+
   .full-width-input {
-    width: 370px; 
-    height: 90px; 
+    width: 370px;
+    height: 90px;
     background-color: #e1f3fd;
     border-radius: 8px;
     border: 1px solid #00000040;
     padding: 13px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   }
-  
-  
+
+
   .full-width-span {
     width: 100%;
     background-color: #e1f3fd;
@@ -324,7 +324,7 @@
     -webkit-background-clip: text;
     background-clip: text;
   }
-  
+
   .midtop .midtopwrap img{
     cursor: pointer;
 
@@ -340,9 +340,9 @@
     height: 30px;
     width: 30px;
   }
-  
 
-  
+
+
 
   @media screen and (max-width: 768px) {
     .custom-modal-content {
@@ -365,7 +365,7 @@
       margin: auto;
       margin-left: 0px;
     }
-  
+
     .topwrap1 input {
       width: 60%;
     }
@@ -376,7 +376,7 @@
       margin-top: 20px;
       margin-left: -170px;
     }
-  
+
     .topwrap {
       width: 480px;
       display:block;
@@ -387,7 +387,7 @@
     .resp{
       display: flex;
     }
-  
+
     .midtop {
       width: 96%;
       height: 340px;
@@ -410,19 +410,19 @@
     .buttonwrap .btnwrap .save{
     margin-left: 20px;
     }
-  
+
     .topwrap,
     .topwrap1,
     .topwrap2,
     .topinput,
     .midtopcontents,
     .buttom {
-      flex-direction: column; 
-      margin-left: 0; 
+      flex-direction: column;
+      margin-left: 0;
     }
-  
-  
-  
+
+
+
 
   }
   @media screen and (max-width: 450px) {
@@ -430,3 +430,68 @@
         margin-left: -90px;
       }
   } */
+
+.modal-backdrop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 50;
+}
+
+.form-input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid var(--secondary-color);
+  outline-color: var(--tertiary-color);
+  background-color: #f8fafc;
+  width: 100%;
+}
+
+.btn-add-lesson,
+.btn-add-topic,
+.btn-save,
+.btn-cancel {
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-add-lesson {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.btn-add-lesson:hover {
+  background: var(--secondary-color-dark);
+}
+
+.btn-add-topic {
+  background: var(--tertiary-color);
+  color: white;
+}
+
+.btn-add-topic:hover {
+  background: var(--tertiary-color-dark);
+}
+
+.btn-save {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #388e3c;
+}
+
+.btn-cancel {
+  background: #f44336;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #d32f2f;
+}

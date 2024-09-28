@@ -50,39 +50,39 @@ export class ThomeComponent implements AfterViewInit,OnInit {
     const days_of_month: number[] = [
       31, this.getFebDays(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
     ];
-  
+
     const currentDate = new Date();
-  
+
     const month_picker = document.querySelector('#month-picker') as HTMLElement;
     if (month_picker) {
       month_picker.innerHTML = this.month_names[month];
     }
-  
+
     if (calendar_header_year) {
       calendar_header_year.innerHTML = year.toString();
     }
-  
+
     const first_day = new Date(year, month);
-  
+
     for (let i = 0; i <= days_of_month[month] + first_day.getDay() - 1; i++) {
       const day = document.createElement('div');
-  
+
       if (i >= first_day.getDay()) {
         day.innerHTML = (i - first_day.getDay() + 1).toString();
-  
+
         if (i - first_day.getDay() + 1 === currentDate.getDate() &&
           year === currentDate.getFullYear() &&
           month === currentDate.getMonth()
         ) {
           day.classList.add('current-date');
           day.style.color = 'white'; // Add this line to color the current date in blue
-          day.style.background = 'linear-gradient(to right, #0172AF , #74FEBD)';// Background color
+          day.style.background = 'linear-gradient(to right, var(--tertiary-color) , var(--tertiary-color))';// Background color
         }
       }
       calendar_days.appendChild(day);
     }
   }
-  
+
 
   monthPickerOnClick(): void {
     const month_list = document.querySelector('.month-list') as HTMLElement;
@@ -152,12 +152,12 @@ nextYearOnClick(): void {
       day: 'numeric',
       weekday: 'long' as const,
     };
-    
+
     const currentDateFormate = new Intl.DateTimeFormat(
       'en-US',
       showCurrentDateOption
     ).format(currshowDate);
-    
+
     if (this.todayShowDate) {
       this.todayShowDate.textContent = currentDateFormate;
     }
@@ -169,7 +169,7 @@ nextYearOnClick(): void {
         minute: 'numeric',
         second: 'numeric',
       };
-      
+
       const formateTimer = new Intl.DateTimeFormat('en-us', option).format(timer);
       const time = `${`${timer.getHours()}`.padStart(
         2,

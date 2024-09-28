@@ -30,22 +30,22 @@ export class TexttospeechComponent implements OnInit {
     private API:APIService,
   ) {
   }
-  
-   
+
+
   ngOnInit(): void {
-   
+
   }
 
   loadVisuallizer(audio:HTMLMediaElement){
     const context = new AudioContext();
     const src = context.createMediaElementSource(audio);
     this.analyser = context.createAnalyser();
-  
+
     src.connect(this.analyser);
     this.analyser.connect(context.destination);
-  
+
     this.analyser.fftSize = 256;
-  
+
     this.bufferLength = this.analyser.frequencyBinCount;
     this.renderFrame();
   }
@@ -101,7 +101,7 @@ selectLanguage(lang: string, langName: string) {
         .catch(err => console.error('Error accessing media devices.', err));
     }
   }
-  
+
 
   playAudio() {
     if (this.audio == null) {
@@ -120,7 +120,7 @@ selectLanguage(lang: string, langName: string) {
       };
     }
   }
-  
+
 
 
   generatingspeech:boolean = false;
@@ -154,38 +154,38 @@ selectLanguage(lang: string, langName: string) {
 
     const canvasWidth = window.innerWidth;
     const canvasHeight = 130;
-  
+
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-  
+
     const barWidth = (canvasWidth / this.bufferLength!) * 2;
     const barHeightMultiplier = 0.5;
     let barHeight: number;
     let x = 0;
-  
+
     const ctx = canvas.getContext("2d")!;
-  
+
     this.analyser!.getByteFrequencyData(dataArray);
-  
+
     // Make the background color transparent
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+
     // Create gradient for the bars
     const gradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
-    gradient.addColorStop(0, "rgba(6, 120, 175, 0.7)"); // Adjust the alpha value for transparency
-    gradient.addColorStop(1, "rgba(96, 229, 187, 0.7)"); // Adjust the alpha value for transparency
-  
+    gradient.addColorStop(0, "rgba(235, 173, 37, 0.7)"); // Adjust the alpha value for transparency
+    gradient.addColorStop(1, "rgba(249, 230, 190, 0.7)"); // Adjust the alpha value for transparency
+
     for (let i = 0; i < this.bufferLength!; i++) {
       barHeight = dataArray[i] * barHeightMultiplier;
-  
+
       // Use the gradient for the bar color
       ctx.fillStyle = gradient;
       ctx.fillRect(x, canvasHeight - barHeight, barWidth, barHeight);
-  
+
       x += barWidth + 1;
     }
   };
-  
+
 
   download() {
     if (!this.audio) {

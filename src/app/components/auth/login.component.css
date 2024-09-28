@@ -13,17 +13,13 @@
   animation: slideDown 1s ease forwards;
 }
 
-
-
 .qlab-desc p,
 .input-div input,
 .checkbox-div,
 .submit-btn button,
 .register {
-    padding: 10px;
+  padding: 10px;
 }
-
-
 
 .my-div {
   position: relative;
@@ -33,7 +29,12 @@
   overflow: hidden;
   color: white;
   transition: background-color 0.5s ease-in;
-  background: linear-gradient(to bottom right,var(--primary-color),var(--secondary-color),var(--primary-color));
+  background: linear-gradient(
+    to bottom right,
+    var(--primary-color),
+    var(--secondary-color),
+    var(--primary-color)
+  );
 }
 
 .my-div::before {
@@ -45,7 +46,11 @@
   width: 70%;
   transform-origin: 60%;
   animation: blob 8s infinite cubic-bezier(0.6, -0.28, 0.735, 0.045);
-  background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+  background: linear-gradient(
+    45deg,
+    var(--secondary-color),
+    var(--primary-color)
+  );
   filter: blur(50px) brightness(125%);
   z-index: 1;
 }
@@ -59,7 +64,11 @@
   width: 70%;
   transform-origin: 60%;
   animation: blob 10s infinite cubic-bezier(0.215, 0.61, 0.355, 1) reverse;
-  background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+  background: linear-gradient(
+    45deg,
+    var(--secondary-color),
+    var(--primary-color)
+  );
   filter: blur(50px) brightness(125%);
   z-index: 1;
 }
@@ -108,12 +117,16 @@
 }
 
 .gradint {
-  background-image: linear-gradient(to right, var(--tw-gradient-color), var(--tw-gradient-color));
+  background-image: linear-gradient(
+    to right,
+    var(--tw-gradient-color),
+    var(--tw-gradient-color)
+  );
   background-size: 300% 100%;
 }
 /* Add this media query to make the background transparent on large screens */
 @media (min-width: 1024px) {
-  .gradint{
+  .gradint {
     background: transparent;
   }
 }

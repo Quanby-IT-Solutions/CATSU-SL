@@ -17,6 +17,16 @@ import Swal from 'sweetalert2';
 export class ManageCourseComponent implements OnInit {
   languages: Map<string, any> = new Map();
   selectedLanguage: string = '';
+  courseProgress: number = 100; // Set this to your desired initial value (e.g., 50%).
+
+  getLiquidTopPosition(): string {
+    return `-${this.courseProgress}px`; // Convert course progress to negative value for the top position
+  }
+
+   updateProgress(newProgress: number) {
+    this.courseProgress = newProgress;
+  }
+
 
   constructor(private modalService: NgbModal, private API: APIService, private router: Router) { }
 

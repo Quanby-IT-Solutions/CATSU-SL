@@ -49,6 +49,7 @@ export class QuizCreationComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal, private API: APIService) {}
 
+
   // ngOnInit(): void {
   //   if(this.quiz){
   //     this.API.showSnackbar('Loading items, please wait....', undefined, 999999999);
@@ -63,14 +64,14 @@ export class QuizCreationComponent implements OnInit {
   //     this.deadline = this.quiz.deadline;
   //     this.attachments = this.quiz.attachments;
   //     this.quiz.settings = this.quiz.settings ?? ''
-      
+
   //     this.settings ={
   //       random_question: this.quiz.settings.includes('random_question'),
   //       allow_backtrack: this.quiz.settings.includes('allow_backtrack'),
   //       allow_review: this.quiz.settings.includes('allow_review'),
   //       popup_quiz: this.quiz.settings.includes('popup_quiz'),
   //     }
-      
+
 
   //     // load the items;
   //     const items$ =  this.API.teacherGetQuizItems(this.quiz.id).subscribe(data=>{
@@ -121,7 +122,7 @@ export class QuizCreationComponent implements OnInit {
       // Editing an existing quiz
       this.API.showSnackbar('Loading quiz details, please wait...', undefined, 999999999);
       this.loading = true;
-      
+
       // Initialize quiz details
       this.course = this.quiz.courseid;
       this.title = this.quiz.title;
@@ -129,7 +130,7 @@ export class QuizCreationComponent implements OnInit {
       this.timelimit = this.quiz.timelimit;
       this.deadline = this.quiz.deadline;
       this.attachments = this.quiz.attachments;
-      
+
       // Initialize settings
       this.quiz.settings = this.quiz.settings ?? '';
       this.settings = {
@@ -138,7 +139,7 @@ export class QuizCreationComponent implements OnInit {
         allow_review: this.quiz.settings.includes('allow_review'),
         popup_quiz: this.quiz.settings.includes('popup_quiz'),
       };
-  
+
       // Load lessons, topics, and quiz items
       this.loadLessonsAndTopics().then(() => {
         this.loadQuizItems();
@@ -147,27 +148,27 @@ export class QuizCreationComponent implements OnInit {
       // Creating a new quiz
       this.questions = [this.createNewQuestion()];
     }
-  
+
     // Load all courses (this might be needed for both new and existing quizzes)
     this.loadCourses();
   }
-  
+
   private async loadLessonsAndTopics(): Promise<void> {
     if (this.course) {
       try {
         // Load lessons for the selected course
         const lessonData = await this.API.teacherCourseLessons(this.course).toPromise();
         this.lessons = lessonData.output;
-        
+
         // Set the lesson if it exists in the quiz
         if (this.quiz.lessonid) {
           this.lesson = this.quiz.lessonid;
-          
+
           // Load topics for the selected lesson
           if (this.lesson) {
             const topicData = await this.API.getTopics(this.lesson).toPromise();
             this.topics = topicData.output;
-            
+
             // Set the topic if it exists in the quiz
             if (this.quiz.topicid) {
               this.topic = this.quiz.topicid;
@@ -180,7 +181,7 @@ export class QuizCreationComponent implements OnInit {
       }
     }
   }
-  
+
   private loadQuizItems(): void {
     this.API.teacherGetQuizItems(this.quiz.id).subscribe(
       data => {
@@ -188,7 +189,7 @@ export class QuizCreationComponent implements OnInit {
           this.questions = data.output.map((item: any) => {
             const [question, attachments] = item.question.split('::::');
             let options;
-            
+
             if (Number(item.type) <= 1) {
               options = item.options.split('\\n\\n').map((option: string, index: number) => {
                 const [value, attachment] = option.split('::::');
@@ -199,7 +200,7 @@ export class QuizCreationComponent implements OnInit {
                 };
               }).slice(0, 4);  // Ensure we only have 4 options
             }
-  
+
             return {
               id: item.id,
               type: item.type,
@@ -211,7 +212,7 @@ export class QuizCreationComponent implements OnInit {
               answer: item.answer,
             };
           });
-          
+
           this.API.successSnackbar('Quiz items loaded successfully!');
         } else {
           this.API.failedSnackbar('Error loading quiz items. Some data may be missing.');
@@ -225,7 +226,7 @@ export class QuizCreationComponent implements OnInit {
       }
     );
   }
-  
+
   private loadCourses(): void {
     this.API.teacherAllCourses().subscribe(
       data => {
@@ -245,7 +246,7 @@ export class QuizCreationComponent implements OnInit {
       }
     );
   }
-  
+
   private createNewQuestion(): any {
     return {
       type: '0',
@@ -270,7 +271,7 @@ export class QuizCreationComponent implements OnInit {
         console.log(question.attachments)
       };
       reader.readAsDataURL(inputElement.files[0]);
-     
+
     }
   }
 
@@ -441,7 +442,7 @@ export class QuizCreationComponent implements OnInit {
     }
     for (let item of this.questions) {
       if (!this.API.checkInputs([(item.question.attachments.length > 0 ?'valid' : null) ?? item.question.value, item.answer])) {
-        
+
         this.API.failedSnackbar(
           'Please fill out all the questions and answer fields!'
         );
@@ -488,13 +489,13 @@ export class QuizCreationComponent implements OnInit {
               }else{
                 link = option.attachment;
               }
-              
+
               options += option.value +`::::${link??''}` + '\\n\\n' ;
             }
           }
-  
+
           // get all attachment in question
-  
+
           var questionAttachments = '::::';
           for(let attachment of item.question.attachments){
             let link;
@@ -509,7 +510,7 @@ export class QuizCreationComponent implements OnInit {
               questionAttachments += '\\n\\n'+link
             }
           }
-  
+
           if(item.id){
             await lastValueFrom(
               this.API.updateQuizItem(
@@ -549,8 +550,8 @@ export class QuizCreationComponent implements OnInit {
         this.deadline,
         attachments,
         settings,
-        this.lesson || undefined,  
-        this.topic || undefined    
+        this.lesson || undefined,
+        this.topic || undefined
       ).subscribe(async () => {
         for (let item of this.questions) {
           var options: any = undefined;
@@ -562,9 +563,9 @@ export class QuizCreationComponent implements OnInit {
               options += option.value +`::::${link??''}` + '\\n\\n' ;
             }
           }
-  
+
           // get all attachment in question
-  
+
           var questionAttachments = '::::';
           for(let attachment of item.question.attachments){
             const link = await this.uploadImage(attachment);
@@ -574,7 +575,7 @@ export class QuizCreationComponent implements OnInit {
               questionAttachments += '\\n\\n'+link
             }
           }
-  
+
           await lastValueFrom(
             this.API.createQuizItem(
               id,
@@ -610,13 +611,12 @@ export class QuizCreationComponent implements OnInit {
 
   closeModal() {
     this.activeModal.close();
-    // You can pass any data you want back to the calling component here
   }
 
   showAIModal: boolean = false;
-  aiPrompt: string = '';  
-  aiGeneratedQuestion: string = '';  
-  isGenerated: boolean = false;  
+  aiPrompt: string = '';
+  aiGeneratedQuestion: string = '';
+  isGenerated: boolean = false;
 
   async generateEssayQuestion() {
     if (!this.aiPrompt.trim()) {
@@ -624,7 +624,7 @@ export class QuizCreationComponent implements OnInit {
       return;
     }
 
-    const prompt = `Give me an essay question using this topic: ${this.aiPrompt}. 
+    const prompt = `Give me an essay question using this topic: ${this.aiPrompt}.
     Minimum 1 sentence, Maximum 2 sentences question.`;
 
     try {
@@ -643,7 +643,7 @@ export class QuizCreationComponent implements OnInit {
       if (currentEssayQuestion) {
         currentEssayQuestion.question.value = this.aiGeneratedQuestion;
       }
-      this.showAIModal = false;  
+      this.showAIModal = false;
     }
   }
 

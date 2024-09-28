@@ -1,29 +1,59 @@
 @media (max-width: 640px) {
-    .scrollable-cards {
-      overflow-x: auto;
-      white-space: nowrap;
-      margin-bottom: -1rem; /* Remove unnecessary space at the bottom */
-    }
-  
-    .scrollable-cards .grid {
-      flex-wrap: nowrap;
-    }
-  
-    .scrollable-cards .card {
-      width: 80vw; /* Adjust the width as needed */
-      margin-right: 1rem; /* Add spacing between cards */
-    }
-  
-    .scrollable-cards .assignment-card {
-      overflow-x: auto; /* Make only assignment cards scrollable */
-    }
-  
-    .scrollable-cards .assignment-card p {
-      white-space: normal;
-    }
-  
-    .scrollable-cards .card p {
-      display: none; /* Hide paragraph content for all cards on small screens */
-    }
+  .scrollable-cards {
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-bottom: -1rem; /* Remove unnecessary space at the bottom */
   }
-  
+
+  .scrollable-cards .grid {
+    flex-wrap: nowrap;
+  }
+
+  .scrollable-cards .card {
+    width: 80vw; /* Adjust the width as needed */
+    margin-right: 1rem; /* Add spacing between cards */
+  }
+
+  .scrollable-cards .assignment-card {
+    overflow-x: auto; /* Make only assignment cards scrollable */
+  }
+
+  .scrollable-cards .assignment-card p {
+    white-space: normal;
+  }
+
+  .scrollable-cards .card p {
+    display: none; /* Hide paragraph content for all cards on small screens */
+  }
+}
+
+/* Custom fade-in animation for cards */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.8s ease-in-out;
+}
+
+/* Bounce animation for buttons */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.bounce-on-hover:hover {
+  animation: bounce 0.5s;
+}

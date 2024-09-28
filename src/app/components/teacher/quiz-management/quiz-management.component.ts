@@ -27,15 +27,17 @@ export class QuizManagementComponent implements OnInit {
   selectedStudent: any;
 
   quizOptions = ['Quiz A', 'Quiz B', 'Quiz C'];
-  // selectedQuiz: string | null = null;
 
   studentOptions = ['Kenneth', 'Felix', 'John'];
-  // selectedStudent: string | null = null;
 
   filteredQuizOptions: string[] = [];
   filteredStudentOptions: string[] = [];
 
   quizzes: any = [];
+
+  // Pagination Variables
+  itemsPerPage: number = 10; // Max items per page
+  currentPage: number = 0; // Current page index
 
   ngOnInit(): void {
     this.getQuizzes();
@@ -43,6 +45,10 @@ export class QuizManagementComponent implements OnInit {
     this.filteredQuizOptions = this.quizOptions.slice();
     this.filteredStudentOptions = this.studentOptions.slice();
   }
+  get selectedQuizTitle(): string {
+    return this.selectedQuiz == null ? 'Select a Quiz Above' : this.selectedQuiz.title;
+  }
+
 
   getQuizzes() {
     this.API.showLoader();
@@ -76,6 +82,7 @@ export class QuizManagementComponent implements OnInit {
       }
     });
   }
+
   selectQuiz(quiz: any) {
     this.selectedQuiz = quiz;
     this.resetStudent();
@@ -84,11 +91,11 @@ export class QuizManagementComponent implements OnInit {
   toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
+
   changeCourse(course: any) {
     this.currentCourse = course;
     console.log(course);
     this.isDropdownOpen = false;
-    // Add logic to handle course change if needed
   }
 
   gettingAvg = false;
@@ -108,10 +115,12 @@ export class QuizManagementComponent implements OnInit {
       this.gettingAvg = false;
     });
   }
+
   search = '';
   people: any = [];
   searching = false;
   search$: any;
+
   searchPeople(event: any) {
     this.people = [];
     if (event.target.value.trim() == '') {
@@ -149,37 +158,32 @@ export class QuizManagementComponent implements OnInit {
   createQuiz() {
     const modalOptions: NgbModalOptions = {
       centered: false,
-      // You can add other options here if needed
     };
 
     const modalRef = this.modalService.open(QuizCreationComponent, modalOptions);
     modalRef.componentInstance.myCustomClass = 'custom-modal';
-    modalRef.componentInstance.courses = this.courses; // Pass the custom class name
+    modalRef.componentInstance.courses = this.courses;
     modalRef.closed.subscribe((data) => {
       if (data != null) {
         this.getQuizzes();
       }
     });
-    // You might pass data or perform any other operations here.
   }
 
-  editQuiz(quiz:any) {
+  editQuiz(quiz: any) {
     const modalOptions: NgbModalOptions = {
       centered: false,
-      // You can add other options here if needed
     };
 
     const modalRef = this.modalService.open(QuizCreationComponent, modalOptions);
     modalRef.componentInstance.quiz = quiz;
-    modalRef.componentInstance.courses = this.courses; // Pass the custom class name
+    modalRef.componentInstance.courses = this.courses;
     modalRef.closed.subscribe((data) => {
       if (data != null) {
         this.getQuizzes();
       }
     });
-    // You might pass data or perform any other operations here.
   }
-
 
   parseDate(date: string) {
     return this.API.parseDate(date);
@@ -195,7 +199,6 @@ export class QuizManagementComponent implements OnInit {
     }
   }
 
-  // Filter students based on input
   filterStudents() {
     if (!this.selectedStudent) {
       this.filteredStudentOptions = this.studentOptions.slice();
@@ -221,14 +224,38 @@ export class QuizManagementComponent implements OnInit {
     this.resetStudent();
     this.feedback = '';
   }
+
   navigateBack(): void {
     this.router.navigate(['teacher/t-home']);
   }
+
   navigateAnal(): void {
     if (this.selectedQuiz) {
       this.router.navigate(['teacher/quiz-analytics'], { state: { quiz: this.selectedQuiz } });
     } else {
       this.API.failedSnackbar('Please select a quiz');
     }
+  }
+
+  // Pagination Logic
+  paginatedQuizzes() {
+    const start = this.currentPage * this.itemsPerPage;
+    return this.quizzes.slice(start, start + this.itemsPerPage);
+  }
+
+  prevPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage() {
+    if ((this.currentPage + 1) * this.itemsPerPage < this.quizzes.length) {
+      this.currentPage++;
+    }
+  }
+
+  get totalPages() {
+    return Math.ceil(this.quizzes.length / this.itemsPerPage);
   }
 }

@@ -1,59 +1,55 @@
+<button class="w-full max-w-lg mx-auto overflow-hidden transition-transform transform bg-white border border-gray-200 rounded-lg shadow-md hover:scale-105 hover:shadow-xl h-[500px]">
+  <!-- Image Section -->
+  <div class="relative h-[200px]">
+    <img
+      class="object-cover w-full h-full"
+      [src]="picture ? picture : 'https://img.freepik.com/free-vector/online-tutorials-concept_52683-37480.jpg'"
+      alt="Lecture Image">
+    <div class="absolute px-3 py-1 text-xs text-white uppercase bg-[var(--tertiary-color)] rounded-full top-4 right-4">
+      {{number}}
+    </div>
+  </div>
 
+  <!-- Content Section -->
+  <div class="p-4 space-y-3 h-[calc(100%-200px-80px)]">
+    <!-- Lecture Title -->
+    <h3 class="text-lg font-bold text-center text-gray-800 truncate">{{lecture}}</h3>
 
-        
-        
-<button class="w-full h-auto mx-auto text-left bg-slate-100 transition-all hover:scale-105 hover:shadow-xl will-change-scroll  hover:!bg-white shadow-lg rounded-2xl overflow-hidden">
-        <img class="w-full h-80 object-cover" src="{{picture}}" alt="assets/login/logonew.png">
-        <div class="px-6 py-2 flex items-center justify-between">
-            <div class="mt-2 flex items-center">
-                <span class="mr-2">▶️</span>
-                <div class="font-normal text-sm">{{number}}</div>
-            </div>
-            <div class="flex items-center">
-                <span class="cursor-pointer" [ngClass]="{'greyed-star': difficulty < 1}">⭐️</span>
-                <span class="cursor-pointer" [ngClass]="{'greyed-star': difficulty < 2}">⭐️</span>
-                <span class="cursor-pointer" [ngClass]="{'greyed-star': difficulty < 3}">⭐️</span>
-                <span class="cursor-pointer" [ngClass]="{'greyed-star': difficulty < 4}">⭐️</span>
-                <span class="cursor-pointer" [ngClass]="{'greyed-star': difficulty < 5}">⭐️</span>
-            </div>
-        </div>
-     <div class="h-40 overflow-hidden"> 
-        <div class=" mb-2 w-full flex justify-center">
-            <div class="w-3/4 rounded-3xl border-4 p-1  border-green-300"> 
-                <p class="text-gray-800 caledea text-2xl text-center font-bold px-6 ">{{lecture}}</p>
+    <!-- Difficulty Rating -->
+    <!-- <div class="flex items-center justify-center space-x-1">
+      <ng-container *ngFor="let i of [1, 2, 3, 4, 5]">
+        <span class="text-xl text-amber-400" [ngClass]="{'text-gray-300': difficulty < i}">⭐️</span>
+      </ng-container>
+    </div> -->
 
-            </div>
-        </div>
-        <div class="mb-2 w-full">
-            <p class="text-gray-600 caledea text-xl font-normal px-6 ">{{description}}</p>
+    <!-- Description Section -->
+    <div class="p-3 bg-gray-100 rounded-md h-[60px]">
+      <p class="text-sm text-gray-700 line-clamp-2">{{description}}</p>
+    </div>
 
-        </div>
-        <div class="mb-2 w-full">
-            <p class="text-gray-600 caledea text-lg font-normal px-6">
-                For 
-                <ng-container *ngIf="targetAudience.length > 0">
-                  {{ targetAudience.slice(0, -1).join(', ') }}<ng-container *ngIf="targetAudience.length > 1"> & </ng-container>{{ targetAudience[targetAudience.length - 1] }}
-                </ng-container>
-                <ng-container *ngIf="targetAudience.length === 0">N/A</ng-container>
-              </p>
-        </div>
-     </div>
-        <div class="linya border-solid border-gray-200"></div>
-        <div class="flex items-center justify-between mx-4 my-3">
-            <div class="flex items-center">
-                <img src="{{profilepic}}" class="w-10 h-10 object-cover rounded-full mr-4" alt="Profile Picture">
-                <div>
-                    <p class="text-sm font-semibold">{{name}}</p>
-                </div>
-            </div>
-            <div *ngIf="enrolled>0" class="flex items-center ml-4"> <!-- Added ml-4 for margin left -->
-                <img class="w-5 h-5" src="assets/add-contact.png" alt="">
-                <p class="ml-2 overlock-i text-lime-600">ENROLLED</p>
-            </div>
-        </div>
-    </button>
-    
+    <!-- Target Audience Section -->
+    <div class="flex flex-wrap items-center justify-center gap-1">
+      <span *ngFor="let audience of targetAudience" class="max-w-[100px] px-2 py-1 text-xs text-[var(--tertiary-color)] truncate bg-amber-100 rounded-full">
+        {{audience}}
+      </span>
+      <ng-container *ngIf="targetAudience.length === 0">
+        <span class="text-sm text-gray-500">N/A</span>
+      </ng-container>
+    </div>
+  </div>
 
-    
-    
-    
+  <!-- Footer Section -->
+  <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50 h-[80px]">
+    <!-- Profile Section -->
+    <div class="flex items-center">
+      <img src="{{profilepic}}" class="object-cover w-10 h-10 mr-3 border-2 border-[var(--tertiary-color)] rounded-full" alt="Profile Picture">
+      <p class="text-sm font-medium text-gray-800 truncate max-w-[80px]">{{name}}</p>
+    </div>
+
+    <!-- Enrolled Section -->
+    <div *ngIf="enrolled > 0" class="flex items-center px-2 py-1 rounded-md bg-lime-100">
+      <img class="w-5 h-5" src="assets/add-contact.png" alt="Enrolled Icon">
+      <p class="ml-2 text-xs font-semibold truncate text-lime-700">ENROLLED</p>
+    </div>
+  </div>
+</button>

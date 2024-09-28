@@ -196,6 +196,7 @@ export class SidebarComponent implements OnInit {
         break;
       case 2:
         this.displayedItems = this.adminDashboardItems;
+        this.mainItemKeys = ['DASHBOARD', 'USERS', 'COUNT', 'SPEECHLAB']; // Main items
         break;
         case 3:
         this.displayedItems = this.principalDashboardItems
@@ -251,7 +252,7 @@ export class SidebarComponent implements OnInit {
       title: 'Are you sure want to Logout?',
       text: 'You will be redirected to login',
       icon: 'warning',
-      confirmButtonColor: 'rgb(116, 254, 189)',
+      confirmButtonColor: 'var(--tertiary-color)',
       cancelButtonColor: '#7F7F7F',
       showCancelButton: true,
       confirmButtonText: 'Logout!',
@@ -262,7 +263,7 @@ export class SidebarComponent implements OnInit {
           title: 'Logout Successfully!',
           text: 'Thank you for your time. :)',
           icon: 'success',
-          confirmButtonColor: '#0172AF',
+          confirmButtonColor: 'var(--secondary-color)',
         }).then(() => {
           this.logout();
           this.renderer.removeClass(document.body, 'custom:ml-20');
@@ -273,7 +274,7 @@ export class SidebarComponent implements OnInit {
           title: 'Cancelled',
           text: 'We are happy you stayed :)',
           icon: 'error',
-          confirmButtonColor: '#0172AF', // Replace 'yourColor' with your preferred color
+          confirmButtonColor: 'var(--secondary-color)', // Replace 'yourColor' with your preferred color
         });
       }
     });
