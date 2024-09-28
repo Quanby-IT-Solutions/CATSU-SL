@@ -586,6 +586,10 @@ export class APIService implements OnDestroy, OnInit {
       });
   }
 
+  generateManualId(): number {
+    return Math.floor(Math.random() * 1000000); 
+  }
+
   askGeminiTon(prompt: string) {
     const headers = new HttpHeaders({
       'X-Requested-With': 'XMLHttpRequest',

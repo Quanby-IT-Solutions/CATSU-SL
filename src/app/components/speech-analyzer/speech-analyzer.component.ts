@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { AssemblyAI } from 'assemblyai';
 import { APIService } from '../../services/API/api.service';
 import { lastValueFrom } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
-// Initialize AssemblyAI client
 const client = new AssemblyAI({
-  apiKey: '1b9759691ec9459182d10a47606a1309',
+  apiKey: environment.speech,
 });
 
 interface AnalysisResult {
@@ -29,7 +29,7 @@ export class SpeechAnalyzerComponent implements OnInit {
   uploadProgress: number = 0;
   isAnalyzing: boolean = false;
   speechSample: string = '';
-  transcriptText: string = '';  // This will store the transcription text
+  transcriptText: string = '';  
 
   constructor(private apiService: APIService, private http: HttpClient) {}
 
@@ -37,15 +37,25 @@ export class SpeechAnalyzerComponent implements OnInit {
     await this.generateNewSpeechSample();
   }
 
+  // For SpeechSample
+
   async generateNewSpeechSample() {
-    const prompt = "Do not include the name. Generate a unique quote from a famous person, philosopher, author, or leader from anywhere in the world. The quote should be between 10 to 20 words long and should be suitable for speech practice.";
+    const prompt = "Generate a unique and inspiring statement for speech practice, between 10 and 20 words. Do not include the name of the author, and do not enclose the sentence in quotation marks.";
+  
     try {
-      this.speechSample = await this.apiService.generateSpeechToRead(prompt);
+      let generatedSample = await this.apiService.generateSpeechToRead(prompt);
+      generatedSample = generatedSample.replace(/^"|"$/g, '').trim();
+      this.speechSample = generatedSample;
+      if (this.speechSample.toLowerCase() === "the quick brown fox jumps over the lazy dog." || !this.speechSample.trim()) {
+      throw new Error("Invalid or default sentence generated.");
+      }
     } catch (error) {
       console.error('Error generating speech sample:', error);
-      this.speechSample = "The quick brown fox jumps over the lazy dog."; // Fallback sentence
+      this.speechSample = "The quick brown fox jumps over the lazy dog."; 
     }
   }
+  
+  
 
   toggleRecording() {
     if (this.recording) {
@@ -65,7 +75,6 @@ export class SpeechAnalyzerComponent implements OnInit {
         this.audioChunks.push(event.data);
       };
 
-      console.log('Recording started...');
     }).catch((err) => console.error('Microphone access denied:', err));
   }
 
@@ -82,49 +91,34 @@ export class SpeechAnalyzerComponent implements OnInit {
           type: 'audio/wav',
         });
 
-        console.log('Recording stopped. Processing...');
         await this.processAudio(audioFile);
       };
-    }
+    } 
   }
 
-  // Generate a random ID for manual insertion
-  generateManualId(): number {
-    return Math.floor(Math.random() * 1000000); // Generate a 6-digit random ID
-  }
+  
 
   async processAudio(audioFile: File) {
-    this.isAnalyzing = true;
+    this.isAnalyzing = true;  
     try {
       const filename = `speech_${Date.now()}.wav`;
       await this.apiService.uploadFileWithProgress(audioFile, filename);
 
       const fileUrl = `files/${filename}`;
-
-      // Generate a manual ID for the audio file
-      const manualId = this.generateManualId();
-      
-      // Create audio file in the database with a manual ID
-      const audioFileResponse = await lastValueFrom(this.apiService.createAudioFileWithId(manualId, fileUrl));
-      
-      console.log('Audio file created with manual ID:', manualId);
-
-      // Proceed with speech analysis
+      const audioId = this.apiService.generateManualId();
+      const audioFileResponse = await lastValueFrom(this.apiService.createAudioFileWithId(audioId, fileUrl));
       const fullUrl = this.apiService.getURL(fileUrl);
       const transcript = await this.analyzeSpeech(fullUrl);
 
-      // Set transcriptText to display the transcription
-      this.transcriptText = transcript.text || 'No transcription available';  // Store transcription here
+      this.transcriptText = transcript.text || 'No transcription available'; 
 
       const analysisJson = await this.processTranscript(transcript);
 
-      // Parse analysis results
       this.parseAnalysisResult(analysisJson);
       if (this.analysisResult) {
-        await this.createSpeechAnalyzerResultEntry(manualId, this.analysisResult);
+        await this.createSpeechAnalyzerResultEntry(audioId, this.analysisResult);
       }
 
-      console.log('Audio processing complete');
     } catch (error) {
       console.error('Error processing audio:', error);
       this.analysisResult = null;
@@ -137,13 +131,11 @@ export class SpeechAnalyzerComponent implements OnInit {
 
   async analyzeSpeech(fileUrl: string): Promise<any> {
     const transcript = await client.transcripts.create({ audio_url: fileUrl });
-    console.log('Transcription Response:', transcript);
     return transcript;
   }
 
   async processTranscript(transcript: any): Promise<string> {
     const transcriptText = transcript.text || 'No transcription available';
-    console.log('Transcript:', transcriptText);
 
     const prompt = `The following is a transcription of the student's reading: "${transcriptText}". 
     The original sentence to be read was: "${this.speechSample}".
@@ -184,7 +176,6 @@ export class SpeechAnalyzerComponent implements OnInit {
 
     try {
       const analysisResult = await this.apiService.analyzeSpeech(prompt);
-      console.log('Speech Analysis Result:', analysisResult);
       return analysisResult;
     } catch (error) {
       console.error('Error during analysis:', error);
