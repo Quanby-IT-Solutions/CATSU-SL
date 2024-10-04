@@ -5593,14 +5593,66 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
+  // async loadComputers() {
+  //   var row1: any[] = [];
+  //   var row2: any[] = [];
+  //   var row3: any[] = [];
+  //   let pcIndex = 1;
+  //   // iterate to row 3
+  //   for (let i = 0; i < 13; i++) {
+  //     row3.push({
+  //       id: null,
+  //       label: `PC-${pcIndex}`,
+  //       ip: '',
+  //       icon: 'assets/monitor.png',
+  //     });
+  //     pcIndex += 1;
+  //   }
+  //   for (let i = 0; i < 13; i++) {
+  //     row2.push({
+  //       id: null,
+  //       label: `PC-${pcIndex}`,
+  //       ip: '',
+  //       icon: 'assets/monitor.png',
+  //     });
+  //     pcIndex += 1;
+  //   }
+  //   for (let i = 0; i < 14; i++) {
+  //     row1.push({
+  //       id: null,
+  //       label: `PC-${pcIndex}`,
+  //       ip: '',
+  //       icon: 'assets/monitor.png',
+  //     });
+  //     pcIndex += 1;
+  //   }
+  //   return [row1, row2, row3];
+  // }
+
+
   async loadComputers() {
-    var row1: any[] = [];
-    var row2: any[] = [];
-    var row3: any[] = [];
+    const rows: any[] = [];
     let pcIndex = 1;
-    // iterate to row 3
-    for (let i = 0; i < 8; i++) {
-      row3.push({
+  
+    // Create 5 rows with 7 PCs each
+    for (let i = 0; i < 5; i++) {
+      const row: any[] = [];
+      for (let j = 0; j < 7; j++) {
+        row.push({
+          id: null,
+          label: `PC-${pcIndex}`,
+          ip: '',
+          icon: 'assets/monitor.png',
+        });
+        pcIndex += 1;
+      }
+      rows.push(row);
+    }
+  
+    // Create the last row with 5 PCs
+    const lastRow: any[] = [];
+    for (let i = 0; i < 5; i++) {
+      lastRow.push({
         id: null,
         label: `PC-${pcIndex}`,
         ip: '',
@@ -5608,26 +5660,13 @@ export class APIService implements OnDestroy, OnInit {
       });
       pcIndex += 1;
     }
-    for (let i = 0; i < 9; i++) {
-      row2.push({
-        id: null,
-        label: `PC-${pcIndex}`,
-        ip: '',
-        icon: 'assets/monitor.png',
-      });
-      pcIndex += 1;
-    }
-    for (let i = 0; i < 8; i++) {
-      row1.push({
-        id: null,
-        label: `PC-${pcIndex}`,
-        ip: '',
-        icon: 'assets/monitor.png',
-      });
-      pcIndex += 1;
-    }
-    return [row1, row2, row3];
+    rows.push(lastRow);
+  
+    return rows;
   }
+
+  
+
   labID?: string;
   getStudentAssignedLab() {
     const id = this.getUserData().visibleid;

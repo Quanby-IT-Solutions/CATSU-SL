@@ -234,7 +234,7 @@ const routes: Routes = [
           {path: 'learning_module' , component: LearningModulesComponent},
           {path: 'modules' , component: ModuleParentComponent},
           {path: 'practice1' , component: Practice1Component},
-          {path: 'paractice-parent', component:PracticeParentComponent},
+          {path: 'practice-parent', component:PracticeParentComponent},
           {path: 'practice', component: PracticeContainerComponent},
           {path: 'quiztemplate', component: QuizTemplateComponent},
 
