@@ -139,6 +139,7 @@ import { SpeechAnalyzerComponent } from './components/speech-analyzer/speech-ana
 import { RecordListComponent } from './components/speech-analyzer/record-list/record-list.component';
 import { RecordReportComponent } from './components/speech-analyzer/record-report/record-report.component';
 import { RecordSpeechComponent } from './components/speech-analyzer/record-speech/record-speech.component';
+import { ClickOutsideDirective } from './services/hook/click-outside.directive';
 
 
 export function playerFactory() {
@@ -272,6 +273,7 @@ export function playerFactory() {
     BrowserAnimationsModule,
     DragDropModule,
     PdfViewerModule,
+    ClickOutsideDirective,
     LottieModule.forRoot({ player: playerFactory }),
 
     provideFirebaseApp(() => initializeApp(firebaseConfig)),

@@ -14,8 +14,11 @@ module.exports = {
             'smallest' : '375px'
           },
       colors: {
-        primary: '#0375AF',
-        secondary: '#6CF5BC'
+        primary: {
+          1: "#212529",
+          2: "#1f2e4d",
+          3: "#f5a425",
+        }
       },
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],

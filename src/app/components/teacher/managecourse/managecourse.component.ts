@@ -143,7 +143,7 @@ export class ManageCourseComponent implements OnInit {
 
   openModal() {
     const modalOptions: NgbModalOptions = {
-      centered: true
+      centered: false
     };
 
     const modalRef = this.modalService.open(CreateCourseComponent, modalOptions);

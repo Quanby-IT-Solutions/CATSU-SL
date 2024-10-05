@@ -1,4 +1,4 @@
-<section *ngIf="!analysisResult" class="flex flex-col items-center justify-center mt-14">
+<section *ngIf="!analysisResult" class="flex flex-col items-center justify-center mt-14 px-4">
   <main class="w-full max-w-2xl overflow-hidden bg-white shadow-lg rounded-3xl">
     <div class="p-6 text-white bg-gradient-to-r from-amber-500 to-amber-600">
       <h2 class="text-3xl font-bold">
@@ -33,7 +33,7 @@
   </main>
 </section>
 
-<section *ngIf="analysisResult && analysisResult.length > 0" class="max-w-[1365px] mx-auto px-4 py-8">
+<section *ngIf="analysisResult && analysisResult.length > 0" class="w-full mx-auto px-4 py-8">
   <header class="w-full">
     <div class="flex flex-wrap items-start justify-between w-full gap-6">
       <div class="flex items-start gap-4 flex-1 min-w-[300px] max-w-[800px]">

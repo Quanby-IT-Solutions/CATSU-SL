@@ -62,13 +62,20 @@ export class CreateCourseComponent {
 
     //  start New Dropdown para sa Request ni Doc
 
-  toggleDropdown(type: string) {
-    if (type === 'audience') {
-      this.showAudienceDropdown = !this.showAudienceDropdown;
-    } else if (type === 'requirements') {
-      this.showRequirementsDropdown = !this.showRequirementsDropdown;
+    toggleDropdown(type: string) {
+      if (type === 'audience') {
+        this.showAudienceDropdown = !this.showAudienceDropdown;
+        if (this.showAudienceDropdown) {
+          this.showRequirementsDropdown = false; // Close the other dropdown
+        }
+      } else if (type === 'requirements') {
+        this.showRequirementsDropdown = !this.showRequirementsDropdown;
+        if (this.showRequirementsDropdown) {
+          this.showAudienceDropdown = false; // Close the other dropdown
+        }
+      }
     }
-  }
+    
 
   onSelectAudience(option: string) {
     if (this.selectedAudience.includes(option)) {
