@@ -76,7 +76,6 @@ import { UsersPageComponent } from './components/admin/users-page/users-page.com
 import { ManageCourseComponent } from './components/teacher/managecourse/managecourse.component';
 import { VideoZoomComponent } from './unused-components/video-zoom/video-zoom.component';
 
-
 import { AddTeachersComponent } from './components/admin/admin-modals/add-teachers/add-teachers.component';
 import { AddStudentsComponent } from './components/admin/admin-modals/add-students/add-students.component';
 import { LessonsComponent } from './components/student/lessons/lessons.component';

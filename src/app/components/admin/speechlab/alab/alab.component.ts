@@ -11,7 +11,11 @@ export class AlabComponent implements OnInit {
   constructor(private API:APIService){}
   row1:any[] = []
   row2:any[] = []
-  row3:any[] = [];
+  row3:any[] = []
+  row4:any[] = []
+  row5:any[] = []
+  row6:any[] = [];
+
   students:any[]= [];
   speechLabs:any[] = []
   speechLabSelected:number = 0;
@@ -19,7 +23,7 @@ export class AlabComponent implements OnInit {
   
 
   async ngOnInit() {
-    [this.row1,this.row2, this.row3]= await this.API.loadComputers();
+    [this.row1,this.row2, this.row3, this.row4, this.row5, this.row6]= await this.API.loadComputers();
     this.loadStudents();
     this.loadLabs();
   }
@@ -59,7 +63,7 @@ export class AlabComponent implements OnInit {
           const assignMap = new Map<string,any>( data.output.filter((e:any)=>e.labid == this.speechLabs[this.speechLabSelected].id).map((entry:any)=> [entry.name, entry]))
           this.loadedAddresses = new Map<string,any>( data.output.map((entry:any)=> [entry.address, entry]))
 
-          for(let pc of [...this.row1, ...this.row2, ...this.row3]){
+          for(let pc of [...this.row1, ...this.row2, ...this.row3, ...this.row4 , ...this.row5 , ...this.row6]){
             pc.ip = assignMap.get(pc.label)?.address ?? '';
             pc.id = assignMap.get(pc.label)?.id ?? null;
           }
@@ -79,7 +83,7 @@ export class AlabComponent implements OnInit {
   value: boolean = false;
 
   checkIfAssigned(student:any){
-    const pcs = [...this.row1, ...this.row2, ...this.row3];
+    const pcs = [...this.row1, ...this.row2, ...this.row3 , ...this.row4 , ...this.row5 , ...this.row6];
     const found = pcs.find((pc)=> pc.ip == student.visibleid);
     return found;
   }
@@ -114,7 +118,7 @@ export class AlabComponent implements OnInit {
   }
 
   checkDuplicate(studentId:string, pcLabel:any){
-    const pcs = [...this.row1, ...this.row2, ...this.row3];
+    const pcs = [...this.row1, ...this.row2, ...this.row3, ...this.row4 , ...this.row5 , ...this.row6];
     const found = pcs.find((pc)=> pc.ip == studentId && pc.label != pcLabel);
     return found;
   }
@@ -138,7 +142,7 @@ export class AlabComponent implements OnInit {
 
   async save(){
     // check all input is valid
-    for(let pc of [...this.row1, ...this.row2, ...this.row3]){
+    for(let pc of [...this.row1, ...this.row2, ...this.row3, ...this.row4 , ...this.row5 , ...this.row6]){
       if(pc.ip.trim() != '' && this.getAssignedName(pc) == 'None' ){
         this.API.failedSnackbar(`${pc.label} contains invalid ID!`);
         return;
@@ -146,7 +150,7 @@ export class AlabComponent implements OnInit {
     }
   if(this.speechLabs.length>0){
     this.API.justSnackbar('Updating Addresses...', 999999)
-     for(let pc of  [...this.row1, ...this.row2, ...this.row3]){
+     for(let pc of  [...this.row1, ...this.row2, ...this.row3, ...this.row4 , ...this.row5 , ...this.row6]){
       // if(){
         await this.API.changePCAddress(this.speechLabs[this.speechLabSelected].id, pc )
       // }

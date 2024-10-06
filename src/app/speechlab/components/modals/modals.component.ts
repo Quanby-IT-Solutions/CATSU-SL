@@ -55,6 +55,10 @@ throw new Error('Method not implemented.');
   row1:any[] = []
   row2:any[] = []
   row3:any[] = [];
+  row4:any[] = [];
+  row5:any[] = [];
+  row6:any[] = [];
+
   messages:Array<MessageObject> = [];
 
   students:any[]= [];
@@ -96,7 +100,7 @@ throw new Error('Method not implemented.');
     //   }
     // }
 
-    [this.row1, this.row2, this.row3] = await this.API.loadComputers();
+    [this.row1, this.row2, this.row3, this.row4, this.row5, this.row6] = await this.API.loadComputers();
     this.loadStudents();
 
     if(this.API.meeting == null){
@@ -366,13 +370,13 @@ async initMeeting() {
 
   selectModule(){
     this.API.sendDirectLabMessage('You are selected for Solo!, Get Ready!', this.API.chosenPCs[0].ip,'wait-for-module' );
-    this.router.navigate(['/teacher/speechlab/paractice-parent']);
+    this.router.navigate(['/teacher/speechlab/practice-parent']);
   }
   selectModuleGroup(){
     for(let pc of this.API.chosenPCs){
       this.API.sendDirectLabMessage('You are selected for with Group!, Get Ready!', pc.ip,'wait-for-module' );
     }
-    this.router.navigate(['/teacher/speechlab/paractice-parent']);
+    this.router.navigate(['/teacher/speechlab/practice-parent']);
   }
 
   selectLab(index:number){
@@ -413,7 +417,7 @@ async initMeeting() {
   value: boolean = false;
 
   checkIfAssigned(student:any){
-    const pcs = [...this.row1, ...this.row2, ...this.row3];
+    const pcs = [...this.row1, ...this.row2, ...this.row3 , ...this.row4 , ...this.row5 , ...this.row6];
     const found = pcs.find((pc)=> pc.ip == student.visibleid);
     return found;
   }
@@ -453,7 +457,7 @@ async initMeeting() {
   }
 
   checkDuplicate(studentId:string, pcLabel:any){
-    const pcs = [...this.row1, ...this.row2, ...this.row3];
+    const pcs = [...this.row1, ...this.row2, ...this.row3 , ...this.row4 , ...this.row5 , ...this.row6];
     const found = pcs.find((pc)=> pc.ip == studentId && pc.label != pcLabel);
     return found;
   }
@@ -477,7 +481,7 @@ async initMeeting() {
 
   async save(){
     // check all input is valid
-    for(let pc of [...this.row1, ...this.row2, ...this.row3]){
+    for(let pc of [...this.row1, ...this.row2, ...this.row3 , ...this.row4 , ...this.row5 , ...this.row6]){
       if(pc.ip.trim() != '' && this.getAssignedName(pc) == 'None' ){
         this.API.failedSnackbar(`${pc.label} contains invalid ID!`);
         return;
