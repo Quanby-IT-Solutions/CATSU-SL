@@ -36,7 +36,7 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
   review = true;
   randomize = true;
   title: string = 'Welcome to the Geria Quiz!';
-  description: string = 'Test your expertise in geriatric care and see how much you really know about providing exceptional support for the elderly.';
+  description: string = 'Enhance your communication skills at Speechlab and master the art of delivering clear, confident speech for every audience.';
   generating = false;
   isButtonDisabled = false;
   mode = 'reading';
