@@ -191,7 +191,7 @@
                 <br>
                   <!-- Upload E-Sig -->
                   <H1 class="poppins-b">E-Signature:</H1>
-                  <div class="relative bg-transparent border-solid border-2 border-grey-600 sm:w-48 w-32 rounded-xl overflow-hidden">
+                  <div class="relative bg-transparent border-solid border-2 border-grey-600 w-44 rounded-xl overflow-hidden">
                     <button (click)="openSignatureModal()" *ngIf="teacher || principal" class="w-full h-full cursor-pointer">
                       <img [src]="getUserSignature() || 'assets/Esig.png'" class="w-full h-full object-cover max-w-[200px] max-h-28" />
                       <span *ngIf="!imageUrl">Click to add signature</span>
@@ -244,21 +244,21 @@
     <button
       *ngIf="teacher"
       (click)="viewGrades()"
-      class="bg-transparent border-solid border-2 border-blue-500 sm:w-48 w-32 rounded-xl"
+      class="bg-transparent border-solid border-2 border-blue-500 w-44 rounded-xl"
     >
       <h1 class="text-lg font-semibold text-blue-500 p-2">View Grades</h1>
     </button>
 
     <button
       (click)="openModalEmail()"
-      class="bg-transparent border-solid border-2 border-green-500 shadow-sm sm:w-48 w-32 rounded-xl"
+      class="bg-transparent border-solid border-2 border-green-500 shadow-sm w-44 rounded-xl"
     >
       <h1 class="text-lg font-semibold text-green-500 p-2">Change Email</h1>
     </button>
 
     <button
       (click)="openModalPassword()"
-      class="bg-red-500 sm:w-48 w-32 rounded-xl"
+      class="bg-red-500 w-44 rounded-xl"
     >
       <h1 class="text-lg font-semibold text-white p-2">Change Password</h1>
     </button>
