@@ -139,7 +139,7 @@ export class HeaderzComponent implements OnInit, OnDestroy {
         break;
       case 1: // Teacher
         this.displayedItems = this.teacherDashboardItems;
-        this.mainItemKeys = ['DASHBOARD', 'MANAGE COURSES', 'MANAGE CLASS', 'MEET', 'GRADES']; // Main items
+        this.mainItemKeys = ['DASHBOARD', 'MANAGE COURSES', 'MANAGE CLASS', 'MEET', 'GRADES', 'SPEECH LAB']; // Main items
         this.specialItemKeys = ['DICTIONARY', 'TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
         break;
       case 2:
