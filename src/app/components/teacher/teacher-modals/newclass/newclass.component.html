@@ -138,7 +138,7 @@
   <form #classForm="ngForm">
     <!-- Header -->
     <div class="flex justify-center items-center mb-8">
-      <h1 class="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent text-center">NEW CLASS</h1>
+      <h1 class="text-2xl font-bold text-primary-2 text-center">NEW CLASS</h1>
     </div>
 
     <!-- Class Name -->
@@ -217,9 +217,9 @@
     </div>
 
     <!-- Button Group -->
-    <div class="flex justify-end space-x-4 mt-6">
-      <button class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400" (click)="classForm.form.markAllAsTouched(); manageClass()">Save</button>
-      <button class="bg-gray-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400" (click)="closeModal(null)">Cancel</button>
+    <div class="flex justify-center items-center gap-4 space-x-4 mt-6">
+      <button class="bg-primary-2 text-white w-full py-2.5 rounded-lg shadow-md hover:bg-primary-2 focus:outline-none focus:ring-2 focus:ring-blue-400" (click)="classForm.form.markAllAsTouched(); manageClass()">Save</button>
+      <button class="bg-gray-500 text-white w-full py-2.5 rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400" (click)="closeModal(null)">Cancel</button>
     </div>
   </form>
 </div>

@@ -1,6 +1,6 @@
 <div class="min-h-screen p-6 bg-gray-100">
   <!-- Top Bar with Back Button -->
-  <div class="flex items-center justify-between px-4 mb-8">
+  <div class="flex items-center justify-between mb-8">
     <button
       class="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white transition bg-[var(--secondary-color)] rounded-lg shadow-md hover:bg-[var(--primary-color)]"
       (click)="navigateBack()"
@@ -63,14 +63,14 @@
       </div>
 
       <!-- Dropdown & New Task Button -->
-      <div class="flex flex-col items-start justify-between gap-4 mb-6 md:flex-row">
+      <div class="flex items-center justify-between gap-4 mb-6 flex-row">
         <!-- Course Filter Dropdown -->
         <div ngbDropdown class="relative">
           <button
             type="button"
             id="dropdownBasic1"
             ngbDropdownToggle
-            class="inline-flex items-center justify-between w-full px-4 py-2 text-base font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100"
+            class="inline-flex items-center justify-between md:w-44 w-fit px-4 py-2 text-base font-medium bg-gray-100 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100"
             >
             Filter: {{ filterCourse === "" ? "All" : courses.get(filterCourse).course }}
             <span class="material-icons">expand_more</span>
