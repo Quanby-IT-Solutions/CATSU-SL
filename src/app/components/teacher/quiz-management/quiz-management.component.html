@@ -1,6 +1,6 @@
 <!-- Import any necessary Angular modules at the top of your file -->
 
-<body class="flex flex-col p-6 bg-gray-100">
+<body class="flex flex-col p-2 bg-gray-100">
   <div class="flex items-center justify-between mx-4">
     <div class="flex w-auto">
       <button
@@ -187,4 +187,4 @@
 
 
 
-<app-quiz-creation *ngIf="isModalOpen" (closed)="closeQuiz()"></app-quiz-creation>
+<app-quiz-creation *ngIf="isModalOpen" [quiz]="selectedQuiz" (closed)="closeQuiz()"></app-quiz-creation>

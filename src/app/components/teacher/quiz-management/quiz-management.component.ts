@@ -157,26 +157,20 @@ export class QuizManagementComponent implements OnInit {
 
   isModalOpen = false;
   createQuiz() {
-    this.isModalOpen = !this.isModalOpen
+    this.selectedQuiz = null; // Clear selected quiz for creating a new one
+    this.isModalOpen = true; // Open the modal
   }
+  
+  editQuiz(quiz: any) {
+    this.selectedQuiz = quiz; // Set the selected quiz for editing
+    this.isModalOpen = true; // Open the modal
+  }
+
   closeQuiz() {
     this.isModalOpen = false
   }
 
-  editQuiz(quiz: any) {
-    const modalOptions: NgbModalOptions = {
-      centered: false,
-    };
-
-    const modalRef = this.modalService.open(QuizCreationComponent, modalOptions);
-    modalRef.componentInstance.quiz = quiz;
-    modalRef.componentInstance.courses = this.courses;
-    modalRef.closed.subscribe((data) => {
-      if (data != null) {
-        this.getQuizzes();
-      }
-    });
-  }
+  
 
   parseDate(date: string) {
     return this.API.parseDate(date);
