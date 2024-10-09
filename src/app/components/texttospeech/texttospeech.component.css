@@ -102,7 +102,7 @@
     linear-gradient(180deg, var(--secondary-color), var(--primary-color));
   background-origin: border-box;
   background-clip: content-box, border-box;
-  box-decoration-break: clone;
+  /* box-decoration-break: clone; */
 }
 
 .box .headphone {
@@ -239,9 +239,6 @@
   .image.button{
     display: none;
   }
-  .listenbox{
-    margin-top:8%;
-  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -261,9 +258,6 @@
 
 .image.button{
   display: none;
-}
-.listenbox{
-  margin-top:8%;
 }
 }
 
