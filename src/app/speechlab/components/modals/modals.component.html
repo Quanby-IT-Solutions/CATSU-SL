@@ -13,13 +13,13 @@
 
         <!-- Close Button -->
         <button *ngIf="solo" (click)="closeSolo()"
-          class="absolute top-0 left-0 transform -translate-y-1/2 -translate-x-1/2 rounded-full bg-red-500 h-10 w-10 flex items-center justify-center shadow-md hover:bg-red-600">
+          class="absolute top-0 left-0 transform -translate-y-1/2 -translate-x-1/2 rounded-full bg-red-500 h-5 w-5 flex items-center justify-center shadow-md hover:bg-red-600">
           <i class="fa-solid fa-xmark text-white"></i>
         </button>
 
         <!-- Confirm Button -->
         <button *ngIf="solo" (click)="!getSolo() ? null : saveSolo()" [disabled]="!getSolo()"
-          class="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 rounded-full h-10 w-10 flex items-center justify-center shadow-md"
+          class="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 rounded-full h-5 w-5 flex items-center justify-center shadow-md"
           [ngClass]="{
               'bg-green-500 hover:bg-green-600': getSolo(),
               'bg-gray-400 cursor-not-allowed': !getSolo()
@@ -56,13 +56,13 @@
 
         <!-- Close Groupings Button -->
         <button *ngIf="groupings" (click)="closeGroupings()"
-          class="absolute top-0 left-0 transform -translate-y-1/2 -translate-x-1/2 rounded-full bg-red-500 h-10 w-10 flex items-center justify-center shadow-md hover:bg-red-600">
+          class="absolute top-0 left-0 transform -translate-y-1/2 -translate-x-1/2 rounded-full bg-red-500 h-5 w-5 flex items-center justify-center shadow-md hover:bg-red-600">
           <i class="fa-solid fa-xmark text-white"></i>
         </button>
 
         <!-- Confirm Groupings Button -->
         <button *ngIf="groupings && groupNumbers() >= 1" (click)="saveGroupings('blue')"
-          class="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 rounded-full h-10 w-10 flex items-center justify-center shadow-md hover:bg-green-600"
+          class="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 rounded-full h-5 w-5 flex items-center justify-center shadow-md hover:bg-green-600"
           [ngClass]="{
               'bg-green-500': true
             }">
