@@ -126,3 +126,9 @@ select {
 .remove-button:hover {
   background-color: #d32f2f;
 } */
+
+button:disabled {
+  background-color: gray;
+  color: white;
+  cursor: not-allowed;
+}
