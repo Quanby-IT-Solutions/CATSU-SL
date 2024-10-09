@@ -12,10 +12,12 @@ import { duration } from 'html2canvas/dist/types/css/property-descriptors/durati
 })
 export class QuizCreationComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
+  
 
   closeModal() {
     this.closed.emit(); // Emit event to notify the parent component to close the modal
   }
+  
   @Input() myCustomClass: string = '';
   @Input() quiz: any = null;
   @Input() courses: any = [];
