@@ -155,19 +155,12 @@ export class QuizManagementComponent implements OnInit {
     this.search = '';
   }
 
+  isModalOpen = false;
   createQuiz() {
-    const modalOptions: NgbModalOptions = {
-      centered: false,
-    };
-
-    const modalRef = this.modalService.open(QuizCreationComponent, modalOptions);
-    modalRef.componentInstance.myCustomClass = 'custom-modal';
-    modalRef.componentInstance.courses = this.courses;
-    modalRef.closed.subscribe((data) => {
-      if (data != null) {
-        this.getQuizzes();
-      }
-    });
+    this.isModalOpen = !this.isModalOpen
+  }
+  closeQuiz() {
+    this.isModalOpen = false
   }
 
   editQuiz(quiz: any) {

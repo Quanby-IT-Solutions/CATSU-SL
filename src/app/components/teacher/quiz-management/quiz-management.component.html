@@ -1,11 +1,11 @@
 <!-- Import any necessary Angular modules at the top of your file -->
+
 <body class="flex flex-col p-6 bg-gray-100">
   <div class="flex items-center justify-between mx-4">
     <div class="flex w-auto">
       <button
         class="flex items-center px-4 py-2 text-lg text-white transition-transform rounded-lg shadow-sm poppins-b bg-[var(--secondary-color)] hover:scale-105"
-        (click)="navigateBack()"
-      >
+        (click)="navigateBack()">
         <i class="mr-2 fas fa-arrow-left"></i> Back
       </button>
     </div>
@@ -17,10 +17,8 @@
       >
         <i class="mr-2 fas fa-chart-bar"></i> ANALYTICS
       </button> -->
-      <button
-        (click)="createQuiz()"
-        class="flex items-center px-4 py-2 ml-2 text-lg font-bold text-white transition-transform rounded-md shadow-sm poppins-b bg-[var(--secondary-color)] hover:scale-105"
-      >
+      <button (click)="createQuiz()"
+        class="flex items-center px-4 py-2 ml-2 text-lg font-bold text-white transition-transform rounded-md shadow-sm poppins-b bg-[var(--secondary-color)] hover:scale-105">
         <i class="mr-2 fas fa-plus"></i> CREATE QUIZ
       </button>
     </div>
@@ -38,27 +36,18 @@
         </div>
         <div class="mb-4">
           <div class="relative inline-block text-left">
-            <button
-              type="button"
-              (click)="toggleDropdown()"
-              class="inline-flex items-center justify-between w-full px-4 py-2 text-base font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100"
-            >
+            <button type="button" (click)="toggleDropdown()"
+              class="inline-flex items-center justify-between w-full px-4 py-2 text-base font-medium bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100">
               {{
-                currentCourse == null ? "Select Course" : currentCourse.title
+              currentCourse == null ? "Select Course" : currentCourse.title
               }}
               <i class="ml-2 fas fa-chevron-down"></i>
             </button>
-            <div
-              *ngIf="isDropdownOpen"
-              class="absolute right-0 z-10 w-full mt-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
-            >
+            <div *ngIf="isDropdownOpen"
+              class="absolute right-0 z-10 w-full mt-2 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
               <div class="py-1" role="menu" aria-orientation="vertical">
-                <button
-                  *ngFor="let course of courses"
-                  (click)="changeCourse(course)"
-                  class="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
-                  role="menuitem"
-                >
+                <button *ngFor="let course of courses" (click)="changeCourse(course)"
+                  class="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900" role="menuitem">
                   {{ course.title }}
                 </button>
               </div>
@@ -68,9 +57,7 @@
 
         <!-- Quiz List Table with Pagination -->
         <div class="w-full overflow-x-auto">
-          <table
-            class="w-full text-sm border border-gray-300 poppins md:text-base lg:text-lg"
-          >
+          <table class="w-full text-sm border border-gray-300 poppins md:text-base lg:text-lg">
             <thead class="text-white poppins-b bg-[var(--secondary-color)]">
               <tr>
                 <th class="px-4 py-3 border border-gray-300">Quiz Title</th>
@@ -84,13 +71,9 @@
             <tbody class="text-gray-600">
               <!-- Quiz List Rows with Pagination Logic -->
               <ng-container *ngFor="let quiz of paginatedQuizzes()">
-                <tr
-                  [ngClass]="{
+                <tr [ngClass]="{
                     'bg-slate-200': quiz.id == selectedQuiz?.id
-                  }"
-                  (click)="getAverageScore(quiz)"
-                  class="cursor-pointer hover:bg-gray-100"
-                >
+                  }" (click)="getAverageScore(quiz)" class="cursor-pointer hover:bg-gray-100">
                   <td class="px-4 py-3 border border-gray-300">
                     {{ quiz.title }}
                   </td>
@@ -107,7 +90,8 @@
                     {{ quiz.timelimit }} {{ quiz.timelimit == 1 ? "min" : "mins" }}
                   </td>
                   <td class="px-4 py-3 border border-gray-300">
-                    <button (click)="editQuiz(quiz)" class="flex items-center px-4 py-2 text-white rounded bg-amber-600 hover:bg-amber-500">
+                    <button (click)="editQuiz(quiz)"
+                      class="flex items-center px-4 py-2 text-white rounded bg-amber-600 hover:bg-amber-500">
                       <i class="mr-2 fas fa-edit"></i> Edit
                     </button>
                   </td>
@@ -119,19 +103,13 @@
 
         <!-- Pagination Controls -->
         <div class="flex items-center justify-between mt-4">
-          <button
-            (click)="prevPage()"
-            [disabled]="currentPage === 0"
-            class="flex items-center px-4 py-2 text-gray-700 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          >
+          <button (click)="prevPage()" [disabled]="currentPage === 0"
+            class="flex items-center px-4 py-2 text-gray-700 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50">
             <i class="mr-2 fas fa-arrow-left"></i> Previous
           </button>
           <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
-          <button
-            (click)="nextPage()"
-            [disabled]="(currentPage + 1) * itemsPerPage >= quizzes.length"
-            class="flex items-center px-4 py-2 text-gray-700 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          >
+          <button (click)="nextPage()" [disabled]="(currentPage + 1) * itemsPerPage >= quizzes.length"
+            class="flex items-center px-4 py-2 text-gray-700 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50">
             Next <i class="ml-2 fas fa-arrow-right"></i>
           </button>
         </div>
@@ -152,52 +130,36 @@
         </p>
       </div>
       <div class="relative inline-block mt-4 mb-4 text-left">
-        <input
-          readonly
-          type="text"
-          [value]="selectedQuizTitle"
-          (input)="filterQuizzes()"
-          placeholder="Enter Quiz Name"
-          class="w-full px-2.5 py-2 text-sm border border-gray-300 rounded-md poppins gradient-text"
-        />
+        <input readonly type="text" [value]="selectedQuizTitle" (input)="filterQuizzes()" placeholder="Enter Quiz Name"
+          class="w-full px-2.5 py-2 text-sm border border-gray-300 rounded-md poppins gradient-text" />
       </div>
       <div class="relative inline-block mb-4 ml-2 text-left">
-        <input
-          [readOnly]="selectedStudent != null"
-          type="text"
-          [(ngModel)]="search"
-          (input)="searchPeople($event)"
+        <input [readOnly]="selectedStudent != null" type="text" [(ngModel)]="search" (input)="searchPeople($event)"
           placeholder="Search Student Name"
-          class="w-full px-2.5 py-2 text-sm border border-gray-300 rounded-md poppins gradient-green-purple-blue"
-        />
+          class="w-full px-2.5 py-2 text-sm border border-gray-300 rounded-md poppins gradient-green-purple-blue" />
       </div>
-      <span
-        (click)="resetStudent()"
-        *ngIf="selectedStudent != null"
-        class="px-2 ml-2 text-white bg-red-600 rounded cursor-pointer"
-      >
+      <span (click)="resetStudent()" *ngIf="selectedStudent != null"
+        class="px-2 ml-2 text-white bg-red-600 rounded cursor-pointer">
         <i class="bx bx-x"></i>
       </span>
 
       <ng-container *ngIf="!searching; else searchingTemplate">
         <div *ngIf="people.length" class="flex-grow mt-4">
           <p class="mb-3 leading-9">
-            <span
-              (click)="selectStudent(person)"
+            <span (click)="selectStudent(person)"
               class="px-2 py-1 ml-2 bg-blue-100 rounded-md cursor-pointer select-none hover:bg-blue-200"
-              *ngFor="let person of people; let i = index"
-            >
+              *ngFor="let person of people; let i = index">
               {{ person.firstname + " " + person.lastname }}
-              <span class="px-2 text-white bg-blue-400 rounded"
-                >{{ person.takenpoints }}/{{ person.totalpoints }}</span
-              >
+              <span class="px-2 text-white bg-blue-400 rounded">{{ person.takenpoints }}/{{ person.totalpoints }}</span>
             </span>
           </p>
         </div>
-        <div *ngIf="!people.length && search.trim() !== '' && selectedStudent == null && selectedQuiz != null" class="mb-2 ml-2">
+        <div *ngIf="!people.length && search.trim() !== '' && selectedStudent == null && selectedQuiz != null"
+          class="mb-2 ml-2">
           No related search for students who took the quiz.
         </div>
-        <div *ngIf="!people.length && search.trim() !== '' && selectedStudent == null && selectedQuiz == null" class="mb-2 ml-2">
+        <div *ngIf="!people.length && search.trim() !== '' && selectedStudent == null && selectedQuiz == null"
+          class="mb-2 ml-2">
           Please select a quiz in the table.
         </div>
       </ng-container>
@@ -208,21 +170,21 @@
       </ng-template>
 
       <div class="h-full mt-4">
-        <textarea
-          [(ngModel)]="feedback"
+        <textarea [(ngModel)]="feedback"
           class="w-full px-2.5 py-2 mb-3.5 text-sm border border-gray-300 rounded-md poppins"
-          placeholder="Write feedback..."
-        ></textarea>
+          placeholder="Write feedback..."></textarea>
       </div>
       <!-- Send Button -->
       <div class="flex items-center justify-center">
-        <button
-          (click)="sendFeedback()"
-          class="flex items-center px-4 py-2 text-white transition-transform rounded-md shadow-md poppins-b bg-[var(--tertiary-color)] hover:scale-105"
-        >
+        <button (click)="sendFeedback()"
+          class="flex items-center px-4 py-2 text-white transition-transform rounded-md shadow-md poppins-b bg-[var(--tertiary-color)] hover:scale-105">
           <i class="mr-2 fas fa-paper-plane"></i> Send
         </button>
       </div>
     </div>
   </div>
 </body>
+
+
+
+<app-quiz-creation *ngIf="isModalOpen" (closed)="closeQuiz()"></app-quiz-creation>
