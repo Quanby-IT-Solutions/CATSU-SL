@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+
 import { lastValueFrom } from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
 import { APIService } from 'src/app/services/API/api.service';
@@ -11,6 +11,11 @@ import { duration } from 'html2canvas/dist/types/css/property-descriptors/durati
   styleUrls: ['./quiz-creation.component.css'],
 })
 export class QuizCreationComponent implements OnInit {
+  @Output() closed = new EventEmitter<void>();
+
+  closeModal() {
+    this.closed.emit(); // Emit event to notify the parent component to close the modal
+  }
   @Input() myCustomClass: string = '';
   @Input() quiz: any = null;
   @Input() courses: any = [];
@@ -47,7 +52,7 @@ export class QuizCreationComponent implements OnInit {
     },
   ];
 
-  constructor(public activeModal: NgbActiveModal, private API: APIService) {}
+  constructor( private API: APIService) {}
 
 
   // ngOnInit(): void {
@@ -538,7 +543,7 @@ export class QuizCreationComponent implements OnInit {
           await lastValueFrom(this.API.deleteQuizItem(item));
         }
         this.API.successSnackbar('Saved quiz!');
-        this.activeModal.close('update');
+        
       });
     }else{
       this.API.createQuiz(
@@ -596,7 +601,7 @@ export class QuizCreationComponent implements OnInit {
           )}</b>.`,
           this.course
         );
-        this.activeModal.close('update');
+       
       });
     }
 
@@ -609,9 +614,6 @@ export class QuizCreationComponent implements OnInit {
     return this.timelimit !== undefined && this.timelimit > 0;
   }
 
-  closeModal() {
-    this.activeModal.close();
-  }
 
   showAIModal: boolean = false;
   aiPrompt: string = '';
