@@ -1,5 +1,5 @@
 <section *ngIf="!analysisResult" class="flex flex-col items-center justify-center mt-14 px-4">
-  <main class="w-full max-w-2xl overflow-hidden bg-white shadow-lg rounded-3xl">
+  <main class="w-full max-w-2xl overflow-hidden bg-white shadow-boxz rounded-3xl">
     <div class="p-6 text-white bg-gradient-to-r from-amber-500 to-amber-600">
       <h2 class="text-3xl font-bold">
         Speech Analyzer
@@ -17,7 +17,7 @@
         <div class="mt-8">
             <button
               (click)="toggleRecording()"
-              class="w-24 h-24 transition-all duration-300 ease-in-out transform rounded-full shadow-lg focus:outline-none focus:ring-4 focus:ring-offset-2 hover:scale-105"
+              class="w-24 h-24 transition-all duration-300 ease-in-out transform rounded-full  focus:outline-none focus:ring-4 focus:ring-offset-2 hover:scale-105"
               [ngClass]="{'bg-blue-500 hover:bg-blue-600': !recording, 'bg-red-500 hover:bg-red-600': recording, 'opacity-50 cursor-not-allowed': isAnalyzing}"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -34,7 +34,7 @@
 </section>
 
 <!-- Display sentence holder for student -->
-<section *ngIf="getUserAccountType() === 0" class="bg-white p-6 rounded-3xl border border-gray-200 shadow-lg w-full max-w-2xl text-center mx-auto mt-8">
+<section *ngIf="getUserAccountType() === 0" class="bg-white p-6 rounded-3xl border border-gray-200 shadow-boxz w-full max-w-2xl text-center mx-auto mt-8">
   <p class="text-lg text-gray-700 mb-2">Read the sentence below </p>
   <blockquote class="py-4 px-6 text-2xl italic font-semibold text-gray-800 border-l-4 border-amber-500 rounded-md bg-gray-50">
     "{{ sentenceHolderText || 'No sentence available.' }}"
@@ -42,7 +42,7 @@
 </section>
 
 <!-- Display input field for teacher -->
-<section *ngIf="getUserAccountType() === 1" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-lg w-full max-w-2xl mx-auto mt-8">
+<section *ngIf="getUserAccountType() === 1" class="bg-white p-8 rounded-3xl shadow-boxz border border-gray-200  w-full max-w-[90%] mx-auto mt-8">
   <p class="text-lg text-gray-700 mb-4">Enter the sentence for students to practice:</p>
   
   <!-- Input field with enhanced design -->

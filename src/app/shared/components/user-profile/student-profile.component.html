@@ -177,90 +177,97 @@
     </button>
   </div>
 
-  <!-- modal -->
-  <div *ngIf="showModalEmail" [@fadeInOut] class="modal-overlayzz">
-    <div class="modal-contentzz flex flex-col h-2/6 w-4/5 lg:w-1/4">
-      <header class="px-4 py-3 lg:py-4 text-gray-700 flex justify-between items-center">
-        <h1 class="text-xl text-center font-semibold flex-1">Change Email</h1>
-        <button (click)="closeModalEmail()" class="text-blue-500 focus:outline-none">
-          <i class="fas fa-close text-transparent gradient-color bg-clip-text"></i>
-        </button>
-      </header>
+<!-- Email Change Modal -->
+<div *ngIf="showModalEmail" [@fadeInOut] class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+    <header class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-[#1f2e4d]">Change Email</h2>
+      <button (click)="closeModalEmail()" class="text-gray-500 hover:text-[#1f2e4d] transition-colors duration-200 focus:outline-none">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </header>
 
-      <div class="linya"></div>
-
-      <main class="flex-1 overflow-y-scroll p-4">
-        <div class="flex flex-col space-y-4">
-          <div class="flex flex-row">
-            <!-- Email Input -->
-            <h1 class="poppins poppins-b mt-1 text-lg" *ngIf="!editingEmail">
-              <span class="poppins mt-1 text-lg">Email: </span>{{ user.email }}
-            </h1>
-            <img *ngIf="!editingEmail" class="h-5 w-5 ml-5 mt-2 cursor-pointer" src="assets/studentprofile/consedit.png"
-              (click)="toggleEditEmail()" />
+    <main class="p-6">
+      <div class="space-y-4">
+        <div *ngIf="!editingEmail" class="flex items-center justify-between">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Current Email</label>
+            <p class="mt-1 text-lg font-semibold text-[#1f2e4d]">{{ user.email }}</p>
           </div>
+          <button (click)="toggleEditEmail()" class="text-blue-600 hover:text-blue-800 focus:outline-none">
+            <i class="fas fa-edit text-xl"></i>
+          </button>
+        </div>
 
-          <div class="flex flex-row" *ngIf="editingEmail">
-            <label class="poppins mt-1 text-lg">Email:</label>
-            <input class="poppins-b w-3/4 border border-blue-500 px-2 rounded overflow-x-auto text-lg text-gray-700"
-              [(ngModel)]="user.email" />
+        <div *ngIf="editingEmail" class="space-y-2">
+          <label for="newEmail" class="block text-sm font-medium text-gray-700">New Email</label>
+          <input id="newEmail" type="email" [(ngModel)]="user.email" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#1f2e4d] focus:border-[#1f2e4d]" 
+                 placeholder="Enter new email">
+        </div>
+      </div>
+    </main>
+
+    <footer class="px-6 py-4 bg-gray-50 rounded-b-lg">
+      <button *ngIf="editingEmail" (click)="toggleEditEmail()" 
+              class="w-full bg-[#1f2e4d] text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1f2e4d]">
+        Update Email
+      </button>
+    </footer>
+  </div>
+</div>
+
+<!-- Password Change Modal -->
+<div *ngIf="showModalPassword" [@fadeInOut] class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+    <header class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-[#1f2e4d]">Change Password</h2>
+      <button (click)="closeModalPassword()" class="text-gray-500 hover:text-[#1f2e4d] transition-colors duration-200 focus:outline-none">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </header>
+
+    <main class="p-6">
+      <div class="space-y-4">
+        <div *ngIf="!editingPassword" class="flex items-center justify-between">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Current Password</label>
+            <p class="mt-1 text-lg font-semibold text-[#1f2e4d]">••••••••</p>
           </div>
+          <button (click)="toggleEditPassword()" class="text-blue-600 hover:text-blue-800 focus:outline-none">
+            <i class="fas fa-edit text-xl"></i>
+          </button>
+        </div>
 
-          <div class="flex justify-center">
-            <button *ngIf="editingEmail" (click)="toggleEditEmail()" class="bg-green-500 w-48 rounded-xl">
-              <h1 class="text-lg font-semibold text-white p-2">Change Email</h1>
-            </button>
+        <div *ngIf="editingPassword" class="space-y-4">
+          <div>
+            <label for="currentPassword" class="block text-sm font-medium text-gray-700">Current Password</label>
+            <input id="currentPassword" type="password" 
+                   class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#1f2e4d] focus:border-[#1f2e4d]" 
+                   placeholder="Enter current password">
+          </div>
+          <div>
+            <label for="newPassword" class="block text-sm font-medium text-gray-700">New Password</label>
+            <input id="newPassword" type="password" [(ngModel)]="user.password" 
+                   class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#1f2e4d] focus:border-[#1f2e4d]" 
+                   placeholder="Enter new password">
+          </div>
+          <div>
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+            <input id="confirmPassword" type="password" 
+                   class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#1f2e4d] focus:border-[#1f2e4d]" 
+                   placeholder="Confirm new password">
           </div>
         </div>
-      </main>
+      </div>
+    </main>
 
-      <!-- Footer -->
-    </div>
+    <footer class="px-6 py-4 bg-gray-50 rounded-b-lg">
+      <button *ngIf="editingPassword" (click)="toggleEditPassword()" 
+              class="w-full bg-[#1f2e4d] text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1f2e4d]">
+        Update Password
+      </button>
+    </footer>
   </div>
-  <!-- end modal-->
-
-  <!-- modal -->
-  <div *ngIf="showModalPassword" [@fadeInOut] class="modal-overlayzz">
-    <div class="modal-contentzz flex flex-col h-2/6 w-4/5 lg:w-1/4">
-      <header class="px-4 py-3 lg:py-4 text-gray-700 flex justify-between items-center">
-        <h1 class="text-xl text-center font-semibold flex-1">
-          Change Password
-        </h1>
-        <button (click)="closeModalPassword()" class="text-blue-500 focus:outline-none">
-          <i class="fas fa-close text-transparent gradient-color bg-clip-text"></i>
-        </button>
-      </header>
-
-      <div class="linya"></div>
-
-      <main class="flex-1 overflow-y-scroll p-4">
-        <div class="flex flex-col space-y-4">
-          <!-- Email Input -->
-          <div class="flex flex-row">
-            <h1 class="poppins poppins-b mt-1 text-lg" *ngIf="!editingPassword">
-              <span class="poppins mt-1 text-lg">Password: </span>***********
-            </h1>
-            <img *ngIf="!editingPassword" class="h-5 w-5 ml-5 mt-2 cursor-pointer"
-              src="assets/studentprofile/consedit.png" (click)="toggleEditPassword()" />
-            <!-- Password Input -->
-          </div>
-          <input [(ngModel)]="user.password" *ngIf="editingPassword" type="password" placeholder="Password"
-            class="py-2 px-2 border rounded-md focus:outline-none focus:border-blue-500" />
-
-          <!-- Confirm Password Input -->
-
-          <div class="flex justify-center">
-            <button *ngIf="editingPassword" (click)="toggleEditPassword()" class="bg-green-500 w-48 rounded-xl">
-              <h1 class="text-lg font-semibold text-white p-2">
-                Change Password
-              </h1>
-            </button>
-          </div>
-        </div>
-      </main>
-
-      <!-- Footer -->
-    </div>
-  </div>
-  <!-- end modal-->
+</div>
 </body>
