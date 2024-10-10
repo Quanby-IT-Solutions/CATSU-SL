@@ -132,13 +132,16 @@ export class CoursesComponent implements OnInit {
   }
 
   openModal(course: any) {
-    const ref = this.modalService.open(CoursecontentComponent);
+    const ref = this.modalService.open(CoursecontentComponent, {
+      windowClass: 'custom-modal'
+    });
     ref.componentInstance.course = course;
     const obs$ = ref.closed.subscribe(enrolled => {
       if (enrolled) {
         this.getCourses();
       }
       obs$.unsubscribe();
-    })
+    });
   }
+  
 }

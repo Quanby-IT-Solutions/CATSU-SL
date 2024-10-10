@@ -1,4 +1,4 @@
-<button class="w-full max-w-lg mx-auto overflow-hidden transition-transform transform bg-white border border-gray-200 rounded-lg shadow-md hover:scale-105 hover:shadow-xl h-[500px]">
+<div class="w-full max-w-lg mx-auto overflow-hidden transition-transform transform bg-white border border-gray-200 rounded-lg shadow-md hover:scale-105 hover:shadow-xl h-[500px]">
   <!-- Image Section -->
   <div class="relative h-[200px]">
     <img
@@ -15,26 +15,19 @@
     <!-- Lecture Title -->
     <h3 class="text-lg font-bold text-center text-gray-800 truncate">{{lecture}}</h3>
 
-    <!-- Difficulty Rating -->
-    <!-- <div class="flex items-center justify-center space-x-1">
-      <ng-container *ngFor="let i of [1, 2, 3, 4, 5]">
-        <span class="text-xl text-amber-400" [ngClass]="{'text-gray-300': difficulty < i}">⭐️</span>
-      </ng-container>
-    </div> -->
-
     <!-- Description Section -->
-    <div class="p-3 bg-gray-100 rounded-md h-[60px]">
-      <p class="text-sm text-gray-700 line-clamp-2">{{description}}</p>
+    <div class="p-3 bg-gray-100 rounded-md h-fit">
+      <p class="text-sm text-gray-700 line-clamp-3">{{description}}</p>
     </div>
 
     <!-- Target Audience Section -->
     <div class="flex flex-wrap items-center justify-center gap-1">
       <span *ngFor="let audience of targetAudience" class="max-w-[100px] px-2 py-1 text-xs text-[var(--tertiary-color)] truncate bg-amber-100 rounded-full">
-        {{audience}}
+        {{audience ? audience : 'N/A'}}
       </span>
-      <ng-container *ngIf="targetAudience.length === 0">
-        <span class="text-sm text-gray-500">N/A</span>
-      </ng-container>
+      <!-- <ng-container *ngIf="targetAudience.length === 0">
+        <span class="text-sm text-gray-500"></span>
+      </ng-container> -->
     </div>
   </div>
 
@@ -52,4 +45,4 @@
       <p class="ml-2 text-xs font-semibold truncate text-lime-700">ENROLLED</p>
     </div>
   </div>
-</button>
+</div>

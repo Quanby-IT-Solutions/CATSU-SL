@@ -14,3 +14,21 @@
     color: #000; /* Change this color to your desired text color */
   }
   
+
+  .custom-modal .modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Ensures the modal centers vertically */
+  }
+  
+  .custom-modal .modal-content {
+    margin: 0; /* Remove default margins */
+  }
+  
+  .custom-modal .modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  

@@ -5,7 +5,7 @@ body {
 }
 
 .wrapbox {
-  width: 97%;
+  width: 100%;
   height: 300px;
   background-color: #ffffff;
   border-radius: 12px;
@@ -28,10 +28,10 @@ body {
   z-index: 1;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
+  width: 100dvw;
+  height: 100dvh;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
@@ -350,4 +350,12 @@ body {
   .btn-container button {
     font-size: 12px;
   }
+}
+
+
+.signature-pad {
+  border: 1px solid #ccc;
+  touch-action: none;
+  width: 100%;
+  height: 300px; /* Adjust as needed */
 }

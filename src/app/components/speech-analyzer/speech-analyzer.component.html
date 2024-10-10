@@ -1,5 +1,5 @@
 <section *ngIf="!analysisResult" class="flex flex-col items-center justify-center mt-14 px-4">
-  <main class="w-full max-w-2xl overflow-hidden bg-white shadow-lg rounded-3xl">
+  <main class="w-full max-w-2xl overflow-hidden bg-white shadow-boxz rounded-3xl">
     <div class="p-6 text-white bg-gradient-to-r from-amber-500 to-amber-600">
       <h2 class="text-3xl font-bold">
         Speech Analyzer
@@ -9,29 +9,58 @@
 
     <div class="p-8">
       <section class="text-center">
-          <p class="mb-4 text-gray-600">Click the mic and read the sentence</p>
-          <blockquote class="py-2 pl-4 mb-8 text-xl italic font-semibold text-gray-800 border-l-4 border-amber-500">
-            "{{ speechSample }}"
-          </blockquote>
+        <p class="mb-4 text-gray-600">Click the mic and read the sentence</p>
+        <blockquote class="py-2 pl-4 mb-8 text-xl italic font-semibold text-gray-800 border-l-4 border-amber-500">
+          "{{ speechSample }}"
+        </blockquote>
 
         <div class="mt-8">
-            <button
-              (click)="toggleRecording()"
-              class="w-24 h-24 transition-all duration-300 ease-in-out transform rounded-full shadow-lg focus:outline-none focus:ring-4 focus:ring-offset-2 hover:scale-105"
-              [ngClass]="{'bg-blue-500 hover:bg-blue-600': !recording, 'bg-red-500 hover:bg-red-600': recording, 'opacity-50 cursor-not-allowed': isAnalyzing}"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-            </button>
-            <p class="mt-4 text-sm text-gray-600">
-              {{ recording ? 'Recording... Click to stop' : 'Click to start recording' }}
-            </p>
+          <button (click)="toggleRecording()"
+            class="w-24 h-24 transition-all duration-300 ease-in-out transform rounded-full  focus:outline-none focus:ring-4 focus:ring-offset-2 hover:scale-105"
+            [ngClass]="{'bg-blue-500 hover:bg-blue-600': !recording, 'bg-red-500 hover:bg-red-600': recording, 'opacity-50 cursor-not-allowed': isAnalyzing}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-white" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+          </button>
+          <p class="mt-4 text-sm text-gray-600">
+            {{ recording ? 'Recording... Click to stop' : 'Click to start recording' }}
+          </p>
         </div>
       </section>
     </div>
   </main>
 </section>
+
+<!-- Display sentence holder for student -->
+<section *ngIf="getUserAccountType() === 0"
+  class="bg-white p-6 rounded-3xl border border-gray-200 shadow-boxz w-full lg:max-w-2xl max-w-[90%] text-center mx-auto mt-8">
+  <p class="text-lg text-gray-700 mb-2">Read the sentence below </p>
+  <blockquote
+    class="py-4 px-6 text-2xl italic font-semibold text-gray-800 border-l-4 border-amber-500 rounded-md bg-gray-50">
+    "{{ sentenceHolderText || 'No sentence available.' }}"
+  </blockquote>
+</section>
+
+<!-- Display input field for teacher -->
+<section *ngIf="getUserAccountType() === 1"
+  class="bg-white p-8 rounded-3xl shadow-boxz border border-gray-200  lg:max-w-2xl max-w-[90%] mx-auto mt-8">
+  <p class="text-lg text-gray-700 mb-4">Enter the sentence for students to practice:</p>
+
+  <!-- Input field with enhanced design -->
+  <input type="text" [(ngModel)]="sentenceHolderText"
+    class="w-full p-4 text-lg border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none"
+    placeholder="Type a sentence..." />
+
+  <!-- Save button -->
+  <button (click)="saveSentence()"
+    class="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-white transition duration-200">
+    Save Sentence
+  </button>
+</section>
+
+
 
 <section *ngIf="analysisResult && analysisResult.length > 0" class="w-full mx-auto px-4 py-8">
   <header class="w-full">
@@ -40,10 +69,12 @@
         <div class="flex flex-col flex-1">
           <h1 class="text-2xl font-extrabold text-black">Overall Speaking Score</h1>
           <p class="mt-1 text-lg">
-            Your speaking proficiency level is <span class="font-extrabold text-amber-500">{{ averageScoreLabel }}</span>. Keep it up!
+            Your speaking proficiency level is <span class="font-extrabold text-amber-500">{{ averageScoreLabel
+              }}</span>. Keep it up!
           </p>
           <p class="mt-1 text-sm text-neutral-500">
-            Your pronunciation skills are at the {{ averageScoreLabel.toLowerCase() }} level. You have a good command of the language sounds and intonation patterns.
+            Your pronunciation skills are at the {{ averageScoreLabel.toLowerCase() }} level. You have a good command of
+            the language sounds and intonation patterns.
           </p>
         </div>
       </div>
@@ -76,12 +107,24 @@
         <article *ngFor="let result of analysisResult" class="flex-1 p-4 bg-white shadow-sm rounded-2xl">
           <div class="flex flex-col items-center text-center">
             <ng-container [ngSwitch]="result.area">
-              <img *ngSwitchCase="'pronunciation'" loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6324a2aa39d53bb6ea1d5725c835799f148e798ab95ea51dc6b6e54dc155e684?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea" alt="Pronunciation Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchCase="'intonation'" loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/d3b7c11787c62fdc9dc8966f50aa73735fe1059a894b9694189a0eff1fa1d97e?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea" alt="Intonation Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchCase="'fluency'" loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/3ca7817d9c0f2d266e321face77ac9ddf391628c7af0f7883cf237e06c016429?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea" alt="Fluency Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchCase="'grammar'" loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/65c3e23cab9731ca08ca0da2159aef5f0fe3d9bd04ca1b19f2f6f3523fa880c5?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea" alt="Grammar Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchCase="'vocabulary'" loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/6324a2aa39d53bb6ea1d5725c835799f148e798ab95ea51dc6b6e54dc155e684?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea" alt="Vocabulary Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchDefault loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/placeholder_icon?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea" alt="{{ result.area }} Icon" class="w-[40px] h-[40px] mb-2" />
+              <img *ngSwitchCase="'pronunciation'" loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6324a2aa39d53bb6ea1d5725c835799f148e798ab95ea51dc6b6e54dc155e684?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
+                alt="Pronunciation Icon" class="w-[40px] h-[40px] mb-2" />
+              <img *ngSwitchCase="'intonation'" loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/d3b7c11787c62fdc9dc8966f50aa73735fe1059a894b9694189a0eff1fa1d97e?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
+                alt="Intonation Icon" class="w-[40px] h-[40px] mb-2" />
+              <img *ngSwitchCase="'fluency'" loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/3ca7817d9c0f2d266e321face77ac9ddf391628c7af0f7883cf237e06c016429?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
+                alt="Fluency Icon" class="w-[40px] h-[40px] mb-2" />
+              <img *ngSwitchCase="'grammar'" loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/65c3e23cab9731ca08ca0da2159aef5f0fe3d9bd04ca1b19f2f6f3523fa880c5?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
+                alt="Grammar Icon" class="w-[40px] h-[40px] mb-2" />
+              <img *ngSwitchCase="'vocabulary'" loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6324a2aa39d53bb6ea1d5725c835799f148e798ab95ea51dc6b6e54dc155e684?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
+                alt="Vocabulary Icon" class="w-[40px] h-[40px] mb-2" />
+              <img *ngSwitchDefault loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/placeholder_icon?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
+                alt="{{ result.area }} Icon" class="w-[40px] h-[40px] mb-2" />
             </ng-container>
             <h3 class="text-sm font-bold">{{ result.area | titlecase }}</h3>
             <p class="mb-2 text-xs">{{ getLabel(result.score) }}</p>
@@ -113,8 +156,12 @@
       <aside class="flex flex-col w-[35%] max-md:w-full items-center">
         <p class="text-xl font-medium text-black text-center">You got a score of</p>
         <div class="flex items-center justify-center relative w-[185px] h-[185px] mt-4">
-          <div class="flex absolute inset-0 z-0 w-full h-full rounded-full border border-black border-solid bg-slate-800"></div>
-          <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/49f57868fa1e9fdc0be298d32f9a291178d6fa2fbb94aa644e8d2621040ffa5e?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea" alt="" class="object-contain absolute inset-0 z-0 w-full h-full rounded-full" />
+          <div
+            class="flex absolute inset-0 z-0 w-full h-full rounded-full border border-black border-solid bg-slate-800">
+          </div>
+          <img loading="lazy"
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/49f57868fa1e9fdc0be298d32f9a291178d6fa2fbb94aa644e8d2621040ffa5e?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
+            alt="" class="object-contain absolute inset-0 z-0 w-full h-full rounded-full" />
           <div class="flex flex-col items-center justify-center z-10 text-center">
             <p class="text-5xl text-amber-500">{{ averageScore }}%</p>
             <p class="text-base text-white">{{ averageScoreLabel }}</p>
@@ -124,4 +171,3 @@
     </div>
   </div>
 </section>
-
