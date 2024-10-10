@@ -1,11 +1,12 @@
 #Step 1: Build the Angular app
-FROM node:18 as build
+FROM node:alpine as build
 
 WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install --only=production
+RUN npm install -g @angular/cli
 
 # Copy the rest of the application code
 COPY . .
