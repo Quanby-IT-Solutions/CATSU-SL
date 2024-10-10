@@ -5,8 +5,9 @@ WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install
 RUN npm install -g @angular/cli
+RUN npm install --save-dev @angular-devkit/build-angular
 
 # Copy the rest of the application code
 COPY . .
