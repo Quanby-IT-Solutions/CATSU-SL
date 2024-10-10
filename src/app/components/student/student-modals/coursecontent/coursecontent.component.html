@@ -1,214 +1,110 @@
-<!-- <style>
-    .modal-content.custom-modal-content {
-        max-height: 80vh; /* Adjust as needed */
-        overflow-y: auto;
-    }
-
-    .container {
-        padding: 20px;
-    }
-
-    .title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .contentwrap {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .flexwrap {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-
-    .midwrap, .btnwrap, .ratewrap {
-        flex: 1;
-        margin: 10px;
-    }
-
-    .detailswrap, .lessonwrap {
-        margin-top: 20px;
-    }
-
-    .lessoncontainer {
-        max-height: 170px; /* Adjust as needed */
-        overflow-y: auto;
-    }
-
-    .close-button {
-        background: none;
-        border: none;
-        font-size: 1.5em;
-        cursor: pointer;
-    }
-
-    .poppins-b {
-        font-family: 'Poppins', sans-serif;
-        font-weight: bold;
-    }
-
-    .poppins {
-        font-family: 'Poppins', sans-serif;
-    }
-</style>
-
-<div class="modal-content custom-modal-content">
-    <div class="container">
-        <div class="title">
-            <h1 class="poppins-b">{{course.course}}</h1>
-            <button class="close-button" (click)="close()">&#10006;</button>
+<div class="h-[90dvh] w-full max-w-[800px] flex flex-col mx-auto my-auto bg-white rounded-lg p-2 shadow-lg relative">
+    <!-- Close button -->
+    <div class="w-full p-4 bg-white">
+        <div class="title flex justify-between items-center text-left text-[var(--primary-color)] text-2xl font-semibold">
+            <p class="font-bold font-poppins {{course.course.length > 10 ? 'line-clamp-1' : ''}}">{{course.course}}</p>
         </div>
+        <button class="text-2xl border-none absolute top-2 right-2 cursor-pointer close-button bg-none bg-white z-[50]"
+            (click)="close()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24"
+                stroke="var(--secondary-color)" stroke-width="4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+    <div class="overflow-y-auto h-full w-full">
+        <div class="h-full w-full p-2 pb-4 space-y-6">
+            <!-- Title and Close Button -->
 
-        <div class="contentwrap">
-            <img class="object-cover w-full h-full vid" [src]=" course?.image ? getUrl(course.image) : 'assets/login/logonew.png'">
-            <div class="flexwrap">
-                <div class="midwrap">
-                    <div class="buttonwrap">
-                        <div class="desc">
-                            <div class="textwrap poppins">
-                                <img src="assets/enrollcourse/User.png" alt="">
-                                <p class="ml-2"> Creator: </p>
-                                <p class="ml-1 name">{{course.firstname + ' ' + course.lastname}}</p>
+
+            <!-- Content Section -->
+            <div class="flex flex-col gap-6 contentwrap">
+                <!-- Image Section -->
+                <div class="w-full">
+                    <img class="w-full h-[300px] object-cover shadow-md rounded-md"
+                        [src]="course?.image ? getUrl(course.image) : 'https://img.freepik.com/free-vector/online-tutorials-concept_52683-37480.jpg'">
+                </div>
+
+                <!-- Creator, Lessons, and Language Info -->
+                <div class="flex flex-wrap justify-between gap-6">
+                    <div class="flex-1 space-y-4">
+                        <!-- Information Card -->
+                        <div class="p-4 space-y-2 bg-white rounded-md shadow-md">
+                            <div class="flex items-center text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[var(--primary-color)]"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5.121 17.804A7.002 7.002 0 0112 5a7.002 7.002 0 016.879 12.804M12 15v6m0 0h4m-4 0H8" />
+                                </svg>
+                                <p class="font-medium">Creator: <span
+                                        class="font-semibold text-[var(--tertiary-color)]">{{course.firstname + ' ' +
+                                        course.lastname}}</span></p>
                             </div>
-                            <div class="textwrap poppins">
+                            <div class="flex items-center text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[var(--primary-color)]"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3M5 11h14M7 16h10M7 20h10" />
+                                </svg>
+                                <p class="font-medium">Lessons: <span class="font-semibold">x
+                                        {{course.lessoncount}}</span>
+                                </p>
                             </div>
-                            <div class="textwrap poppins">
-                                <img src="assets/enrollcourse/Chart.png" alt="">
-                                <p class="ml-2"> Lessons: </p>
-                                <p class="ml-1 name"> x {{course.lessoncount}}</p>
+                            <div class="flex items-center text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[var(--primary-color)]"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 7l6 6 4-4 8 8" />
+                                </svg>
+                                <p class="font-medium">Objectives: <span class="font-semibold">{{course.details}}
+                                        {{course.objectives}}</span></p>
                             </div>
-                            <div class="textwrap poppins">
-                                <img src="assets/enrollcourse/Document.png" alt="">
-                                <p class="ml-2"> Language: </p>
-                                <p class="ml-1 name">{{course.Objectives}}</p>
-                            </div>
-                            <div class="descfooter"></div>
+                        </div>
+
+                        <!-- Enroll Button and Input -->
+                        <div class="flex flex-col gap-3">
+                            <input [(ngModel)]="courseCode"
+                                class="mt-3 h-10 w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-[var(--tertiary-color)] font-poppins"
+                                placeholder="Course code :" type="text">
+
+                            <button (click)="enroll()"
+                                class="font-poppins bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary-color)] w-full h-12 text-white rounded-md hover:shadow-md transition-shadow duration-200">Enroll
+                                Now</button>
                         </div>
                     </div>
-                    <div class="btnwrap">
-                        <button (click)="enroll()" class="poppins">Enroll Now</button>
-                        <input [(ngModel)]="courseCode" class="h-8 p-2 mt-3 ml-10 rounded-md w-52 poppins" placeholder="Course code :" type="text">
+                </div>
+
+                <!-- Details Section -->
+                <div class="space-y-4 detailswrap">
+                    <div class="details font-poppins text-xl font-bold text-[var(--tertiary-color)]">
+                        <h1>Details</h1>
                     </div>
+                    <p #detailsContent class="detailscontent max-h-[100px] overflow-hidden text-gray-600"
+                        [ngClass]="{ 'show-more': showFullContent }">{{course.details ? course.details : '[NONE]'}}</p>
+                    <button *ngIf="showReadMoreButton" (click)="toggleReadMore()"
+                        class="text-[var(--tertiary-color)] font-medium">{{ showFullContent ? 'Show less' : 'Read more'
+                        }}</button>
                 </div>
-                <div class="ratewrap">
-                    <ngb-rating class="rate" [rate]="course.complexity"></ngb-rating>
-                    <span>
-                        <p *ngIf="course.complexity <= 2" class="level">(Beginner)</p>
-                        <p *ngIf="course.complexity < 4 && course.complexity > 2" class="level">(Intermediate)</p>
-                        <p *ngIf="course.complexity >= 4" class="level">(Expert)</p>
-                    </span>
-                </div>
-            </div>
-            <div class="detailswrap">
-                <div class="details poppins-b">
-                    <h1>Details</h1>
-                </div>
-                <p class="detailscontent" [ngClass]="{ 'show-more': showFullContent }">{{course.details ? course.details : '[NONE]'}}</p>
-                <button (click)="toggleReadMore()">{{ showFullContent ? 'Show less' : 'Read more' }}</button>
-            </div>
-            <div class="lessonwrap">
-                <div class="lesson poppins-b">
-                    <h1>Lessons</h1>
-                </div>
-                <div *ngFor="let lesson of lessons; let i = index" class="lessoncontainer">
-                    <div *ngIf="lessons.length == 0">
-                        Currently, this course has no lessons.
+
+                <!-- Lessons Section -->
+                <div class="space-y-4 lessonwrap">
+                    <div class="lesson font-poppins text-xl font-bold text-[var(--tertiary-color)]">
+                        <h1>Lessons</h1>
                     </div>
-                    <div  class="lessontitle">
-                        <div class="thislesson">Lesson {{i+1}} : <span class="poppins-b">{{lesson.title}}</span></div>
-                        <div class="lessontext">
-                            <p>{{lesson.details}}</p>
+                    <div *ngFor="let lesson of lessons; let i = index" class="p-4 mb-4 bg-white rounded-md shadow-md">
+                        <div *ngIf="lessons.length == 0" class="text-center text-gray-500">
+                            Currently, this course has no lessons.
+                        </div>
+                        <div class="space-y-2 lessontitle">
+                            <div class="thislesson text-lg text-[var(--primary-color)]">Lesson {{i+1}}: <span
+                                    class="font-semibold">{{lesson.title}}</span></div>
+                            <div class="text-sm text-gray-600 lessontext">
+                                <p>{{lesson.details}}</p>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-</div> -->
-<div class="modal-content custom-modal-content max-h-[80vh] overflow-y-auto bg-white rounded-lg p-6 shadow-lg w-[700px] mx-auto">
-  <div class="container p-4 space-y-6">
-      <!-- Title and Close Button -->
-      <div class="title flex justify-between items-center text-left text-[var(--primary-color)] text-2xl font-semibold">
-          <h1 class="font-bold font-poppins">{{course.course}}</h1>
-          <button class="text-2xl border-none cursor-pointer close-button bg-none" (click)="close()">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="var(--secondary-color)" stroke-width="4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-          </button>
-      </div>
-
-      <!-- Content Section -->
-      <div class="flex flex-col gap-6 contentwrap">
-          <!-- Image Section -->
-          <div class="w-full">
-              <img class="w-full h-[300px] object-cover shadow-md rounded-md" [src]="course?.image ? getUrl(course.image) : 'assets/login/logonew.png'">
-          </div>
-
-          <!-- Creator, Lessons, and Language Info -->
-          <div class="flex flex-wrap justify-between gap-6">
-              <div class="flex-1 space-y-4">
-                  <!-- Information Card -->
-                  <div class="p-4 space-y-2 bg-white rounded-md shadow-md">
-                      <div class="flex items-center text-sm">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[var(--primary-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A7.002 7.002 0 0112 5a7.002 7.002 0 016.879 12.804M12 15v6m0 0h4m-4 0H8" />
-                          </svg>
-                          <p class="font-medium">Creator: <span class="font-semibold text-[var(--tertiary-color)]">{{course.firstname + ' ' + course.lastname}}</span></p>
-                      </div>
-                      <div class="flex items-center text-sm">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[var(--primary-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M5 11h14M7 16h10M7 20h10" />
-                          </svg>
-                          <p class="font-medium">Lessons: <span class="font-semibold">x {{course.lessoncount}}</span></p>
-                      </div>
-                      <div class="flex items-center text-sm">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[var(--primary-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l6 6 4-4 8 8" />
-                          </svg>
-                          <p class="font-medium">Objectives: <span class="font-semibold">{{course.details}} {{course.objectives}}</span></p>
-                      </div>
-                  </div>
-
-                  <!-- Enroll Button and Input -->
-                  <div class="flex flex-col gap-3">
-                      <input [(ngModel)]="courseCode" class="mt-3 h-10 w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-[var(--tertiary-color)] font-poppins" placeholder="Course code :" type="text">
-
-                      <button (click)="enroll()" class="font-poppins bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary-color)] w-full h-12 text-white rounded-md hover:shadow-md transition-shadow duration-200">Enroll Now</button>
-                  </div>
-              </div>
-          </div>
-
-          <!-- Details Section -->
-          <div class="space-y-4 detailswrap">
-              <div class="details font-poppins text-xl font-bold text-[var(--tertiary-color)]">
-                  <h1>Details</h1>
-              </div>
-              <p #detailsContent class="detailscontent max-h-[100px] overflow-hidden text-gray-600" [ngClass]="{ 'show-more': showFullContent }">{{course.details ? course.details : '[NONE]'}}</p>
-              <button *ngIf="showReadMoreButton" (click)="toggleReadMore()" class="text-[var(--tertiary-color)] font-medium">{{ showFullContent ? 'Show less' : 'Read more' }}</button>
-          </div>
-
-          <!-- Lessons Section -->
-          <div class="space-y-4 lessonwrap">
-              <div class="lesson font-poppins text-xl font-bold text-[var(--tertiary-color)]">
-                  <h1>Lessons</h1>
-              </div>
-              <div *ngFor="let lesson of lessons; let i = index" class="p-4 mb-4 bg-white rounded-md shadow-md">
-                  <div *ngIf="lessons.length == 0" class="text-center text-gray-500">
-                      Currently, this course has no lessons.
-                  </div>
-                  <div class="space-y-2 lessontitle">
-                      <div class="thislesson text-lg text-[var(--primary-color)]">Lesson {{i+1}}: <span class="font-semibold">{{lesson.title}}</span></div>
-                      <div class="text-sm text-gray-600 lessontext">
-                          <p>{{lesson.details}}</p>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
 </div>
