@@ -1,6 +1,6 @@
 <body>
-  <div class="main">
-    <div class="wrapbox">
+  <div class="main w-full flex flex-col gap-8">
+    <div class="wrapbox w-full">
       <div class="top">
         <div class="imageProfile">
           <img src="{{ user.profile ? getURL(user.profile) : noProfile() }}" class="object-cover" alt="Profile Image" />
@@ -14,7 +14,6 @@
             <img src="assets/studentprofile/consedit.png" class="cursor-pointer" alt="Edit Icon" />
           </label>
         </div>
-
       </div>
       <div class="buttom justify-between pl-1">
         <!-- <div class="bio">
@@ -53,9 +52,6 @@
               <i
                 class="bx bx-save text-3xl select-none gradient-color text-transparent bg-clip-text !font-extralight"></i>
             </div>
-
-
-
           </div>
           <div class="thisrespo">
             <div *ngIf="student" class="location">
@@ -74,134 +70,110 @@
       </div>
     </div>
 
-    <div class="infowrap mt-4">
-      <div class="personal">
-        <div clas="newflex ">
-          <table>
-            <tr *ngIf="student">
-              <td class="flex">
-                <img class="imageicon" src="assets/studentprofile/Frame.png" alt="" />
-                <h1 class="poppins ml-2">DATE OF BIRTH:</h1>
-              </td>
-              <td>
-                <h1 class="ml-4 poppins">{{ parseDate(user.birthdate) }}</h1>
-              </td>
-            </tr>
-            <tr *ngIf="student">
-              <td class="flex mt-2">
-                <img class="imageicon" src="assets/studentprofile/Frame (1).png" alt="" />
-                <h1 class="poppins ml-2">SEX:</h1>
-              </td>
-              <td>
-                <h1 class="ml-4 poppins mt-2">{{ user.gender }}</h1>
-              </td>
-            </tr>
-            <tr *ngIf="student">
-              <td class="flex mt-2">
-                <img class="imageicon" src="assets/studentprofile/Frame (2).png" alt="" />
-                <h1 class="poppins ml-2">NATIONALITY:</h1>
-              </td>
-              <td>
-                <h1 class="ml-4 poppins mt-2">{{ user.nationality }}</h1>
-              </td>
-            </tr>
-            <tr *ngIf="student">
-              <td class="flex mt-2">
-                <img class="imageicon" src="assets/studentprofile/Frame (3).png" alt="" />
-                <h1 class="poppins ml-2">ADDRESS:</h1>
-              </td>
-              <td>
-                <h1 class="ml-4 poppins mt-2">{{ user.address }}</h1>
-              </td>
-            </tr>
-            <tr *ngIf="student">
-              <td class="flex mt-2">
-                <img class="imageicon" src="assets/studentprofile/Frame (5).png" alt="" />
-                <h1 class="poppins ml-2">EMAIL ADDRESS:</h1>
-              </td>
-              <td>
-                <h1 class="ml-4 poppins mt-2">{{ user.email }}</h1>
-              </td>
-            </tr>
-            <tr *ngIf="teacher">
-              <td class="flex mt-2">
-                <img class="imageicon" src="assets/studentprofile/Frame (5).png" alt="" />
-                <h1 class="poppins ml-2">EMAIL ADDRESS:</h1>
-              </td>
-              <td>
-                <h1 class="ml-4 poppins mt-2">{{ user.email }}</h1>
-              </td>
-            </tr>
-            <tr *ngIf="teacher || principal">
-              <td class="mt-2">
-                <br>
-                <!-- Upload E-Sig -->
-                <H1 class="font-sans">E-Signature:</H1>
-                <div
-                  class="relative bg-transparent border-solid border-2 border-grey-600 w-44 rounded-xl overflow-hidden">
-                  <button (click)="openSignatureModal()" *ngIf="teacher || principal"
-                    class="w-full h-full cursor-pointer">
-                    <img [src]="getUserSignature() || 'assets/Esig.png'"
-                      class="w-full h-full object-cover max-w-[200px] max-h-28" />
-                    <span *ngIf="!imageUrl">Click to add signature</span>
-                  </button>
-                </div>
-
-                <!-- Signature Modal -->
-                <!-- Signature Modal -->
-                <div *ngIf="showSignatureModal" class="modal w-full">
-                  <div class="w-full h-full flex justify-center items-center">
-                    <div class="w-full mx-auto flex flex-col gap-4 bg-white rounded-xl relative max-w-[95%]">
-                      <span><i
-                          class="fas fa-times text-black hover:text-red-500 duration-300 ease-in-out text-2xl cursor-pointer absolute top-1 right-2"
-                          (click)="closeSignatureModal()"></i></span>
-                      <div class="w-full flex justify-center items-center p-4">
-                        <h2 class="title italic font-serif uppercase text-5xl font-bold text-center">E-Signature</h2>
-                      </div>
-
-                      <canvas #signPadCanvas width="400" height="200" class="border border-gray-500 mx-auto"></canvas>
-                      <div class="w-full flex justify-center items-center">
-                        <span class="title">Write the signature and click on Save</span>
-                      </div>
-                      <div class="w-full flex gap-2 pb-8 justify-center items-center">
-                        <button class="w-32 btn btn-success" color="secondary" (click)="saveSignPad()">Save</button>
-                        <button class="w-32 btn btn-danger" (click)="clearSignPad()">Clear</button>
-                        <button class="w-32 btn btn-warning" (click)="undoSign()">Undo</button>
-
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr *ngIf="admin">
-              <td class="flex mt-2">
-                <img class="imageicon" src="assets/studentprofile/Frame (5).png" alt="" />
-                <h1 class="poppins ml-2">EMAIL ADDRESS:</h1>
-              </td>
-              <td>
-                <h1 class="ml-4 poppins mt-2">{{ user.email }}</h1>
-              </td>
-            </tr>
-          </table>
+    <div class="bg-white p-8 rounded-xl border border-primary-2 w-full">
+      <h2 class="text-3xl font-bold mb-8 text-[#1f2e4d] border-b-2 border-[#1f2e4d] pb-4">Personal Information</h2>
+      <div class="space-y-6">
+        <div *ngIf="student" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+            <div class="bg-[#1f2e4d] p-2 rounded-full">
+              <img class="w-6 h-6 filter invert" src="assets/studentprofile/Frame.png" alt="DOB icon" />
+            </div>
+            <div>
+              <span class="font-semibold text-[#1f2e4d] block">Date of Birth</span>
+              <span class="text-black">{{ parseDate(user.birthdate) }}</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+            <div class="bg-[#1f2e4d] p-2 rounded-full">
+              <img class="w-6 h-6 filter invert" src="assets/studentprofile/Frame (1).png" alt="Gender icon" />
+            </div>
+            <div>
+              <span class="font-semibold text-[#1f2e4d] block">Sex</span>
+              <span class="text-black">{{ user.gender }}</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+            <div class="bg-[#1f2e4d] p-2 rounded-full">
+              <img class="w-6 h-6 filter invert" src="assets/studentprofile/Frame (2).png" alt="Nationality icon" />
+            </div>
+            <div>
+              <span class="font-semibold text-[#1f2e4d] block">Nationality</span>
+              <span class="text-black">{{ user.nationality }}</span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+            <div class="bg-[#1f2e4d] p-2 rounded-full">
+              <img class="w-6 h-6 filter invert" src="assets/studentprofile/Frame (3).png" alt="Address icon" />
+            </div>
+            <div>
+              <span class="font-semibold text-[#1f2e4d] block">Address</span>
+              <span class="text-black">{{ user.address }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+          <div class="bg-[#1f2e4d] p-2 rounded-full">
+            <img class="w-6 h-6 filter invert" src="assets/studentprofile/Frame (5).png" alt="Email icon" />
+          </div>
+          <div>
+            <span class="font-semibold text-[#1f2e4d] block">Email Address</span>
+            <span class="text-black">{{ user.email }}</span>
+          </div>
+        </div>
+      </div>
+    
+      <div *ngIf="teacher || principal" class="mt-8">
+        <div class="relative bg-gray-50 border-2 border-[#1f2e4d] w-full h-36 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+          <button (click)="openSignatureModal()"
+            class="w-full h-full text-[#1f2e4d] hover:bg-[#1f2e4d] hover:text-white transition-colors">
+            <img [src]="getUserSignature() || 'assets/Esig.png'" class="w-full h-full object-cover" />
+            <span *ngIf="!imageUrl" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
+              Click to add signature
+            </span>
+          </button>
         </div>
       </div>
     </div>
-  </div>
-  <div class="btn-container flex justify-center items-center gap-3 my-4">
 
+    <!-- Signature Modal -->
+    <div *ngIf="showSignatureModal" class="modal w-full">
+      <div class="w-full h-full flex justify-center items-center">
+        <div class="w-full mx-auto flex flex-col gap-4 bg-white rounded-xl relative max-w-[90%]">
+          <span><i
+              class="fas fa-times text-black hover:text-red-500 duration-300 ease-in-out text-2xl cursor-pointer absolute top-1 right-2"
+              (click)="closeSignatureModal()"></i></span>
+          <div class="w-full flex justify-center items-center p-4">
+            <h2 class="title uppercase text-3xl italic font-serif font-semibold text-center">E-Signature</h2>
+          </div>
+
+          <canvas #signPadCanvas width="400" height="200" class="border border-gray-500 mx-auto"></canvas>
+          <div class="w-full flex justify-center items-center">
+            <span class="title">Write the signature and click on Save</span>
+          </div>
+          <div class="w-full flex gap-2 pb-8 justify-center items-center">
+            <button class="w-32 btn btn-success" color="secondary" (click)="saveSignPad()">Save</button>
+            <button class="w-32 btn btn-danger" (click)="clearSignPad()">Clear</button>
+            <button class="w-32 btn btn-warning" (click)="undoSign()">Undo</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="btn-container flex justify-center items-center gap-3 my-4 p-4 bg-white rounded-xl shadow-boxz">
     <button *ngIf="teacher" (click)="viewGrades()"
-      class="bg-transparent border-solid border-2 border-blue-500 w-44 rounded-xl">
-      <h1 class="text-lg font-semibold text-blue-500 p-2">View Grades</h1>
+      class="bg-transparent border-solid border-2 border-blue-500 w-36 rounded-xl">
+      <h1 class="text-sm font-semibold text-blue-500 p-2">View Grades</h1>
     </button>
 
     <button (click)="openModalEmail()"
-      class="bg-transparent border-solid border-2 border-green-500 shadow-sm w-44 rounded-xl">
-      <h1 class="text-lg font-semibold text-green-500 p-2">Change Email</h1>
+      class="bg-transparent border-solid border-2 border-green-500 shadow-sm w-36 rounded-xl">
+      <h1 class="text-sm font-semibold text-green-500 p-2">Change Email</h1>
     </button>
 
-    <button (click)="openModalPassword()" class="bg-red-500 w-44 rounded-xl">
-      <h1 class="text-lg font-semibold text-white p-2">Change Password</h1>
+    <button (click)="openModalPassword()" class="bg-red-500 w-36 rounded-xl">
+      <h1 class="text-sm font-semibold text-white p-2">Change Password</h1>
     </button>
   </div>
 
