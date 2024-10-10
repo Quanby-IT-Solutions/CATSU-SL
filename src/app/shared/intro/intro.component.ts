@@ -86,14 +86,14 @@ export class IntroComponent implements AfterViewInit {
     let top = document.documentElement.scrollTop;
     let delta = this.lastPos - top;
     this.lastPos = top;
-  
+
     this.galers.forEach((galer, i) => {
       this.zVals[i] += delta * -6.1;
       let transform = `translateZ(${this.zVals[i]}px)`;
       let opacity = this.zVals[i] < Math.abs(this.zSpacing) / 1.8 ? 1 : 0;
       this.renderer.setAttribute(galer, 'style', `transform: ${transform}; opacity: ${opacity}`);
     });
-  
+
     const windowHeight = window.innerHeight;
     const scrollY = window.scrollY;
     const bodyHeight = document.body.clientHeight;
@@ -102,7 +102,7 @@ export class IntroComponent implements AfterViewInit {
     if (scrollY >= bodyHeight - windowHeight - 100) {
       // Apply the fade-out effect
       this.renderer.addClass(this.rootElement.nativeElement, 'fade-out');
-    
+
       // Delay navigation to allow for the fade-out effect
       setTimeout(() => {
         this.router.navigate(['login']);
