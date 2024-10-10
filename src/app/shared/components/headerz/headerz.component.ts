@@ -148,8 +148,9 @@ export class HeaderzComponent implements OnInit, OnDestroy {
         break;
         case 3:
         this.displayedItems = this.principalDashboardItems
+        this.mainItemKeys = ['DASHBOARD', 'USERS', 'COUNT', 'SPEECHLAB']; // Main items
         break;
-        default:
+                default:
           this.API.failedSnackbar('System Error');
           return;
     }
