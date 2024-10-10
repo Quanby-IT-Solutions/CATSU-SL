@@ -21,6 +21,9 @@ FROM nginx:alpine
 # Copy the built Angular app from the previous stage
 COPY --from=build /app/dist/quanlab /usr/share/nginx/html
 
+# NGINX configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Expose the port the app runs on
 EXPOSE 80
 
