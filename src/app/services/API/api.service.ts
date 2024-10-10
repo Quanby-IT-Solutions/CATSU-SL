@@ -839,6 +839,7 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
+
   teacherAllCourses() {
     const id = this.getUserData().id;
     const postObject = {

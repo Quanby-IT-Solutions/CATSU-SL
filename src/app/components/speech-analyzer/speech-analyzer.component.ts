@@ -5,6 +5,7 @@ import { APIService } from '../../services/API/api.service';
 import { lastValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+
 const client = new AssemblyAI({
   apiKey: environment.speech,
 });
@@ -33,11 +34,31 @@ export class SpeechAnalyzerComponent implements OnInit {
   averageScore: number = 0;
   currentDate: string = new Date().toDateString();
   averageScoreLabel: string = '';
+  sentenceHolderText: string = '';
+  usedStorage: any;
 
   constructor(private apiService: APIService, private http: HttpClient) {}
 
   async ngOnInit() {
     await this.generateNewSpeechSample();
+  }
+  
+  getUserAccountType(): number | null {
+    console.log(this.apiService.getUserAccountType());
+    
+    return this.apiService.getUserAccountType()
+    
+
+  }
+
+  saveSentence() {
+    if (this.sentenceHolderText.trim()) {
+      console.log("Saved sentence:", this.sentenceHolderText);
+      // ton pa connect nalang labyo
+      alert('Sentence saved successfully!');
+    } else {
+      alert('Please enter a valid sentence.');
+    }
   }
 
   async generateNewSpeechSample() {

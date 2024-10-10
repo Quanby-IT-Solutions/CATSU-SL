@@ -33,6 +33,37 @@
   </main>
 </section>
 
+<!-- Display sentence holder for student -->
+<section *ngIf="getUserAccountType() === 0" class="bg-white p-6 rounded-3xl border border-gray-200 shadow-lg w-full max-w-2xl text-center mx-auto mt-8">
+  <p class="text-lg text-gray-700 mb-2">Click the mic and read the sentence</p>
+  <blockquote class="py-4 px-6 text-2xl italic font-semibold text-gray-800 border-l-4 border-amber-500 rounded-md bg-gray-50">
+    "{{ sentenceHolderText || 'No sentence available.' }}"
+  </blockquote>
+</section>
+
+<!-- Display input field for teacher -->
+<section *ngIf="getUserAccountType() === 1" class="bg-white p-8 rounded-3xl border border-gray-200 shadow-lg w-full max-w-2xl mx-auto mt-8">
+  <p class="text-lg text-gray-700 mb-4">Enter the sentence for students to practice:</p>
+  
+  <!-- Input field with enhanced design -->
+  <input
+    type="text"
+    [(ngModel)]="sentenceHolderText"
+    class="w-full p-4 text-lg border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none"
+    placeholder="Type a sentence..."
+  />
+  
+  <!-- Save button -->
+  <button
+    (click)="saveSentence()"
+    class="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-white transition duration-200"
+  >
+    Save Sentence
+  </button>
+</section>
+
+
+
 <section *ngIf="analysisResult && analysisResult.length > 0" class="w-full mx-auto px-4 py-8">
   <header class="w-full">
     <div class="flex flex-wrap items-start justify-between w-full gap-6">
