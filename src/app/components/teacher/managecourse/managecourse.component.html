@@ -36,7 +36,7 @@
             class="w-full h-[200px] object-cover cursor-pointer rounded-t-lg transition-opacity duration-300 group-hover:opacity-90"
             alt="Course Image" />
           <div class="absolute bottom-3 left-3">
-            <a (click)="showCertificateModal(course.id)"
+            <a (click)="showCertificateModal(course)"
               class="certificate-btn relative block text-center text-decoration-none uppercase overflow-hidden rounded-full w-[200px]"
               [ngClass]="{ 'sparkling': courseProgress === 100 }"
               [ngStyle]="{ backgroundColor: courseProgress === 100 ? 'var(--tertiary-color)' : '' }">
