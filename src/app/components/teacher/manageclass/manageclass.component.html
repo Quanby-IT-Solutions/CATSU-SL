@@ -1,20 +1,20 @@
-<div class="h-dvh overflow-hidden w-full md:py-4 py-6 bg-white">
+<div class="w-full py-6 overflow-hidden bg-white h-dvh md:py-4">
   <div class="h-full w-full flex flex-col gap-12 max-w-[90%] mx-auto  ">
     <div class="h-fit !justify-between flex items-center space-x-4">
       <div
-        class="hover:scale-105 hover:ease-out duration-300 border border-gray-400 cursor-pointer newclass p-3 shadow-md rounded">
-        <button class="poppins-b flex items-center" (click)="openModal()">
-          <span class="plus-icon mr-2"></span>
+        class="p-3 duration-300 border border-gray-400 rounded shadow-md cursor-pointer hover:scale-105 hover:ease-out newclass">
+        <button class="flex items-center poppins-b" (click)="openModal()">
+          <span class="mr-2 plus-icon"></span>
           NEW CLASS
         </button>
       </div>
 
-      <div class="img md:block hidden">
+      <div class="hidden img md:block">
         <img src="assets/teacher/manageclass/image_vector.png" alt="image" />
       </div>
       <div
-        class="hover:scale-105 hover:ease-out duration-300 border border-gray-400 cursor-pointer newclass  p-3 shadow-md rounded">
-        <button class="poppins-b flex items-center" (click)="openStudentModal()">
+        class="p-3 duration-300 border border-gray-400 rounded shadow-md cursor-pointer hover:scale-105 hover:ease-out newclass">
+        <button class="flex items-center poppins-b" (click)="openStudentModal()">
 
           STUDENTS
         </button>
@@ -22,8 +22,8 @@
     </div>
     <!-- bottom -->
 
-    <div class="w-full h-full flex flex-col">
-      <h1 class="text-3xl poppins-b text-primary-2 text-center mb-4">
+    <div class="flex flex-col w-full h-full">
+      <h1 class="mb-4 text-3xl text-center poppins-b text-primary-2">
         List of Classes
       </h1>
 
@@ -41,7 +41,7 @@
             </tr>
           </thead>
           <tbody *ngFor="let class of classes">
-            <tr (click)="selectClass(class.id)" class="hover:bg-blue-100 active:bg-blue-200 select-none"
+            <tr (click)="selectClass(class.id)" class="select-none hover:bg-blue-100 active:bg-blue-200"
               [ngClass]="{ 'bg-white': selectedClass == class.id }">
               <td class="text-xs lg:text-base">{{ class.duration }} days</td>
               <td class="text-xs lg:text-base">{{ class.course }}</td>
@@ -87,7 +87,139 @@
   </div>
 </div>
 
-<!-- <div class="regwrap -mr-2"> -->
+<div *ngIf="studentModal" class="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center">
+  <div class="relative flex flex-col items-center p-8 bg-white rounded-lg h-1/2 full">
+    <div class="flex items-center justify-between w-full mb-4">
+      <h2 class="text-xl font-bold text-gray-600">List of Students</h2>
+      <button (click)="closeStudentModal()" class="absolute text-2xl text-red-500 top-2 right-4 hover:text-red-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- list-->
+
+    <div class="!w-full table-container rounded">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-sm lg:text-base">Name of Student</th>
+            <th class="text-sm lg:text-base">
+              Course
+              <select [(ngModel)]="selectedCourseFilter" (change)="applyFilters()" class="p-1 ml-2 text-xs text-[--primary-color] border rounded">
+                <option *ngFor="let course of uniqueCourses" [value]="course">{{course}}</option>
+              </select>
+            </th>
+            <th class="text-sm lg:text-base">
+              Class Name
+              <select [(ngModel)]="selectedClassFilter" (change)="applyFilters()" class="p-1 ml-2 text-[--primary-color] text-xs border rounded">
+                <option *ngFor="let class of uniqueClasses" [value]="class">{{class}}</option>
+              </select>
+            </th>
+            <th class="text-sm text-center lg:text-base">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let student of filteredStudents"
+              class="cursor-pointer select-none hover:bg-blue-100 active:bg-blue-200"
+              [ngClass]="{ 'bg-white': selectedStudent == student.id }">
+            <td class="text-xs lg:text-base">{{ student.firstname }} {{student.lastname}}</td>
+            <td class="text-xs lg:text-base">{{student.course}}</td>
+            <td class="text-xs lg:text-base">{{student.class}}</td>
+            <td class="justify-center space-x-2 text-center">
+              <i class="text-teal-500 cursor-pointer far fa-eye" (click)="viewStudentProfile(student)"></i>
+              <i class="text-red-500 cursor-pointer fa-solid fa-trash" (click)="openConfirmDelete(student)"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="editStudentProfile"
+        class="fixed inset-0 z-[1000] overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="w-full max-w-md p-6 mx-4 my-8 bg-white rounded-lg shadow-xl">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Student's Profile</h2>
+            <button (click)="closeStudentProfileModal()"
+              class="text-gray-500 transition-colors duration-200 hover:text-gray-700">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div *ngIf="selectedStudentId">
+            <div class="flex flex-col items-center w-full mb-6" *ngFor="let student of students">
+              <ng-container *ngIf="student.id === selectedStudentId">
+                <div class="w-24 h-24 mb-4 overflow-hidden border-4 border-teal-500 rounded-full">
+                  <img [src]="student.profile ? getURL(student.profile) : noProfile()"
+                    class="object-cover w-full h-full" alt="Profile Image" />
+                </div>
+                <div *ngIf="!editing" class="text-2xl font-bold text-teal-600">
+                  {{ student.firstname }} {{ student.lastname }}
+                </div>
+                <div *ngIf="editing" class="flex w-full space-x-2">
+                  <input type="text" [(ngModel)]="student.firstname"
+                    class="w-full px-2 py-1 text-lg font-semibold text-teal-600 border border-gray-300 rounded">
+                  <input type="text" [(ngModel)]="student.lastname"
+                    class="w-full px-2 py-1 text-lg font-semibold text-teal-600 border border-gray-300 rounded">
+                </div>
+              </ng-container>
+            </div>
+
+            <div class="space-y-4">
+              <div *ngFor="let student of students">
+                <ng-container *ngIf="student.id === selectedStudentId">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div class="font-medium text-gray-600">Email Address:</div>
+                    <div class="text-gray-800">{{ student.email }}</div>
+                    <div class="font-medium text-gray-600">Birthday:</div>
+                    <div class="text-gray-800">{{ student.birthdate }}</div>
+                    <div class="font-medium text-gray-600">Sex:</div>
+                    <div class="text-gray-800">{{ student.gender }}</div>
+                    <div class="font-medium text-gray-600">Nationality:</div>
+                    <div class="text-gray-800">{{ student.nationality }}</div>
+                    <div class="font-medium text-gray-600">Address:</div>
+                    <div class="text-gray-800">{{ student.address }}</div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-center w-full mt-8">
+            <button (click)="toggleEdit()"
+              class="bg-teal-500 hover:bg-teal-600 w-full text-white font-bold py-2.5 rounded-xl transition-colors duration-200">
+              {{ editing ? 'SAVE' : 'EDIT' }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="confirmDelete" class="fixed inset-0 z-20 flex items-center justify-center bg-gray-500 bg-opacity-70">
+        <div class="flex flex-col items-center justify-center w-1/4 p-8 bg-white rounded-lg h-1/4">
+
+          <h2 class="mb-4 text-xl font-bold">Delete Student?</h2>
+
+          <div class="flex flex-row-reverse justify-center gap-x-6">
+            <div class="flex justify-center w-10 h-10 bg-red-500 rounded-full">
+              <button class="text-xl text-white" (click)=" noConfirmDelete()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="flex justify-center w-10 h-10 bg-green-500 rounded-full">
+              <button class="text-xl text-white" (click)=" yesConfirmDelete()">
+                <i class="fas fa-check"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <!-- <div class="-mr-2 regwrap"> -->
 <!-- <div class="approve">
             <div class="regcontent">
                 <div class="table">
@@ -95,31 +227,31 @@
                     <table class="poppins">
                         <tbody class="h-36">
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>View</button></td>
-                                <td class="btn2 border"><button>Remove</button></td>
-                            </tr>  
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>View</button></td>
+                                <td class="border btn2"><button>Remove</button></td>
+                            </tr>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>View</button></td>
-                                <td class="btn2 border"><button>Remove</button></td>
-                            </tr>                      
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>View</button></td>
+                                <td class="border btn2"><button>Remove</button></td>
+                            </tr>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>View</button></td>
-                                <td class="btn2 border"><button>Remove</button></td>
-                            </tr>  
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>View</button></td>
+                                <td class="border btn2"><button>Remove</button></td>
+                            </tr>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>View</button></td>
-                                <td class="btn2 border"><button>Remove</button></td>
-                            </tr>   
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>View</button></td>
+                                <td class="border btn2"><button>Remove</button></td>
+                            </tr>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>View</button></td>
-                                <td class="btn2 border"><button>Remove</button></td>
-                            </tr>  
-                        
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>View</button></td>
+                                <td class="border btn2"><button>Remove</button></td>
+                            </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -137,173 +269,38 @@
                         <table class="poppins">
                             <tbody>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>Accept</button></td>
-                                <td class="btn2 border"><button>Reject</button></td>
-                            </tr>  
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>Accept</button></td>
+                                <td class="border btn2"><button>Reject</button></td>
+                            </tr>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>Accept</button></td>
-                                <td class="btn2 border"><button>Reject</button></td>
-                            </tr>  
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>Accept</button></td>
+                                <td class="border btn2"><button>Reject</button></td>
+                            </tr>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>Accept</button></td>
-                                <td class="btn2 border"><button>Reject</button></td>
-                            </tr>                      
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>Accept</button></td>
+                                <td class="border btn2"><button>Reject</button></td>
+                            </tr>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>Accept</button></td>
-                                <td class="btn2 border"><button>Reject</button></td>
-                            </tr>  
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>Accept</button></td>
+                                <td class="border btn2"><button>Reject</button></td>
+                            </tr>
                             <tr>
-                                <td class="student border">student 1</td>
-                                <td class="btn1 border"><button>Accept</button></td>
-                                <td class="btn2 border"><button>Reject</button></td>
-                            </tr>                          
+                                <td class="border student">student 1</td>
+                                <td class="border btn1"><button>Accept</button></td>
+                                <td class="border btn2"><button>Reject</button></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div> -->
-<!-- 
+<!--
         <div class="analytics">
             <button class="poppins" routerLink="/teacher/studentA&D">CLASS ANALYTICS <img src="assets/teacher/manageclass/Receive.png" alt=""></button>
         </div> -->
 <!-- </div> -->
-
-
-
-
-<div *ngIf="studentModal" class="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center">
-  <div class="bg-white h-1/2 full p-8 rounded-lg flex flex-col items-center relative">
-    <div class="flex items-center justify-between w-full mb-4">
-      <h2 class="text-xl font-bold text-gray-600">List of Students</h2>
-      <button (click)="closeStudentModal()" class="absolute top-2 right-4 text-2xl text-red-500 hover:text-red-700">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <!-- list-->
-
-    <div class="!w-full table-container rounded">
-      <table class="w-full">
-        <thead>
-          <tr>
-            <th class="text-sm lg:text-base">Name of Student</th>
-            <th class="text-sm lg:text-base">Course</th>
-            <th class="text-sm lg:text-base">Class Name</th>
-            <th class="text-sm lg:text-base text-center">Action</th>
-          </tr>
-        </thead>
-        <tbody *ngFor="let student of students">
-          <tr class="cursor-pointer hover:bg-blue-100 active:bg-blue-200 select-none"
-            [ngClass]="{ 'bg-white': selectedStudent == student.id }">
-            <td class="text-xs lg:text-base">{{ student.firstname }} {{student.lastname}} </td>
-            <td class="text-xs lg:text-base"> {{student.course}} </td>
-            <td class="text-xs lg:text-base"> {{student.class}} </td>
-
-
-
-
-            <td class="justify-center space-x-2 text-center">
-              <i class="far fa-eye cursor-pointer text-teal-500" (click)="viewStudentProfile(student)"></i>
-
-              <i class="fa-solid fa-trash cursor-pointer text-red-500 " (click)="openConfirmDelete(student)"></i>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- edit student profile-->
-
-      <div *ngIf="editStudentProfile"
-        class="fixed inset-0 z-[1000] overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 my-8 p-6">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">Student's Profile</h2>
-            <button (click)="closeStudentProfileModal()"
-              class="text-gray-500 hover:text-gray-700 transition-colors duration-200">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-
-          <div *ngIf="selectedStudentId">
-            <div class="w-full flex flex-col items-center mb-6" *ngFor="let student of students">
-              <ng-container *ngIf="student.id === selectedStudentId">
-                <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-teal-500 mb-4">
-                  <img [src]="student.profile ? getURL(student.profile) : noProfile()"
-                    class="w-full h-full object-cover" alt="Profile Image" />
-                </div>
-                <div *ngIf="!editing" class="text-2xl font-bold text-teal-600">
-                  {{ student.firstname }} {{ student.lastname }}
-                </div>
-                <div *ngIf="editing" class="flex space-x-2 w-full">
-                  <input type="text" [(ngModel)]="student.firstname"
-                    class="w-full border border-gray-300 rounded px-2 py-1 text-lg font-semibold text-teal-600">
-                  <input type="text" [(ngModel)]="student.lastname"
-                    class="w-full border border-gray-300 rounded px-2 py-1 text-lg font-semibold text-teal-600">
-                </div>
-              </ng-container>
-            </div>
-
-            <div class="space-y-4">
-              <div *ngFor="let student of students">
-                <ng-container *ngIf="student.id === selectedStudentId">
-                  <div class="grid grid-cols-2 gap-2">
-                    <div class="text-gray-600 font-medium">Email Address:</div>
-                    <div class="text-gray-800">{{ student.email }}</div>
-                    <div class="text-gray-600 font-medium">Birthday:</div>
-                    <div class="text-gray-800">{{ student.birthdate }}</div>
-                    <div class="text-gray-600 font-medium">Sex:</div>
-                    <div class="text-gray-800">{{ student.gender }}</div>
-                    <div class="text-gray-600 font-medium">Nationality:</div>
-                    <div class="text-gray-800">{{ student.nationality }}</div>
-                    <div class="text-gray-600 font-medium">Address:</div>
-                    <div class="text-gray-800">{{ student.address }}</div>
-                  </div>
-                </ng-container>
-              </div>
-            </div>
-          </div>
-
-          <div class="w-full mt-8 flex justify-center">
-            <button (click)="toggleEdit()"
-              class="bg-teal-500 hover:bg-teal-600 w-full text-white font-bold py-2.5 rounded-xl transition-colors duration-200">
-              {{ editing ? 'SAVE' : 'EDIT' }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- end edit student profile-->
-
-      <!-- delete -->
-      <div *ngIf="confirmDelete" class="fixed inset-0 z-20 bg-gray-500 bg-opacity-70 flex items-center justify-center">
-        <div class="w-1/4 h-1/4 bg-white p-8 rounded-lg flex flex-col items-center justify-center">
-
-          <h2 class="text-xl font-bold mb-4">Delete Student?</h2>
-
-          <div class="flex flex-row-reverse gap-x-6 justify-center">
-            <div class="flex bg-red-500 justify-center h-10 w-10 rounded-full">
-              <button class="text-xl text-white" (click)=" noConfirmDelete()">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <div class="flex  bg-green-500 justify-center h-10 w-10 rounded-full">
-              <button class="text-xl text-white" (click)=" yesConfirmDelete()">
-                <i class="fas fa-check"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- end delete-->
-
-      <!-- end list-->
-    </div>
-  </div>

@@ -26,6 +26,14 @@ export class ManageclassComponent implements OnInit {
   classes:any
   selectedClass:any;
   selectedStudent:any;
+
+  selectedClassFilter: string = 'All Classes';
+  selectedCourseFilter: string = 'All Courses';
+  filteredStudents: any[] = [];
+  uniqueClasses: string[] = [];
+  uniqueCourses: string[] = [];
+
+
   constructor (
     private modalService: NgbModal,
     private API:APIService
@@ -59,7 +67,6 @@ export class ManageclassComponent implements OnInit {
       });
     }
 
-
     // start ton
     editing = false;
     students:any[]= [];
@@ -88,10 +95,12 @@ export class ManageclassComponent implements OnInit {
       }
     }
 
-    loadStudents(){
+    loadStudents() {
       const obs$ = this.API.getStudentsTeacher().subscribe((data) => {
         if (data.success) {
           this.students = data.output;
+          this.updateUniqueFilters();
+          this.applyFilters(); // Apply filters initially to ensure correct initial state
         } else {
           this.API.failedSnackbar('Unable to load student data');
         }
@@ -99,13 +108,24 @@ export class ManageclassComponent implements OnInit {
       });
     }
 
+    updateUniqueFilters() {
+      this.uniqueClasses = ['All Classes', ...new Set(this.students.map(student => student.class))];
+      this.uniqueCourses = ['All Courses', ...new Set(this.students.map(student => student.course))];
+    }
 
-
+    applyFilters() {
+      this.filteredStudents = this.students.filter(student => {
+        const matchesClass = this.selectedClassFilter === 'All Classes' || student.class === this.selectedClassFilter;
+        const matchesCourse = this.selectedCourseFilter === 'All Courses' || student.course === this.selectedCourseFilter;
+        return matchesClass && matchesCourse;
+      });
+    }
 
     studentModal: boolean = false;
     editStudentModal: boolean = false;
     confirmDelete: boolean = false;
     editStudentProfile: boolean = false;
+
 
     openStudentModal() {
       this.studentModal = true;
@@ -228,11 +248,17 @@ export class ManageclassComponent implements OnInit {
 
     }
 
-    parsetime(schedule:string){
+    parsetime(schedule: string | undefined): [string, string] {
+      if (!schedule) {
+        return ['', ''];
+      }
       const datetime = schedule.split("(");
+      if (datetime.length < 2) {
+        return ['', ''];
+      }
       const days = datetime[0].trim();
-      const time = datetime[1].replaceAll(")", "").trim();
-      return [days,time];
+      const time = datetime[1].replace(/\)/g, "").trim();
+      return [days, time];
     }
 
 
