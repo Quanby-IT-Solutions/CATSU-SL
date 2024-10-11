@@ -1,190 +1,200 @@
-<section *ngIf="!analysisResult && getUserAccountType() == 0" class="flex flex-col items-center justify-center mt-14 px-4">
-  <main class="w-full max-w-5xl overflow-hidden bg-white shadow-boxz rounded-3xl">
-    <div class="p-6 text-white bg-gradient-to-r from-amber-500 to-amber-600">
-      <h2 class="text-3xl font-bold">
-        Speech Analyzer
-      </h2>
-      <time class="text-sm opacity-80">{{ currentDate }}</time>
-    </div>
-    <!-- Select Class -->
+<section class="min-h-screen px-4 py-12 bg-gradient-to-br from-amber-50 to-orange-100">
+  <div class="max-w-5xl mx-auto">
+    <header class="mb-12 text-center">
+      <h1 class="mb-2 text-4xl font-bold text-amber-800">Speech Analyzer</h1>
+      <p class="text-lg text-amber-700">Improve your language skills with real-time feedback</p>
+    </header>
 
-    <div *ngIf="!selectedStudentClass"  class="p-8 ">
-      <div class="text-white bg-[var(--primary-color)] px-6 py-2 w-1/4 rounded-md">Select a class</div>
-      <div class="grid grid-cols-3 gap-3 mt-2">
-          <div (click)="selectClass(class.class_id)" *ngFor="let class of classes" class="cursor-pointer bg-[var(--primary-color)]  hover:bg-[var(--secondary-color)] h-48  w-full rounded-lg shadow-sm hover:scale-105 hover:border-dashed border-2 hover:border-orange-500 transition-all flex justify-center items-center">
-              <div class="font-medium text-6xl text-white" >{{ class.course }} - {{ class.class }}</div>
+    <!-- Student Section -->
+    <main *ngIf="getUserAccountType() === 0" class="overflow-hidden bg-white shadow-xl rounded-3xl" [@fadeIn]>
+      <div class="flex items-center justify-between p-6 bg-gradient-to-r from-amber-500 to-orange-600">
+        <h2 class="text-2xl font-semibold text-white">Student Practice</h2>
+        <time class="text-sm text-white opacity-80">{{ currentDate | date:'longDate' }}</time>
+      </div>
+
+      <div class="p-8">
+        <!-- Select Class -->
+        <div *ngIf="!selectedStudentClass && !analysisResult" class="mb-8" [@staggered]="classes.length">
+          <h3 class="mb-4 text-xl font-semibold text-gray-800">Select Your Class</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <button *ngFor="let class of classes; let i = index" (click)="selectClass(class.class_id)"
+              class="p-6 transition-all duration-300 rounded-lg shadow bg-amber-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500 hover:scale-105"
+              [@slideIn]="{ value: '', params: { delay: i * 100 } }">
+              <span class="text-lg font-medium text-amber-800">{{class.class}}</span>
+            </button>
           </div>
-      </div>
-    </div>
-    <!-- Speech Messages -->
-    <div *ngIf="speechSample == '' && selectedStudentClass" class="p-8">
-      <div class="text-white bg-[var(--primary-color)] px-6 py-2 w-1/4 rounded-md">Select a text</div>
-      <div class="mt-2 flex flex-col gap-2">
-        <div (click)="selectSpeech(speech.sentence)" *ngFor="let speech of classSpeeches" class="transition-all cursor-pointer hover:bg-[var(--secondary-color)] h-12 w-full bg-[var(--primary-color)] rounded-lg flex items-center px-6 text-white">
-          {{speech.sentence}}
         </div>
-      </div>
-    </div>
-    <!-- Speech to text -->
-    <div *ngIf="speechSample != ''" class="p-8">
-      <section class="text-center">
-        <p class="mb-4 text-gray-600">Click the mic and read the sentence</p>
-        <blockquote class="py-2 pl-4 mb-8 text-xl italic font-semibold text-gray-800 border-l-4 border-amber-500">
-          "{{ speechSample }}"
-        </blockquote>
 
-        <div class="mt-8">
-          <button (click)="toggleRecording()"
-            class="w-24 h-24 transition-all duration-300 ease-in-out transform rounded-full  focus:outline-none focus:ring-4 focus:ring-offset-2 hover:scale-105"
-            [ngClass]="{'bg-blue-500 hover:bg-blue-600': !recording, 'bg-red-500 hover:bg-red-600': recording, 'opacity-50 cursor-not-allowed': isAnalyzing}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-white" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        <!-- Select Speech Sample -->
+        <div *ngIf="selectedStudentClass && !speechSample && !analysisResult" class="mb-8" [@fadeIn]>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-gray-800">Choose a Practice Text</h3>
+            <button (click)="goBack()" class="px-4 py-2 transition-colors duration-300 rounded-md text-amber-600 bg-amber-100 hover:bg-amber-200">
+              <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-5 h-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+              </svg>
+              Back to Classes
+            </button>
+          </div>
+          <div class="space-y-3">
+            <button *ngFor="let speech of classSpeeches" (click)="selectSpeech(speech.sentence)"
+              class="w-full p-4 text-left transition-colors duration-300 rounded-lg bg-amber-50 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <p class="text-gray-700">{{speech.sentence}}</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recording Interface -->
+        <div *ngIf="speechSample && !analysisResult" class="text-center" [@fadeIn]>
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-lg text-gray-600">Read the following sentence:</p>
+            <button (click)="goBack()" class="px-4 py-2 transition-colors duration-300 rounded-md text-amber-600 bg-amber-100 hover:bg-amber-200">
+              <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-5 h-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+              </svg>
+              Back to Texts
+            </button>
+          </div>
+          <blockquote class="p-6 mb-8 text-xl italic font-medium text-gray-800 border-l-4 rounded-lg bg-amber-50 border-amber-500">
+            "{{ speechSample }}"
+          </blockquote>
+
+          <button (click)="toggleRecording()" [disabled]="isAnalyzing"
+            class="w-20 h-20 transition-all duration-300 ease-in-out transform rounded-full focus:outline-none focus:ring-4 focus:ring-offset-2 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            [ngClass]="{'bg-blue-500 hover:bg-blue-600 focus:ring-blue-300': !recording, 'bg-red-500 hover:bg-red-600 focus:ring-red-300': recording}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
             </svg>
           </button>
-          <p class="mt-4 text-sm text-gray-600">
+          <p class="mt-4 text-gray-600">
             {{ recording ? 'Recording... Click to stop' : 'Click to start recording' }}
           </p>
         </div>
-      </section>
-    </div>
 
+        <!-- Analysis Result Section -->
+        <section *ngIf="analysisResult && analysisResult.length > 0" class="mt-12" [@fadeIn]>
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Speech Analysis Results</h2>
+            <button (click)="goBack()" class="px-4 py-2 transition-colors duration-300 rounded-md text-amber-600 bg-amber-100 hover:bg-amber-200">
+              <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-5 h-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+              </svg>
+              Back to Recording
+            </button>
+          </div>
 
-  </main>
-</section>
+          <div class="flex flex-wrap items-start justify-between gap-8">
+            <div class="flex-1 min-w-[300px]">
+              <h3 class="mb-2 text-2xl font-bold text-gray-800">Overall Speaking Score</h3>
+              <p class="mb-2 text-lg text-gray-600">
+                Your speaking proficiency level is <span class="font-bold text-amber-500">{{ averageScoreLabel }}</span>.
+              </p>
+              <p class="text-sm text-gray-500">
+                Your pronunciation skills are at the {{ averageScoreLabel.toLowerCase() }} level. You have a good command of
+                the language sounds and intonation patterns.
+              </p>
+            </div>
 
-<!-- Display input field for teacher -->
-<section *ngIf="getUserAccountType() === 1"
-  class="bg-white p-8 rounded-3xl shadow-boxz border border-gray-200  lg:max-w-2xl max-w-[90%] mx-auto mt-8">
-  <p class="text-lg text-gray-700 mb-4">Enter the sentence for students to practice:</p>
-  <button (click)="generateNewSpeechSample()" class="flex justify-center px-4 py-2 bg-yellow-600 text-white text-lg font-semibold"> Generate Sentence </button>
+            <div class="w-[200px] bg-amber-50 rounded-xl p-4">
+              <h4 class="mb-2 text-lg font-semibold text-gray-800">Proficiency Levels</h4>
+              <ul class="space-y-2">
+                <li class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-gray-600">Beginner</span>
+                  <span class="text-sm font-bold text-amber-500">0-39%</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-gray-600">Intermediate</span>
+                  <span class="text-sm font-bold text-amber-500">40-79%</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span class="text-sm font-medium text-gray-600">Advanced</span>
+                  <span class="text-sm font-bold text-amber-500">80-100%</span>
+                </li>
+              </ul>
+            </div>
+          </div>
 
-  <input type="text" [(ngModel)]="sentenceHolderText"
-  class="w-full p-4 text-lg border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none"
-  placeholder="Type a sentence..." />
+          <div class="mt-12">
+            <h3 class="mb-4 text-2xl font-bold text-gray-800">Score Breakdown</h3>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+              <div *ngFor="let result of analysisResult" class="p-6 text-center bg-amber-50 rounded-xl">
+                <img [src]="getIconForArea(result.area)" [alt]="result.area + ' Icon'" class="w-12 h-12 mx-auto mb-4">
+                <h4 class="mb-2 text-lg font-semibold text-gray-800">{{ result.area | titlecase }}</h4>
+                <p class="mb-2 text-sm text-gray-600">{{ getLabel(result.score) }}</p>
+                <p class="text-2xl font-bold text-amber-500">{{ result.score }}%</p>
+              </div>
+            </div>
+          </div>
 
-    <select [(ngModel)]="selectedClass"
-    class="w-full mt-10 p-4 text-lg border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none">
-    <option value="" disabled selected>Select a class</option>
-    <option *ngFor="let class of classes" [value]="class.id">{{ class.course }} - {{ class.class }}</option>
-  </select>
-  
+          <div class="mt-12">
+            <h3 class="mb-4 text-xl font-semibold text-gray-800">Areas for Improvement</h3>
+            <ul class="space-y-3 text-gray-700 list-disc list-inside">
+              <li *ngFor="let point of improvementPoints">{{ point }}</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </main>
 
-  <button (click)="saveSentence()"
-    class="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-white transition duration-200">
-    Save Sentence
-  </button>
-</section>
-
-
-
-<section *ngIf="analysisResult && analysisResult.length > 0" class="w-full mx-auto px-4 py-8">
-  <header class="w-full">
-    <div class="flex flex-wrap items-start justify-between w-full gap-6">
-      <div class="flex items-start gap-4 flex-1 min-w-[300px] max-w-[800px]">
-        <div class="flex flex-col flex-1">
-          <h1 class="text-2xl font-extrabold text-black">Overall Speaking Score</h1>
-          <p class="mt-1 text-lg">
-            Your speaking proficiency level is <span class="font-extrabold text-amber-500">{{ averageScoreLabel
-              }}</span>. Keep it up!
-          </p>
-          <p class="mt-1 text-sm text-neutral-500">
-            Your pronunciation skills are at the {{ averageScoreLabel.toLowerCase() }} level. You have a good command of
-            the language sounds and intonation patterns.
-          </p>
-        </div>
+    <!-- Teacher Section -->
+    <main *ngIf="getUserAccountType() === 1" class="overflow-hidden bg-white shadow-xl rounded-3xl" [@fadeIn]>
+      <div class="p-6 bg-gradient-to-r from-amber-500 to-orange-600">
+        <h2 class="text-2xl font-semibold text-white">Teacher's Speech Management</h2>
       </div>
 
-      <aside class="w-[300px] bg-white rounded-2xl border-solid p-4">
-        <h2 class="mb-2 text-xl font-bold text-black">Proficiency levels</h2>
-        <ul class="p-0 list-none">
-          <li class="flex items-center justify-between mt-2 text-sm">
-            <span class="font-bold text-black">Beginner</span>
-            <span class="font-medium text-amber-500">0-39%</span>
-          </li>
-          <li class="flex items-center justify-between mt-2 text-sm">
-            <span class="font-bold text-black">Intermediate</span>
-            <span class="font-medium text-amber-500">40-79%</span>
-          </li>
-          <li class="flex items-center justify-between mt-2 text-sm">
-            <span class="font-bold text-black">Advanced</span>
-            <span class="font-medium text-amber-500">80-100%</span>
-          </li>
-        </ul>
-      </aside>
-    </div>
+      <div class="p-8">
+        <div class="mb-8">
+          <label for="classSelect" class="block mb-2 text-sm font-medium text-gray-700">Select a class</label>
+          <select id="classSelect" [(ngModel)]="selectedClass" (change)="loadSavedSpeeches()"
+            class="w-full p-3 border rounded-md bg-amber-50 border-amber-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+            <option value="" disabled selected>Select a class</option>
+            <option *ngFor="let class of classes" [value]="class.id">{{ class.course }} - {{ class.class }}</option>
+          </select>
+        </div>
 
-    <section class="w-full mt-16">
-      <h2 class="text-2xl font-extrabold text-black">Score Breakdown</h2>
-      <p class="mt-1 text-lg font-medium text-neutral-500">
-        Focus on your intonation to sound more natural when you speak
-      </p>
-      <div class="flex justify-between gap-4 pb-4 mt-6 overflow-x-auto flex-nowrap">
-        <article *ngFor="let result of analysisResult" class="flex-1 p-4 bg-white shadow-sm rounded-2xl">
-          <div class="flex flex-col items-center text-center">
-            <ng-container [ngSwitch]="result.area">
-              <img *ngSwitchCase="'pronunciation'" loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6324a2aa39d53bb6ea1d5725c835799f148e798ab95ea51dc6b6e54dc155e684?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
-                alt="Pronunciation Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchCase="'intonation'" loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/d3b7c11787c62fdc9dc8966f50aa73735fe1059a894b9694189a0eff1fa1d97e?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
-                alt="Intonation Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchCase="'fluency'" loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/3ca7817d9c0f2d266e321face77ac9ddf391628c7af0f7883cf237e06c016429?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
-                alt="Fluency Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchCase="'grammar'" loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/65c3e23cab9731ca08ca0da2159aef5f0fe3d9bd04ca1b19f2f6f3523fa880c5?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
-                alt="Grammar Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchCase="'vocabulary'" loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6324a2aa39d53bb6ea1d5725c835799f148e798ab95ea51dc6b6e54dc155e684?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
-                alt="Vocabulary Icon" class="w-[40px] h-[40px] mb-2" />
-              <img *ngSwitchDefault loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/placeholder_icon?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
-                alt="{{ result.area }} Icon" class="w-[40px] h-[40px] mb-2" />
-            </ng-container>
-            <h3 class="text-sm font-bold">{{ result.area | titlecase }}</h3>
-            <p class="mb-2 text-xs">{{ getLabel(result.score) }}</p>
-            <p class="text-xl font-extrabold text-amber-500">{{ result.score }}%</p>
+        <div class="mb-8">
+          <label for="speechInput" class="block mb-2 text-sm font-medium text-gray-700">Speech sample</label>
+          <div class="flex mb-2 space-x-4">
+            <button (click)="generateNewSpeechSample()" [disabled]="isGenerating"
+              class="px-4 py-2 text-white transition-colors duration-300 rounded-md bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+              {{ isGenerating ? 'Generating...' : 'Generate Sentence' }}
+            </button>
+            <button *ngIf="sentenceHolderText" (click)="clearSentence()"
+              class="px-4 py-2 text-gray-700 transition-colors duration-300 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+              Clear
+            </button>
           </div>
-        </article>
+          <textarea id="speechInput" [(ngModel)]="sentenceHolderText" rows="3"
+            class="w-full p-3 border rounded-md resize-none bg-amber-50 border-amber-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+            placeholder="Type or generate a sentence for students to practice..."></textarea>
+        </div>
+
+        <div class="flex justify-end">
+          <button (click)="saveSentence()" [disabled]="!selectedClass || !sentenceHolderText"
+            class="px-6 py-3 font-semibold text-white transition-colors duration-300 rounded-lg shadow-md bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            Save Sentence
+          </button>
+        </div>
+
+        <div class="mt-12">
+          <h3 class="mb-4 text-xl font-semibold text-gray-800">Saved Speech Samples</h3>
+          <div class="space-y-4">
+            <div *ngFor="let speech of savedSpeeches; let i = index" class="p-4 rounded-lg bg-amber-50">
+              <p class="mb-2 text-gray-800">{{ speech.sentence }}</p>
+              <div class="flex justify-end space-x-2">
+                <button (click)="editSpeech(i)"
+                  class="px-3 py-1 transition-colors duration-300 rounded-md bg-amber-200 text-amber-800 hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+                  Edit
+                </button>
+                <button (click)="deleteSpeech(speech.id)"
+                  class="px-3 py-1 text-red-800 transition-colors duration-300 bg-red-200 rounded-md hover:bg-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
-  </header>
-</section>
-
-
-<section *ngIf="summary && improvementPoints.length > 0" class="max-w-[1365px] mx-auto px-4 py-8">
-  <div class="w-full px-10 py-12 bg-white border border-black border-solid rounded-2xl max-md:px-5 max-md:max-w-full">
-    <div class="flex gap-10 max-md:flex-col">
-      <article class="flex flex-col w-[65%] max-md:w-full">
-        <header class="text-3xl text-black font-bold">
-          <h2>Your Pronunciation Highlights</h2>
-        </header>
-        <div class="mt-6 p-6 ">
-          <h3 class="text-xl font-semibold text-amber-700">Areas for Improvement:</h3>
-          <ul class="mt-4 space-y-4 text-base text-gray-700 list-disc list-inside">
-            <li *ngFor="let point of improvementPoints">
-              {{ point }}
-            </li>
-          </ul>
-        </div>
-      </article>
-      <aside class="flex flex-col w-[35%] max-md:w-full items-center">
-        <p class="text-xl font-medium text-black text-center">You got a score of</p>
-        <div class="flex items-center justify-center relative w-[185px] h-[185px] mt-4">
-          <div
-            class="flex absolute inset-0 z-0 w-full h-full rounded-full border border-black border-solid bg-slate-800">
-          </div>
-          <img loading="lazy"
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/49f57868fa1e9fdc0be298d32f9a291178d6fa2fbb94aa644e8d2621040ffa5e?placeholderIfAbsent=true&apiKey=2e31fa6b2d0c458aaebf11d5898097ea"
-            alt="" class="object-contain absolute inset-0 z-0 w-full h-full rounded-full" />
-          <div class="flex flex-col items-center justify-center z-10 text-center">
-            <p class="text-5xl text-amber-500">{{ averageScore }}%</p>
-            <p class="text-base text-white">{{ averageScoreLabel }}</p>
-          </div>
-        </div>
-      </aside>
-    </div>
+    </main>
   </div>
 </section>
