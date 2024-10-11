@@ -1,5 +1,5 @@
 <div class="w-full h-fit pb-[5dvh] px-4 flex flex-col gap-4">
-    <div class="flex lg:flex-row flex-col w-full gap-4 h-fit mt-10 containerflex">
+    <div class="flex lg:flex-row flex-col w-full gap-4 h-fit containerflex">
         <div
             class="lg:w-4/6 flex flex-col w-full lg:h-[80dvh] h-[50dvh] shadow-boxz rounded videosy border border-gray-400">
             <div class="flex justify-between items-center font-semibold mx-6 my-1.5 min-h-7">
@@ -82,7 +82,7 @@
                             class="shadow-boxz lg:rounded-3xl rounded lg:h-32 lg:w-32 w-20 h-20 relative overflow-hidden"
                             [style.display]="shouldDisplay(i) ? 'block' : 'none'">
                             <div *ngIf="src.value?.isLoading"
-                                class="flex place-content-center justify-center h-1/2 w-full absolute top-0 left-0 bg-black opacity-55 ">
+                                class="flex place-content-center justify-center h-full w-full absolute top-0 left-0 bg-black opacity-55 ">
                                 <div>
                                     Loading
                                 </div>
@@ -338,15 +338,17 @@
     <div class="flex w-full h-fit min-h-32 gap-x-4">
 
         <!-- participants-->
-        <div class="w-full h-full bg-white shadow-boxz border border-gray-400 rounded-lg p-4">
+        <div class="w-full flex flex-col gap-4 h-full bg-white shadow-boxz border border-gray-400 rounded-lg p-4">
             <!--title-->
             <div class="flex justify-between items-center font-semibold my-1.5">
                 <div>
                     <p> Participants </p>
                 </div>
-                <div class="flex ">
-                    <button (click)="moveLeft()" class="rounded-3xl px-1 py-1 font-black"> &lt; </button>
-                    <button (click)="moveRight()" class="rounded-3xl px-1 py-1 font-black"> &gt; </button>
+                <div class="flex gap-6">
+                    <button (click)="moveLeft()" class="rounded-3xl px-1 py-1 font-black"> <i
+                            class="fa-solid fa-chevron-left"></i> </button>
+                    <button (click)="moveRight()" class="rounded-3xl px-1 py-1 font-black"> <i
+                            class="fa-solid fa-chevron-right"></i> </button>
                 </div>
             </div>
 
@@ -372,7 +374,7 @@
                     class="shadow-boxz ;g:rounded-3xl rounded w-full h-full relative overflow-hidden"
                     [style.display]="shouldDisplay(i) ? 'block' : 'none'">
                     <div *ngIf="src.value?.isLoading"
-                        class="flex place-content-center justify-center h-1/2 w-full absolute top-0 left-0 bg-black opacity-55 ">
+                        class="flex place-content-center justify-center h-full w-full absolute top-0 left-0 bg-black opacity-55 ">
                         <div>
                             Loading
                         </div>
