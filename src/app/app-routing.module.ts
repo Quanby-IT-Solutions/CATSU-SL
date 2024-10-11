@@ -85,11 +85,11 @@ const routes: Routes = [
     path: 'modules',
     component: LessonPageComponent,
   },
-  {
-    path: 'intro',
-    component: IntroComponent,
-    canActivate: [LoginGuard], // Add LoaderGuard here
-  },
+  // {
+  //   path: 'intro',
+  //   component: IntroComponent,
+  //   canActivate: [LoginGuard], // Add LoaderGuard here
+  // },
   // {
   //   path: 'verify',
   //   component: LoginComponent,
@@ -251,7 +251,7 @@ const routes: Routes = [
     ],
   },
 
-  { path: '**', redirectTo: 'intro', pathMatch: 'full' },
+  { path: '**', redirectTo: 'login', pathMatch: 'full' },
 ];
 
 @NgModule({

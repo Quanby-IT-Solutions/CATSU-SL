@@ -200,6 +200,7 @@ export class SidebarComponent implements OnInit {
         break;
         case 3:
         this.displayedItems = this.principalDashboardItems
+        this.mainItemKeys = ['DASHBOARD', 'USERS', 'COUNT', 'SPEECHLAB']; // Main items
         break;
         default:
           this.API.failedSnackbar('System Error');

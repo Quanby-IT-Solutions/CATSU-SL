@@ -136,9 +136,9 @@
     </div>
 
     <!-- Signature Modal -->
-    <div *ngIf="showSignatureModal" class="modal w-full">
+    <div *ngIf="showSignatureModal" [@fadeInOut] class="modal w-full z-[1000]">
       <div class="w-full h-full flex justify-center items-center">
-        <div class="w-full mx-auto flex flex-col gap-4 bg-white rounded-xl relative max-w-[90%]">
+        <div class="w-full mx-auto flex flex-col gap-4 bg-white rounded-xl relative lg:max-w-[50%] max-w-[90%]">
           <span><i
               class="fas fa-times text-black hover:text-red-500 duration-300 ease-in-out text-2xl cursor-pointer absolute top-1 right-2"
               (click)="closeSignatureModal()"></i></span>
@@ -178,7 +178,7 @@
   </div>
 
 <!-- Email Change Modal -->
-<div *ngIf="showModalEmail" [@fadeInOut] class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div *ngIf="showModalEmail" [@fadeInOut] class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
   <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
     <header class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-[#1f2e4d]">Change Email</h2>
@@ -218,7 +218,7 @@
 </div>
 
 <!-- Password Change Modal -->
-<div *ngIf="showModalPassword" [@fadeInOut] class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div *ngIf="showModalPassword" [@fadeInOut] class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
   <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
     <header class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-[#1f2e4d]">Change Password</h2>
