@@ -56,6 +56,7 @@ export class PracticeParentComponent  implements OnInit {
 
 
   openModule(module:any){
+
     this.router.navigate([module.route, {m:module.id}])
   }
   

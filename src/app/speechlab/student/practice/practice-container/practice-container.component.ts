@@ -17,6 +17,7 @@ export class PracticeContainerComponent implements OnInit {
     private location: Location,
   ) {}
 
+  
   ngOnInit(): void {
     const moduleID = this.route.snapshot.paramMap.get('m');
     if (moduleID == null) {
@@ -26,8 +27,10 @@ export class PracticeContainerComponent implements OnInit {
 
     const obs = this.API.loadSpeechLessons(moduleID, true).subscribe(data => {
       if (data.success) {
+        
         this.array = [];
         for (let lesson of data.output) {
+          alert();
           const isTeacherRoute = this.API.getUserType() == '1';
           this.array.push({
             id: lesson.id,
