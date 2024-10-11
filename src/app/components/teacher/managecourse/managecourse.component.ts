@@ -165,6 +165,7 @@ export class ManageCourseComponent implements OnInit {
   }
 
   openEdit(course: any) {
+    
     const modalOptions: NgbModalOptions = {
       centered: false
     };

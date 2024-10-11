@@ -289,37 +289,66 @@ export class SpeechAnalyzerComponent implements OnInit {
   }
 
 
-  parseAnalysisResult(analysisJson: string) {
-    try {
-        // Clean the JSON to ensure there are no unwanted characters
-        const cleanJson = analysisJson.replace(/```json\n|\n```/g, '').trim();
-        const parsedResult = JSON.parse(cleanJson);
+//   parseAnalysisResult(analysisJson: string) {
+//     try {
+//         const cleanJson = analysisJson.replace(/```json\n|\n```/g, '').trim();
+//         const parsedResult = JSON.parse(cleanJson);
 
-        if (Array.isArray(parsedResult)) {
-            // Extract actual analysis results and exclude summary
-            this.analysisResult = parsedResult.filter(item => item.area && item.area !== 'summary');
+//         if (Array.isArray(parsedResult)) {
+//             this.analysisResult = parsedResult.filter(item => item.area && item.area !== 'summary');
 
-            // Extract summary and set the summary and overall score
-            const summaryItem = parsedResult.find(item => item.summary);
-            if (summaryItem) {
-                this.summary = summaryItem.summary.areas_for_improvement;
-                // Clean the summary points and split them into an array
-                this.improvementPoints = this.summary.split('-')
-                    .map(point => point.replace(/\*\*/g, '').trim())
-                    .filter(point => point.length > 0);
-                this.averageScore = summaryItem.summary.overall_score;
-                this.averageScoreLabel = this.getLabel(this.averageScore);
-            } else {
-                throw new Error('Summary not found in parsed result');
-            }
+//             const summaryItem = parsedResult.find(item => item.summary);
+//             if (summaryItem) {
+//                 this.summary = summaryItem.summary.areas_for_improvement;
+//                 this.improvementPoints = this.summary.split('-')
+//                     .map(point => point.replace(/\*\*/g, '').trim())
+//                     .filter(point => point.length > 0);
+//                 this.averageScore = summaryItem.summary.overall_score;
+//                 this.averageScoreLabel = this.getLabel(this.averageScore);
+//             } else {
+//                 throw new Error('Summary not found in parsed result');
+//             }
+//         } else {
+//             throw new Error('Parsed result is not an array');
+//         }
+//     } catch (error) {
+//         console.error('Error parsing analysis result:', error);
+//         this.analysisResult = null;
+//         this.summary = 'Error parsing analysis result.';
+//     }
+// }
+
+parseAnalysisResult(analysisJson: string) {
+  try {
+    const cleanJson = analysisJson.replace(/```json\n|\n```/g, '').trim();
+    const parsedResult = JSON.parse(cleanJson);
+
+    if (Array.isArray(parsedResult)) {
+      this.analysisResult = parsedResult.filter(item => item.area && item.area !== 'summary');
+
+      const summaryItem = parsedResult.find(item => item.summary);
+      if (summaryItem && summaryItem.summary) {
+        this.summary = summaryItem.summary.areas_for_improvement || ''; 
+        if (typeof this.summary === 'string') {
+          this.improvementPoints = this.summary.split('-')
+            .map(point => point.replace(/\*\*/g, '').trim())
+            .filter(point => point.length > 0);
         } else {
-            throw new Error('Parsed result is not an array');
+          this.improvementPoints = [];
         }
-    } catch (error) {
-        console.error('Error parsing analysis result:', error);
-        this.analysisResult = null;
-        this.summary = 'Error parsing analysis result.';
+        this.averageScore = summaryItem.summary.overall_score;
+        this.averageScoreLabel = this.getLabel(this.averageScore);
+      } else {
+        throw new Error('Summary not found in parsed result');
+      }
+    } else {
+      throw new Error('Parsed result is not an array');
     }
+  } catch (error) {
+    console.error('Error parsing analysis result:', error);
+    this.analysisResult = null;
+    this.summary = 'Error parsing analysis result.';
+  }
 }
 
 

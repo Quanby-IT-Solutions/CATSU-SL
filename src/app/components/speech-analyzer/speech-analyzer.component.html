@@ -12,7 +12,7 @@
       <div class="text-white bg-[var(--primary-color)] px-6 py-2 w-1/4 rounded-md">Select a class</div>
       <div class="grid grid-cols-3 gap-3 mt-2">
           <div (click)="selectClass(class.class_id)" *ngFor="let class of classes" class="cursor-pointer bg-[var(--primary-color)]  hover:bg-[var(--secondary-color)] h-48  w-full rounded-lg shadow-sm hover:scale-105 hover:border-dashed border-2 hover:border-orange-500 transition-all flex justify-center items-center">
-              <div class="font-medium text-6xl text-white" >{{class.class}}</div>
+              <div class="font-medium text-6xl text-white" >{{ class.course }} - {{ class.class }}</div>
           </div>
       </div>
     </div>

@@ -6104,7 +6104,7 @@ export class APIService implements OnDestroy, OnInit {
       tables: 'administrators',
       conditions: {
         WHERE :  {
-          Role: 'doctor',
+          Role: 'Principal',
         },
       }
     };
