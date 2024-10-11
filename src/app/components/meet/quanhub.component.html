@@ -357,7 +357,7 @@
             <div
                 class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 lg:gap-4 md:gap-2 gap-1">
                 <div *ngFor="let src of activeParticipants| keyvalue; let i = index"
-                    class="shadow-boxz lg:rounded-3xl rounded w-full h-full relative overflow-hidden"
+                    class="shadow-boxz lg:rounded-3xl rounded w-full xl:h-40 lg:h-36 md:h-28 h-24 relative overflow-hidden"
                     [style.display]="shouldDisplay(i) ? 'block' : 'none'">
                     <div *ngIf="src.value?.isLoading"
                         class="flex place-content-center justify-center h-full w-full absolute top-0 left-0 bg-black opacity-55 ">
@@ -371,7 +371,7 @@
                         class="w-full h-full object-cover" *ngIf="src.value.stream == undefined">
                 </div>
                 <div *ngFor="let src of participants| keyvalue; let i = index"
-                    class="shadow-boxz ;g:rounded-3xl rounded w-full h-full relative overflow-hidden"
+                    class="shadow-boxz ;g:rounded-3xl rounded w-full xl:h-40 lg:h-36 md:h-28 h-24 relative overflow-hidden"
                     [style.display]="shouldDisplay(i) ? 'block' : 'none'">
                     <div *ngIf="src.value?.isLoading"
                         class="flex place-content-center justify-center h-full w-full absolute top-0 left-0 bg-black opacity-55 ">
