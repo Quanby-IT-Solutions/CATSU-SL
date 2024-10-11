@@ -1612,6 +1612,24 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
+  getSpeechesInClass(_class:string) {
+    const postObject = {
+      selectors: [
+        '*'
+      ],
+      tables: 'speech_analyzer_items',
+      conditions: {
+        WHERE: {
+          'class_id': _class,
+        },
+      },
+    };
+    return this.post('get_entries', {
+      data: JSON.stringify(postObject),
+    });
+  }
+  
+
   // before duration
 
   // createClass(
@@ -3983,37 +4001,49 @@ export class APIService implements OnDestroy, OnInit {
     );
   }
 
-  // createSpeechAnalyzerResult(
-  //   audioId: number,
-  //   fluency: number,
-  //   pronunciation: number,
-  //   pacing: number,
-  //   intonation_and_stress: number,
-  //   correct_wordings: number,
-  //   confidence_and_expression: number
-  // ): Observable<any> {
-  //   const postObject = {
-  //     tables: 'result_speech_analyzer',
-  //     values: {
-  //       audio_id: audioId,
-  //       fluency,
-  //       pronunciation,
-  //       pacing,
-  //       intonation_and_stress,
-  //       correct_wordings,
-  //       confidence_and_expression
-  //     },
-  //   };
 
-  //   console.log('Creating speech analyzer result with data:', postObject);
+  getSpeechSentence() {
+    const postObject = {
+      selectors: ['*'],
+      tables: 'speech_analyzer_items',
+      conditions: {
+        'ORDER BY': 'id DESC'
+      }
+    };
+    return this.post('get_entries', {
+      data: JSON.stringify(postObject),
+    }).pipe(
+      tap(response=> console.log('Speech Analyzer Sentences:' ,response)),
+      catchError(this.handleError)
+    );
+  }
 
-  //   return this.post('create_entry', {
-  //     data: JSON.stringify(postObject),
-  //   }).pipe(
-  //     tap(response => console.log('Create speech analyzer result response:', response)),
-  //     catchError(this.handleError)
-  //   );
-  // }
+
+  createSpeechSentence(
+    id: number,
+    classid: number,
+    sentence_question: string,
+  ): Observable<any>  {
+    const postObject = {
+      tables: 'speech_analyzer_items',
+      values: {
+        id,
+        class_id: classid,
+        sentence: sentence_question,
+      },
+    };
+
+    console.log('Saving Speech Sentence', postObject);
+
+    return this.post('create_entry', {
+      data: JSON.stringify(postObject),
+    }).pipe(
+      tap(response => console.log('Saved Speech sentence:',response)),
+      catchError(this.handleError)
+    );
+  }
+
+  
 
  
   createSpeechAnalyzerResult(

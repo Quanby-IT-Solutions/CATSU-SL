@@ -1,13 +1,32 @@
-<section *ngIf="!analysisResult" class="flex flex-col items-center justify-center mt-14 px-4">
-  <main class="w-full max-w-2xl overflow-hidden bg-white shadow-boxz rounded-3xl">
+<section *ngIf="!analysisResult && getUserAccountType() == 0" class="flex flex-col items-center justify-center mt-14 px-4">
+  <main class="w-full max-w-5xl overflow-hidden bg-white shadow-boxz rounded-3xl">
     <div class="p-6 text-white bg-gradient-to-r from-amber-500 to-amber-600">
       <h2 class="text-3xl font-bold">
         Speech Analyzer
       </h2>
       <time class="text-sm opacity-80">{{ currentDate }}</time>
     </div>
+    <!-- Select Class -->
 
-    <div class="p-8">
+    <div *ngIf="!selectedStudentClass"  class="p-8 ">
+      <div class="text-white bg-[var(--primary-color)] px-6 py-2 w-1/4 rounded-md">Select a class</div>
+      <div class="grid grid-cols-3 gap-3 mt-2">
+          <div (click)="selectClass(class.class_id)" *ngFor="let class of classes" class="cursor-pointer bg-[var(--primary-color)]  hover:bg-[var(--secondary-color)] h-48  w-full rounded-lg shadow-sm hover:scale-105 hover:border-dashed border-2 hover:border-orange-500 transition-all flex justify-center items-center">
+              <div class="font-medium text-6xl text-white" >{{class.class}}</div>
+          </div>
+      </div>
+    </div>
+    <!-- Speech Messages -->
+    <div *ngIf="speechSample == '' && selectedStudentClass" class="p-8">
+      <div class="text-white bg-[var(--primary-color)] px-6 py-2 w-1/4 rounded-md">Select a text</div>
+      <div class="mt-2 flex flex-col gap-2">
+        <div (click)="selectSpeech(speech.sentence)" *ngFor="let speech of classSpeeches" class="transition-all cursor-pointer hover:bg-[var(--secondary-color)] h-12 w-full bg-[var(--primary-color)] rounded-lg flex items-center px-6 text-white">
+          {{speech.sentence}}
+        </div>
+      </div>
+    </div>
+    <!-- Speech to text -->
+    <div *ngIf="speechSample != ''" class="p-8">
       <section class="text-center">
         <p class="mb-4 text-gray-600">Click the mic and read the sentence</p>
         <blockquote class="py-2 pl-4 mb-8 text-xl italic font-semibold text-gray-800 border-l-4 border-amber-500">
@@ -30,33 +49,33 @@
         </div>
       </section>
     </div>
+
+
   </main>
 </section>
 
-<!-- Display sentence holder for student -->
-<section *ngIf="getUserAccountType() === 0"
-  class="bg-white p-6 rounded-3xl border border-gray-200 shadow-boxz w-full lg:max-w-2xl max-w-[90%] text-center mx-auto mt-8">
-  <p class="text-lg text-gray-700 mb-2">Read the sentence below </p>
-  <blockquote
-    class="py-4 px-6 text-2xl italic font-semibold text-gray-800 border-l-4 border-amber-500 rounded-md bg-gray-50">
-    "{{ sentenceHolderText || 'No sentence available.' }}"
-  </blockquote>
-</section>
-
 <!-- Display input field for teacher -->
-<!-- <section *ngIf="getUserAccountType() === 1"
+<section *ngIf="getUserAccountType() === 1"
   class="bg-white p-8 rounded-3xl shadow-boxz border border-gray-200  lg:max-w-2xl max-w-[90%] mx-auto mt-8">
   <p class="text-lg text-gray-700 mb-4">Enter the sentence for students to practice:</p>
+  <button (click)="generateNewSpeechSample()" class="flex justify-center px-4 py-2 bg-yellow-600 text-white text-lg font-semibold"> Generate Sentence </button>
 
   <input type="text" [(ngModel)]="sentenceHolderText"
-    class="w-full p-4 text-lg border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none"
-    placeholder="Type a sentence..." />
+  class="w-full p-4 text-lg border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none"
+  placeholder="Type a sentence..." />
+
+    <select [(ngModel)]="selectedClass"
+    class="w-full mt-10 p-4 text-lg border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none">
+    <option value="" disabled selected>Select a class</option>
+    <option *ngFor="let class of classes" [value]="class.id">{{ class.course }} - {{ class.class }}</option>
+  </select>
+  
 
   <button (click)="saveSentence()"
     class="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-white transition duration-200">
     Save Sentence
   </button>
-</section> -->
+</section>
 
 
 
