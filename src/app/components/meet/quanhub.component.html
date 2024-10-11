@@ -1,4 +1,4 @@
-<div class=" h-full  marginPhone mx-4 flex flex-col gap-4">
+<div class="w-full h-fit pb-[5dvh] px-4 flex flex-col gap-4">
     <div class="flex lg:flex-row flex-col w-full gap-4 h-fit mt-10 containerflex">
         <div class="lg:w-4/6 flex flex-col w-full lg:h-[80dvh] h-[50dvh] shadow-boxz rounded videosy border border-gray-400">
             <div class="flex justify-between items-center font-semibold mx-6 my-1.5 min-h-7">
@@ -333,7 +333,7 @@
 
     <!--- start -->
 
-    <div class="flex w-full h-32 gap-x-4">
+    <div class="flex w-full h-fit min-h-32 gap-x-4">
 
         <!-- participants-->
         <div class="w-full h-full bg-white shadow-boxz border border-gray-400 rounded-lg p-4">
@@ -350,9 +350,9 @@
 
             <!-- tawo container-->
 
-            <div class="flex lg:gap-x-4 gap-x-1 mb-10 h-full lg:w-1/2 w-full taowrap">
+            <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 gap-4">
                 <div *ngFor="let src of activeParticipants| keyvalue; let i = index"
-                    class="shadow-boxz lg:rounded-3xl rounded lg:w-1/4 w-full h-full relative overflow-hidden"
+                    class="shadow-boxz lg:rounded-3xl rounded w-full h-full relative overflow-hidden"
                     [style.display]="shouldDisplay(i) ? 'block' : 'none'">
                     <div *ngIf="src.value?.isLoading"
                         class="flex place-content-center justify-center h-full w-full absolute top-0 left-0 bg-black opacity-55 ">
@@ -366,7 +366,7 @@
                         class="w-full h-full object-cover" *ngIf="src.value.stream == undefined">
                 </div>
                 <div *ngFor="let src of participants| keyvalue; let i = index"
-                    class="shadow-boxz ;g:rounded-3xl rounded lg:w-1/4 w-full h-full relative overflow-hidden"
+                    class="shadow-boxz ;g:rounded-3xl rounded w-full h-full relative overflow-hidden"
                     [style.display]="shouldDisplay(i) ? 'block' : 'none'">
                     <div *ngIf="src.value?.isLoading"
                         class="flex place-content-center justify-center h-1/2 w-full absolute top-0 left-0 bg-black opacity-55 ">
