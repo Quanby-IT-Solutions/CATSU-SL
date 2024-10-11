@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AssemblyAI } from 'assemblyai';
 import { APIService } from '../../services/API/api.service';
-import { lastValueFrom } from 'rxjs';
+import { first, firstValueFrom, lastValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 
@@ -36,47 +36,134 @@ export class SpeechAnalyzerComponent implements OnInit {
   averageScoreLabel: string = '';
   sentenceHolderText: string = '';
   usedStorage: any;
-
+  isGenerating = false;
+  selectedClass: string = '';
+  classes: any[] = []; 
+  classSpeeches:any[] = [];
+  selectedStudentClass:any = null;
+  selectedStudentSpeech:any = null;
   constructor(private apiService: APIService, private http: HttpClient) {}
 
-  async ngOnInit() {
-    await this.generateNewSpeechSample();
+  ngOnInit() {
+    // await this.generateNewSpeechSample();
+     this.initialize();
   }
   
-  getUserAccountType(): number | null {
-    console.log(this.apiService.getUserAccountType());
-    
+  getUserAccountType(): number | null {    
     return this.apiService.getUserAccountType()
-    
+  }
 
+  async initialize(){
+    this.apiService.showLoader();
+    if(this.getUserAccountType() == 0){
+      await this.loadStudentCourses();
+    }else{
+      await this.loadClasses();
+    }
+    this.apiService.hideLoader();
+  }
+
+  createID32(): string {
+    return this.apiService.createID32();
+  }
+
+  async loadStudentCourses(){
+    const response = await firstValueFrom(this.apiService.getEnrolledCourses());
+    if(response.success){ 
+      console.log('?',response.output)
+      this.classes = response.output
+    }
+  }
+
+  semiLoading = false;
+
+  selectClass(class_id:string){
+    this.selectedStudentClass = class_id;
+    this.loadSpeeches(class_id);
+  }
+
+  selectSpeech(speech:string){
+    this.speechSample = speech;
+  }
+ 
+  deselectClass(){
+    this.selectedStudentClass = null;
+  }
+
+  deselectSpeech(){
+    this.speechSample = ''
+  }
+
+  async loadSpeeches(_class:string){
+    this.semiLoading = true;
+    const response = await firstValueFrom(this.apiService.getSpeechesInClass(_class));
+    if(response.success){ 
+      console.log(response.output);
+      this.classSpeeches = response.output
+    }
+    this.semiLoading = false;
+  }
+
+  async loadClasses(){
+    const response = await firstValueFrom(this.apiService.teacherAllClasses());
+    if(response.success){
+      this.classes = response.output;
+    }else{
+      this.apiService.failedSnackbar('Unable to connect to the server.', 3000);
+    }
   }
 
   saveSentence() {
-    if (this.sentenceHolderText.trim()) {
-      console.log("Saved sentence:", this.sentenceHolderText);
-      // ton pa connect nalang labyo
-      alert('Sentence saved successfully!');
+    if (this.sentenceHolderText.trim() && this.selectedClass) {
+      const id = this.apiService.generateManualId();
+      const classId = parseInt(this.selectedClass, 10);
+  
+      if (isNaN(classId)) {
+        alert('Invalid class selected. Please try again.');
+        return;
+      }
+      this.apiService.createSpeechSentence(Number(id), classId, this.sentenceHolderText).subscribe({
+        next: (response) => {
+          console.log('Saved sentence:', response);
+          alert('Sentence saved successfully!');
+          // Reset form fields
+          this.sentenceHolderText = '';
+          this.selectedClass = '';  
+        },
+        error: (error) => { 
+          console.error('Error saving sentence:', error);
+          alert('Error saving the sentence. Please try again.');
+        }
+      });
     } else {
-      alert('Please enter a valid sentence.');
+      alert('Please enter a valid sentence and select a class.');
     }
   }
 
   async generateNewSpeechSample() {
+    this.isGenerating = true;
     const prompt = "Generate a unique and inspiring statement for speech practice, between 10 and 20 words. Do not include the name of the author, and do not enclose the sentence in quotation marks.";
   
     try {
       let generatedSample = await this.apiService.generateSpeechToRead(prompt);
       generatedSample = generatedSample.replace(/^"|"$/g, '').trim();
       this.speechSample = generatedSample;
+      
+      this.sentenceHolderText = this.speechSample;
+  
       if (this.speechSample.toLowerCase() === "the quick brown fox jumps over the lazy dog." || !this.speechSample.trim()) {
         throw new Error("Invalid or default sentence generated.");
       }
     } catch (error) {
       console.error('Error generating speech sample:', error);
-      this.speechSample = "The quick brown fox jumps over the lazy dog."; 
+      this.speechSample = "The quick brown fox jumps over the lazy dog.";
+      this.sentenceHolderText = this.speechSample; 
+    } finally {
+      this.isGenerating = false;
     }
   }
-
+  
+  
   toggleRecording() {
     if (this.recording) {
       this.stopRecording();
