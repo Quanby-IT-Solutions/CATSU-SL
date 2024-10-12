@@ -183,7 +183,7 @@ export class ManageCourseComponent implements OnInit {
   }
 
   async showCertificateModal(course: any) {
-    const imageUrl = 'assets/cert/ace-cert.png'; // Replace with the actual URL or path to the certificate image
+    const imageUrl = 'assets/cert/cnsc-cert.png'; // Replace with the actual URL or path to the certificate image
     const teacherSign = this.API.getUserData().esign;
     const response = await firstValueFrom(this.API.getCNSCPresident());
     if (response.output.length <= 0) {
