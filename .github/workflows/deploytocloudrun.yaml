@@ -1,6 +1,9 @@
 name: Build and Deploy to Cloud Run
 on:
-  workflow_dispatch:
+  # workflow_dispatch:
+  push:
+    branches:
+      - main
 env:
   PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
   GAR_LOCATION: ${{ vars.GAR_LOCATION }}
