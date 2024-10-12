@@ -181,7 +181,6 @@ export class ManageCourseComponent implements OnInit {
       }
     });
   }
-
   async showCertificateModal(course: any) {
     const imageUrl = 'assets/cert/cnsc-cert.png'; // Replace with the actual URL or path to the certificate image
     const teacherSign = this.API.getUserData().esign;
@@ -268,12 +267,9 @@ export class ManageCourseComponent implements OnInit {
     this.API.setCourse(courseID);
     this.router.navigate(['/teacher/lessons'], { queryParams: { hideMarkAsDone: true } });
   }
-
   trimText(text: string, wordLimit: number): string {
     if (!text) return '[NONE]';
     const words = text.split(' ');
     return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
   }
-
 }
-
