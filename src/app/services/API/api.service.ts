@@ -4163,8 +4163,8 @@ export class APIService implements OnDestroy, OnInit {
     settings?: string,
     lessonid?: string,
     topicid?: string,
-    classid?: string
-  )  {
+    classid?: string // Added classid parameter
+  ) {
     var attach = {};
     if (attachments != undefined) {
       attach = { Attachments: attachments };
@@ -4186,14 +4186,13 @@ export class APIService implements OnDestroy, OnInit {
         {},
         {
           CourseID: CourseID,
-          ID: ID,
           Title: title,
           Details: det,
           Timelimit: timelimit,
           Deadline: deadline,
           lessonid: lessonid,
           topicid: topicid,
-          classid: classid,
+          classid: classid, // Include classid in the update
         },
         attach,
         sett
@@ -4207,7 +4206,13 @@ export class APIService implements OnDestroy, OnInit {
 
     return this.post('update_entry', {
       data: JSON.stringify(postObject),
-    });
+    }).pipe(
+      tap(response => console.log('Update quiz response:', response)),
+      catchError(error => {
+        console.error('Error updating quiz:', error);
+        return throwError(() => new Error('Failed to update quiz. Please try again.'));
+      })
+    );
   }
 
 
