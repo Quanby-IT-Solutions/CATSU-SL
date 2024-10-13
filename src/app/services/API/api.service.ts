@@ -26,6 +26,7 @@ import {
   EMPTY,
   ReplaySubject,
   Subject,
+  Subscriber,
   Subscription,
   catchError,
   firstValueFrom,
@@ -1119,57 +1120,64 @@ export class APIService implements OnDestroy, OnInit {
   //   );
   // }
 
-  uploadFile(file: File, filename: string) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = (reader.result as string).split(',')[1];
-      this.http
-        .post(environment.nodeserver + '/filehandler', {
-          key: environment.socketKey,
-          method: 'create_url',
-          file_content: base64String,
-          search_key: 'files/' + filename,
-        })
-        .subscribe();
-    };
-    reader.readAsDataURL(file);
-  }
 
 
-  uploadFileLoading(file: File, filename: string): Observable<number> {
-    const reader = new FileReader();
+  uploadFileLoading(file: File, filename: string, chunkSize: number = 1024 * 1024): Observable<number> {
+  return new Observable((subscriber: Subscriber<number>) => {
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    let uploadedChunks = 0; // Track uploaded chunks
 
-    return new Observable<number>((observer) => {
+    const uploadChunk = (chunkIndex: number) => {
+      const start = chunkIndex * chunkSize;
+      const end = Math.min(start + chunkSize, file.size);
+      const chunk = file.slice(start, end);
+
+      const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = (reader.result as string).split(',')[1];
-        const body = {
-          key: environment.socketKey,
-          method: 'create_url',
-          file_content: base64String,
-          search_key: 'files/' + filename,
-        };
 
         this.http
-          .post(environment.nodeserver + '/filehandler', body, {
-            reportProgress: true, // Enable progress reporting
-            observe: 'events',    // Observe the upload events
+          .post(environment.nodeserver + '/filehandler-progress', {
+            key: environment.socketKey,
+            app: environment.app,
+            method: 'create_url',
+            chunk: base64String,
+            fileName: 'files/' + filename,
+            chunkIndex: chunkIndex,
+            totalChunks: totalChunks,
           })
           .subscribe({
-            next: (event: HttpEvent<any>) => {
-              if (event.type === HttpEventType.UploadProgress) {
-                const progress = Math.round((100 * event.loaded) / (event.total ?? 1));
-                observer.next(progress); // Emit the progress
-              } else if (event.type === HttpEventType.Response) {
-                observer.complete(); // Complete the observable when done
+            next: () => {
+              uploadedChunks++;
+              const progress = Math.round((uploadedChunks / totalChunks) * 100);
+              subscriber.next(progress); // Emit progress
+
+              // Update the snackbar with the current progress
+              this.justSnackbar(`Uploading ${filename}... ${progress}%`, 99999999999999);
+
+              if (chunkIndex + 1 < totalChunks) {
+                // Upload next chunk
+                uploadChunk(chunkIndex + 1);
+              } else {
+                console.log(`File upload complete: ${filename}`);
+                subscriber.complete(); // Complete the observable when the upload is done
               }
             },
-            error: (error) => observer.error(error), // Emit error in case of failure
+            error: (err) => {
+              console.error('Error uploading chunk', err);
+              subscriber.error(err); // Emit error if there's an issue
+            },
           });
       };
 
-      reader.readAsDataURL(file);
-    });
-  }
+      reader.readAsDataURL(chunk);
+    };
+
+    // Start uploading the first chunk
+    uploadChunk(0);
+  });
+}
+
   public uploadProgress:number = 0;
 
   // uploadFileWithProgress(file: File, filename: string, chunkSize: number = 1024 * 1024): Promise<void> { // Default chunk size of 1MB
@@ -1242,6 +1250,7 @@ export class APIService implements OnDestroy, OnInit {
           this.http
             .post(environment.nodeserver + '/filehandler-progress', {
               key: environment.socketKey,
+              app: environment.app,
               method: 'create_url',
               chunk: base64String,
               fileName: 'files/' + filename,
@@ -1296,6 +1305,7 @@ export class APIService implements OnDestroy, OnInit {
           this.http
             .post(environment.nodeserver + '/filehandler-progress', {
               key: environment.socketKey,
+              app: environment.app,
               method: 'create_url',
               chunk: base64String,
               fileName: 'files/' + filename,
@@ -3200,30 +3210,6 @@ export class APIService implements OnDestroy, OnInit {
   }
 
 
-
-  uploadFilee(file: File, filename: string): Observable<any> {  // Changed to return Observable
-    return new Observable(observer => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = (reader.result as string).split(',')[1];
-        this.http
-          .post(environment.nodeserver + '/filehandler', {
-            key: environment.socketKey,
-            method: 'create_url',
-            file_content: base64String,
-            search_key: 'files/' + filename,
-          })
-          .subscribe({
-            next: (response) => {
-              observer.next(response);
-              observer.complete();
-            },
-            error: (error) => observer.error(error)
-          });
-      };
-      reader.readAsDataURL(file);
-    });
-  }
 
 
   deleteFile(file: string) {

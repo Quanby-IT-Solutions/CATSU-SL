@@ -451,7 +451,7 @@ export class QuizCreationComponent implements OnInit {
   }
 
 
-  submit() {
+  async submit() {
     if (this.uploading) return;
     this.uploading = true;
     var settings: any = '';
@@ -483,7 +483,7 @@ export class QuizCreationComponent implements OnInit {
       var fileparse = this.attachments.name.split('.');
       var serverLocation =
         this.API.createID36() + '.' + fileparse[fileparse.length - 1];
-      this.API.uploadFile(this.attachments, serverLocation);
+      await this.API.uploadFileWithProgress(this.attachments, serverLocation);
       var filelocation = 'files/' + serverLocation;
       var filename = this.attachments.name;
       attachments = filelocation + '>' + filename;
