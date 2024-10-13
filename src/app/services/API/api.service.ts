@@ -4123,8 +4123,9 @@ export class APIService implements OnDestroy, OnInit {
     deadline: string,
     attachments?: string,
     settings?: string,
-    lessonid?: string,  // New parameter
-    topicid?: string    // New parameter
+    lessonid?: string,  
+    topicid?: string,
+    classid?: string  
   ) {
     var attach = {};
     if (attachments != undefined) {
@@ -4152,8 +4153,9 @@ export class APIService implements OnDestroy, OnInit {
           Details: det,
           Timelimit: timelimit,
           Deadline: deadline,
-          lessonid: lessonid,  // Add lessonid
-          topicid: topicid     // Add topicid
+          lessonid: lessonid,  
+          topicid: topicid,
+          classid: classid,    
         },
         attach,
         sett
@@ -4173,8 +4175,8 @@ export class APIService implements OnDestroy, OnInit {
     deadline: string,
     attachments?: string,
     settings?: string,
-    lessonid?: string,  // New parameter
-    topicid?: string    // New parameter
+    lessonid?: string,
+    topicid?: string,
   ) {
     var attach = {};
     if (attachments != undefined) {

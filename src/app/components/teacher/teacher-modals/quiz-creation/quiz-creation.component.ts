@@ -25,8 +25,8 @@ export class QuizCreationComponent implements OnInit {
 
 
   course: string = '';
-  selectedClass: string = '';
   lesson: string = '';
+  selectedClassID: string = '';
   topic: string = '';
   title: string = '';
   description: string = '';
@@ -262,14 +262,20 @@ export class QuizCreationComponent implements OnInit {
     this.API.showLoader();
     this.API.teacherAllClasses().subscribe(data => {
       if (data.success) {
-        this.classes = data.output;
-        console.log(data);
+        this.classes = data.output.map((_class: any) => ({
+          id: _class.id,  // Store the class ID
+          courseid: _class.courseid,  // Store the course ID
+          course: _class.course,
+          class: _class.class
+        }));
+        console.log(this.classes);  // You will now see both class ID and course ID in the console
       } else {
         this.API.failedSnackbar('Unable to connect to the server.', 3000);
       }
       this.API.hideLoader();
     });
   }
+  
   
 
 
@@ -380,10 +386,37 @@ export class QuizCreationComponent implements OnInit {
 
   uploading: boolean = false;
 
-  onCourseChange() {
+  // onCourseChange() {
+  //   this.lesson = '';
+  //   this.topic = '';
+  //   this.topics = [];
+  //   if (this.course) {
+  //     this.API.teacherCourseLessons(this.course).subscribe(
+  //       (data) => {
+  //         this.lessons = data.output;
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching lessons:', error);
+  //         this.API.failedSnackbar('Failed to fetch lessons for the selected course.');
+  //       }
+  //     );
+  //   } else {
+  //     this.lessons = [];
+  //   }
+  // }
+
+
+
+
+  onCourseChange(selectedClass: any) {
+    this.course = selectedClass.courseid;  // Set the selected courseid
+    this.selectedClassID = selectedClass.id;  // Store the associated class ID
+  
     this.lesson = '';
     this.topic = '';
     this.topics = [];
+  
+    // Load lessons based on the selected course
     if (this.course) {
       this.API.teacherCourseLessons(this.course).subscribe(
         (data) => {
@@ -398,8 +431,7 @@ export class QuizCreationComponent implements OnInit {
       this.lessons = [];
     }
   }
-
-  onClassChange() {}
+  
 
   onLessonChange() {
     this.topic = '';
@@ -502,8 +534,8 @@ export class QuizCreationComponent implements OnInit {
         this.deadline,
         attachments,
         settings,
-        this.lesson || undefined,  // Add lesson ID
-        this.topic || undefined    // Add topic ID
+        this.lesson || undefined,
+        this.topic || undefined,
       ).subscribe(async () => {
         for (let item of this.questions) {
           var options: any = undefined;
@@ -579,7 +611,10 @@ export class QuizCreationComponent implements OnInit {
         attachments,
         settings,
         this.lesson || undefined,
-        this.topic || undefined
+        this.topic || undefined,
+        this.selectedClassID 
+
+
       ).subscribe(async () => {
         for (let item of this.questions) {
           var options: any = undefined;

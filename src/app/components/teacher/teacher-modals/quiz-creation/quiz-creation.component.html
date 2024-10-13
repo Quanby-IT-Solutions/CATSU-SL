@@ -27,15 +27,28 @@
               type="text" [(ngModel)]="deadline" name="deadline" id="deadline" placeholder="Deadline:"
               onfocus="this.type='date'" onblur="this.type='text'" required style="padding-left: 10px" />
           
-              <select
+              <!-- <select
               class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
               [(ngModel)]="course" (ngModelChange)="onCourseChange()" name="course">
               <option value="" disabled selected hidden>Select Course</option>
               <option *ngFor="let _class of classes" [value]="_class.courseid">
                 {{ _class.course }} - {{ _class.class }}
               </option>
-            </select>
+            </select> -->
            
+            <select
+            class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
+            [(ngModel)]="course"
+            (ngModelChange)="onCourseChange($event)" 
+            name="course"
+          >
+            <option value="" disabled selected hidden>Select Course</option>
+            <option *ngFor="let _class of classes" [ngValue]="_class">  <!-- Use [ngValue] to bind the whole object -->
+              {{ _class.course }} - {{ _class.class }}
+            </option>
+          </select>
+          
+
               <select
                 class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
                 [(ngModel)]="lesson" (ngModelChange)="onLessonChange()" name="lesson">
