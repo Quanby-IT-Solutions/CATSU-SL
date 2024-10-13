@@ -149,13 +149,13 @@ export class APIService implements OnDestroy, OnInit {
     }
   }
 
-  
+
   async analyzeSpeech(prompt: string): Promise<string> {
     try {
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
       const text = await response.text();
-  
+
       return text.trim();
     } catch (error) {
       console.error('Error generating content from speech:', error);
@@ -168,14 +168,14 @@ export class APIService implements OnDestroy, OnInit {
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
       const text = await response.text();
-  
+
       return text.trim();
     } catch (error) {
       console.error('Error generating content from speech:', error);
       throw new Error('Error generating content from speech. Please try again.');
     }
   }
-  
+
 
 
   getAttendanceHistory() {
@@ -588,7 +588,7 @@ export class APIService implements OnDestroy, OnInit {
   }
 
   generateManualId(): number {
-    return Math.floor(Math.random() * 1000000); 
+    return Math.floor(Math.random() * 1000000);
   }
 
   askGeminiTon(prompt: string) {
@@ -1321,7 +1321,7 @@ export class APIService implements OnDestroy, OnInit {
                   uploadChunk(chunkIndex + 1);
                 } else {
                   console.log(`File upload complete: ${filename}`);
-                  resolve(); 
+                  resolve();
                 }
               },
               error: (err) => {
@@ -1339,8 +1339,8 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
-  
-  
+
+
 
 
 
@@ -1638,7 +1638,7 @@ export class APIService implements OnDestroy, OnInit {
       data: JSON.stringify(postObject),
     });
   }
-  
+
 
   // before duration
 
@@ -3955,9 +3955,9 @@ export class APIService implements OnDestroy, OnInit {
         audio_file: audioFile,
       }
     };
-  
+
     console.log('Creating audio file with manual ID:', postObject);
-  
+
     return this.post('create_entry', {
       data: JSON.stringify(postObject),
     }).pipe(
@@ -3967,8 +3967,8 @@ export class APIService implements OnDestroy, OnInit {
       catchError(this.handleError)
     );
   }
-  
-  
+
+
 
   getAudioFiles(): Observable<any> {
     const postObject = {
@@ -4029,9 +4029,9 @@ export class APIService implements OnDestroy, OnInit {
     );
   }
 
-  
 
- 
+
+
   createSpeechAnalyzerResult(
     audioId: number,
     fluency: number,
@@ -4055,9 +4055,9 @@ export class APIService implements OnDestroy, OnInit {
         speech_analyzer_items_id: itemsId,
       },
     };
-  
+
     console.log('Creating speech analyzer result with data:', postObject);
-  
+
     return this.post('create_entry', {
       data: JSON.stringify(postObject),
     }).pipe(
@@ -4065,8 +4065,8 @@ export class APIService implements OnDestroy, OnInit {
       catchError(this.handleError)
     );
   }
-  
-  
+
+
 
   getSpeechAnalyzerResults(): Observable<any> {
     const postObject = {
@@ -4109,25 +4109,25 @@ export class APIService implements OnDestroy, OnInit {
     deadline: string,
     attachments?: string,
     settings?: string,
-    lessonid?: string,  
+    lessonid?: string,
     topicid?: string,
-    classid?: string  
+    classid?: string
   ) {
     var attach = {};
     if (attachments != undefined) {
       attach = { Attachments: attachments };
     }
-  
+
     var det = '[NONE]';
     if (details.trim() != '') {
       det = details;
     }
-  
+
     var sett = {};
     if (settings != undefined) {
       sett = { Settings: settings };
     }
-  
+
     const postObject = {
       tables: 'assessments',
       values: Object.assign(
@@ -4139,9 +4139,9 @@ export class APIService implements OnDestroy, OnInit {
           Details: det,
           Timelimit: timelimit,
           Deadline: deadline,
-          lessonid: lessonid,  
+          lessonid: lessonid,
           topicid: topicid,
-          classid: classid,    
+          classid: classid,
         },
         attach,
         sett
@@ -4151,7 +4151,7 @@ export class APIService implements OnDestroy, OnInit {
       data: JSON.stringify(postObject),
     });
   }
-  
+
   updateQuiz(
     CourseID: string,
     ID: string,
@@ -4168,45 +4168,45 @@ export class APIService implements OnDestroy, OnInit {
     if (attachments != undefined) {
       attach = { Attachments: attachments };
     }
-  
+
     var det = '[NONE]';
     if (details.trim() != '') {
       det = details;
     }
-  
+
     var sett = {};
     if (settings != undefined) {
       sett = { Settings: settings };
     }
-  
+
     const postObject = {
       tables: 'assessments',
       values: Object.assign(
         {},
         {
           CourseID: CourseID,
-          ID: ID,
           Title: title,
           Details: det,
           Timelimit: timelimit,
           Deadline: deadline,
-          lessonid: lessonid,  // Add lessonid
-          topicid: topicid     // Add topicid
+          lessonid: lessonid,
+          topicid: topicid
         },
         attach,
         sett
       ),
-      conditions:{
-        WHERE:{
+      conditions: {
+        WHERE: {
           ID: ID,
-        }
-      }
+        },
+      },
     };
+
     return this.post('update_entry', {
       data: JSON.stringify(postObject),
     });
   }
-  
+
 
   updateQuizItem(
     ID: string,
@@ -4303,25 +4303,34 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
-  teacherGetQuizzes() {
+  teacherGetQuizzes(courseId?: string, classId?: string) {
     const id = this.getUserData().id;
-    const postObject = {
+    const postObject: any = {
       selectors: ['assessments.*', 'COUNT(assessment_items.ID) as items'],
       tables: 'assessments',
       conditions: {
         'LEFT JOIN courses': 'ON assessments.CourseID = courses.ID',
-        'LEFT JOIN assessment_items':
-          'ON assessment_items.AssessmentID = assessments.ID',
+        'LEFT JOIN assessment_items': 'ON assessment_items.AssessmentID = assessments.ID',
         WHERE: {
           'courses.TeacherID': id,
         },
         'GROUP BY': 'assessments.ID',
       },
     };
+
+    if (courseId) {
+      postObject.conditions.WHERE['assessments.CourseID'] = courseId;
+    }
+
+    if (classId) {
+      postObject.conditions.WHERE['assessments.classid'] = classId;
+    }
+
     return this.post('get_entries', {
       data: JSON.stringify(postObject),
     });
   }
+
 
   teacherGetQuizItems(quizId:string){
     const postObject = {
@@ -5654,7 +5663,7 @@ export class APIService implements OnDestroy, OnInit {
   async loadComputers() {
     const rows: any[] = [];
     let pcIndex = 1;
-  
+
     // Create 5 rows with 7 PCs each
     for (let i = 0; i < 5; i++) {
       const row: any[] = [];
@@ -5669,7 +5678,7 @@ export class APIService implements OnDestroy, OnInit {
       }
       rows.push(row);
     }
-  
+
     // Create the last row with 5 PCs
     const lastRow: any[] = [];
     for (let i = 0; i < 5; i++) {
@@ -5682,11 +5691,11 @@ export class APIService implements OnDestroy, OnInit {
       pcIndex += 1;
     }
     rows.push(lastRow);
-  
+
     return rows;
   }
 
-  
+
 
   labID?: string;
   getStudentAssignedLab() {
