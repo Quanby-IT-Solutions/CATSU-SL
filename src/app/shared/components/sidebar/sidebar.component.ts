@@ -34,7 +34,7 @@ export class SidebarComponent implements OnInit {
       routerLink: '/student/dashboard',
     },
     LAB: {
-      redirect: 'student/lab',
+      redirect: '/student/lab',
       icon: 'bx-extension',
       routerLink: '/student/lab',
     },
@@ -186,13 +186,13 @@ export class SidebarComponent implements OnInit {
     switch (accountType) {
       case 0: // Student
         this.displayedItems = this.studentDashboardItems;
-        this.mainItemKeys = ['DASHBOARD', 'LAB', 'MEET', 'TASKS', 'SPEECH LAB']; // Main items
-        this.specialItemKeys = ['DICTIONARY', 'TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
+        this.mainItemKeys = ['DASHBOARD', 'LAB','MEET', 'TASKS',  'SPEECH LAB']; // Main items
+        this.specialItemKeys = ['DICTIONARY','TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
         break;
       case 1: // Teacher
         this.displayedItems = this.teacherDashboardItems;
-        this.mainItemKeys = ['DASHBOARD', 'MANAGE COURSES', 'MANAGE CLASS', 'MEET', 'GRADES', 'SPEECH LAB']; // Main items
-        this.specialItemKeys = ['DICTIONARY', 'TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
+        this.mainItemKeys = ['DASHBOARD', 'MANAGE COURSES', 'MANAGE CLASS',  'MEET' ,'GRADES','SPEECH LAB']; // Main items
+        this.specialItemKeys = ['DICTIONARY','TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
         break;
       case 2:
         this.displayedItems = this.adminDashboardItems;
