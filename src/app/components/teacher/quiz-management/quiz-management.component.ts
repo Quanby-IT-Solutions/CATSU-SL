@@ -17,11 +17,16 @@ export class QuizManagementComponent implements OnInit {
     private router: Router
   ) {}
 
+
   isDropdownOpen = false;
   currentCourse: any;
   courses: any = [];
   mockAverageScore = 0;
   mockCompletionRate = 85;
+  isCourseDropdownOpen = false;
+  isClassDropdownOpen = false;
+  currentClass: any;
+  classes: any = [];
 
   selectedQuiz: any;
   selectedStudent: any;
@@ -42,6 +47,7 @@ export class QuizManagementComponent implements OnInit {
   ngOnInit(): void {
     this.getQuizzes();
     this.getTeacherCourses();
+    this.getTeacherClasses();
     this.filteredQuizOptions = this.quizOptions.slice();
     this.filteredStudentOptions = this.studentOptions.slice();
   }
@@ -52,10 +58,45 @@ export class QuizManagementComponent implements OnInit {
 
   getQuizzes() {
     this.API.showLoader();
-    this.API.teacherGetQuizzes().subscribe((data) => {
-      this.quizzes = data.output;
-      this.API.hideLoader();
-    });
+    this.API.teacherGetQuizzes(this.currentCourse?.id, this.currentClass?.id).subscribe(
+      (data: any) => {
+        if (data.success) {
+          this.quizzes = data.output;
+          this.currentPage = 0; // Reset to first page when new data is loaded
+        } else {
+          this.API.failedSnackbar('Failed to load quizzes');
+        }
+        this.API.hideLoader();
+      },
+      (error) => {
+        console.error('Error loading quizzes:', error);
+        this.API.failedSnackbar('Error loading quizzes');
+        this.API.hideLoader();
+      }
+    );
+  }
+  getTeacherClasses() {
+    if (this.currentCourse) {
+      this.API.teacherGetClassesByCourse(this.currentCourse.id).subscribe(
+        (data: any) => {
+          if (data.success) {
+            this.classes = data.output.map((_class: any) => ({
+              id: _class.id,
+              name: _class.class,
+              courseId: _class.courseid
+            }));
+          } else {
+            this.API.failedSnackbar('Failed loading classes');
+          }
+        },
+        (error) => {
+          console.error('Error loading classes:', error);
+          this.API.failedSnackbar('Error loading classes');
+        }
+      );
+    } else {
+      this.classes = [];
+    }
   }
 
   getTeacherCourses() {
@@ -92,11 +133,29 @@ export class QuizManagementComponent implements OnInit {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
+  toggleCourseDropdown() {
+    this.isCourseDropdownOpen = !this.isCourseDropdownOpen;
+  }
+
+  toggleClassDropdown() {
+    this.isClassDropdownOpen = !this.isClassDropdownOpen;
+  }
+
+
   changeCourse(course: any) {
     this.currentCourse = course;
-    console.log(course);
-    this.isDropdownOpen = false;
+    this.currentClass = null; // Reset class when course changes
+    this.isCourseDropdownOpen = false;
+    this.getTeacherClasses(); // Update class list for the selected course
+    this.filterQuizzes();
   }
+
+  changeClass(selectedClass: any) {
+    this.currentClass = selectedClass;
+    this.isClassDropdownOpen = false;
+    this.filterQuizzes();
+  }
+
 
   gettingAvg = false;
 
@@ -160,7 +219,7 @@ export class QuizManagementComponent implements OnInit {
     this.selectedQuiz = null; // Clear selected quiz for creating a new one
     this.isModalOpen = true; // Open the modal
   }
-  
+
   editQuiz(quiz: any) {
     this.selectedQuiz = quiz; // Set the selected quiz for editing
     this.isModalOpen = true; // Open the modal
@@ -170,19 +229,15 @@ export class QuizManagementComponent implements OnInit {
     this.isModalOpen = false
   }
 
-  
+
 
   parseDate(date: string) {
     return this.API.parseDate(date);
   }
 
   filterQuizzes() {
-    if (!this.selectedQuiz) {
-      this.filteredQuizOptions = this.quizOptions.slice();
-    } else {
-      this.filteredQuizOptions = this.quizOptions.filter((option) =>
-        option.toLowerCase().includes(this.selectedQuiz.toLowerCase())
-      );
+    if (this.currentCourse || this.currentClass) {
+      this.getQuizzes(); // This will now use the current course and class
     }
   }
 
@@ -264,5 +319,5 @@ export class QuizManagementComponent implements OnInit {
       );
     }
   }
-  
+
 }

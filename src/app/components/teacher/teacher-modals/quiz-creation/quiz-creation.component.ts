@@ -12,12 +12,12 @@ import { duration } from 'html2canvas/dist/types/css/property-descriptors/durati
 })
 export class QuizCreationComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
-  
+
 
   closeModal() {
     this.closed.emit(); // Emit event to notify the parent component to close the modal
   }
-  
+
   @Input() myCustomClass: string = '';
   @Input() quiz: any = null;
   @Input() courses: any = [];
@@ -275,8 +275,8 @@ export class QuizCreationComponent implements OnInit {
       this.API.hideLoader();
     });
   }
-  
-  
+
+
 
 
   private createNewQuestion(): any {
@@ -411,11 +411,11 @@ export class QuizCreationComponent implements OnInit {
   onCourseChange(selectedClass: any) {
     this.course = selectedClass.courseid;  // Set the selected courseid
     this.selectedClassID = selectedClass.id;  // Store the associated class ID
-  
+
     this.lesson = '';
     this.topic = '';
     this.topics = [];
-  
+
     // Load lessons based on the selected course
     if (this.course) {
       this.API.teacherCourseLessons(this.course).subscribe(
@@ -431,7 +431,7 @@ export class QuizCreationComponent implements OnInit {
       this.lessons = [];
     }
   }
-  
+
 
   onLessonChange() {
     this.topic = '';
@@ -598,7 +598,7 @@ export class QuizCreationComponent implements OnInit {
           await lastValueFrom(this.API.deleteQuizItem(item));
         }
         this.API.successSnackbar('Saved quiz!');
-        
+
       });
     }else{
       this.API.createQuiz(
@@ -612,7 +612,7 @@ export class QuizCreationComponent implements OnInit {
         settings,
         this.lesson || undefined,
         this.topic || undefined,
-        this.selectedClassID 
+        this.selectedClassID
 
 
       ).subscribe(async () => {
@@ -659,7 +659,7 @@ export class QuizCreationComponent implements OnInit {
           )}</b>.`,
           this.course
         );
-       
+
       });
     }
 
