@@ -108,7 +108,7 @@ export class MaterialsComponent implements OnInit {
     if( this.fileUpload != undefined){
      var fileparse =  this.fileUpload.name.split(".");
      var serverLocation = this.API.createID36()+ '.' + fileparse[fileparse.length-1];
-     this.API.uploadFile( this.fileUpload, serverLocation);
+     this.API.uploadFileWithProgress( this.fileUpload, serverLocation);
      var filelocation = 'files/' + serverLocation;
      var filename =  this.fileUpload.name;
       attachments = filelocation+'>'+filename; 
