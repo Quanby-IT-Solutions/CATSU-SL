@@ -1,7 +1,7 @@
-<div class="p-6 bg-gray-100 min-h-screen">
+<div class="min-h-screen p-6 bg-gray-100">
   <div class="flex justify-start mb-6">
     <button
-      class="bg-white shadow-md text-lg font-semibold rounded-lg px-4 py-2 text-green-700 border border-green-500 hover:bg-green-100 transition duration-300 ease-in-out"
+      class="px-4 py-2 text-lg font-semibold transition duration-300 ease-in-out bg-white border rounded-lg shadow-md text-amber-700 border-amber-500 hover:bg-amber-100"
       (click)="navigateBack()"
     >
       Back
@@ -9,10 +9,10 @@
   </div>
 
   <!-- Loop through lessons -->
-  <div *ngFor="let lesson of lessons; let i = index" class="bg-white p-6 mb-8 rounded-xl shadow-md border-l-4 border-green-600 relative">
+  <div *ngFor="let lesson of lessons; let i = index" class="relative p-6 mb-8 bg-white border-l-4 shadow-md rounded-xl border-amber-600">
     <!-- Lesson-level quiz indicator -->
     <div *ngIf="lesson.hasQuiz" class="absolute top-2 right-2">
-      <ng-lottie 
+      <ng-lottie
       [options]="lottieOptions"
       width="75px"
       height="75px"
@@ -20,55 +20,55 @@
     </ng-lottie>
     </div>
 
-  
 
-    <div class="flex justify-between items-start mb-4">
+
+    <div class="flex items-start justify-between mb-4">
       <div>
-        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
-          <i class="fas fa-book text-3xl mr-3 text-green-600"></i>
+        <h2 class="flex items-center text-2xl font-bold text-gray-800">
+          <i class="mr-3 text-3xl fas fa-book text-amber-600"></i>
           Lesson #{{i + 1}}: {{lesson.title}}
         </h2>
-        <div class="mt-2 text-gray-600 flex items-center">
+        <div class="flex items-center mt-2 text-gray-600">
           <span>{{lesson.firstname}} {{lesson.lastname}}</span>
           <span class="mx-2">•</span>
           <span>{{parseTime(lesson.time)}}</span>
         </div>
       </div>
       <div class="flex items-center">
-        <button *ngIf="!isDone(lesson) && !hideMarkAsDone" (click)="markAsDone(lesson)" class="text-white bg-blue-500 hover:bg-blue-600 font-medium rounded-md px-4 py-2 mr-2 transition duration-300">
+        <button *ngIf="!isDone(lesson) && !hideMarkAsDone" (click)="markAsDone(lesson)" class="px-4 py-2 mr-2 font-medium text-white transition duration-300 bg-blue-500 rounded-md hover:bg-blue-600">
           Mark as done
         </button>
-        <button *ngIf="isDone(lesson)" class="text-white bg-green-500 hover:bg-green-600 font-medium rounded-md px-4 py-2 mr-2 transition duration-300">
+        <button *ngIf="isDone(lesson)" class="px-4 py-2 mr-2 font-medium text-white transition duration-300 rounded-md bg-amber-500 hover:bg-amber-600">
           Done
         </button>
       </div>
     </div>
 
-    <p class="text-gray-700 mb-6 leading-relaxed">{{lesson.details}}</p>
+    <p class="mb-6 leading-relaxed text-gray-700">{{lesson.details}}</p>
 
     <div>
-      <h4 class="text-lg font-semibold text-green-700 mb-4">Topics</h4>
+      <h4 class="mb-4 text-lg font-semibold text-amber-700">Topics</h4>
       <div *ngIf="lesson.topics && lesson.topics.length > 0; else noTopics">
         <!-- Loop through topics -->
-        <div *ngFor="let topic of lesson.topics; let idx = index" class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 shadow-sm relative">
+        <div *ngFor="let topic of lesson.topics; let idx = index" class="relative p-4 mb-4 border border-gray-200 rounded-lg shadow-sm bg-gray-50">
           <!-- Topic-level quiz indicator -->
           <div *ngIf="topic.hasQuiz" class="absolute top-2 right-2">
-            <ng-lottie 
+            <ng-lottie
             [options]="lottieOptions"
             width="75px"
             height="75px"
             title="This lesson has a quiz">
           </ng-lottie>          </div>
 
-          <div class="flex justify-between items-center mb-2">
-            <h5 class="font-semibold text-lg text-green-700">Topic #{{ idx + 1 }}: {{ topic.title }}</h5>
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-lg font-semibold text-amber-700">Topic #{{ idx + 1 }}: {{ topic.title }}</h5>
           </div>
 
           <!-- Check each line, only display bullet if line starts with '-' -->
-          <div class="text-gray-600 mb-4">
+          <div class="mb-4 text-gray-600">
             <ng-container *ngFor="let line of topic.details.split('\n')">
               <div *ngIf="line.trim().startsWith('-'); else softBreak">
-                <ul class="list-disc pl-5">
+                <ul class="pl-5 list-disc">
                   <li>{{ line.replace('-', '').trim() }}</li>
                 </ul>
               </div>
@@ -79,12 +79,12 @@
           </div>
 
           <div *ngIf="topic.attachments && topic.attachments.length > 0" class="mt-2">
-            <h6 class="text-sm font-semibold text-green-500">Attachments:</h6>
-            <ul class="list-disc ml-5">
-              <li *ngFor="let file of topic.attachments" (click)="handleFileClick(file, topic)" class="cursor-pointer text-blue-600 hover:underline flex items-center">
+            <h6 class="text-sm font-semibold text-amber-500">Attachments:</h6>
+            <ul class="ml-5 list-disc">
+              <li *ngFor="let file of topic.attachments" (click)="handleFileClick(file, topic)" class="flex items-center text-blue-600 cursor-pointer hover:underline">
                 <span>{{ getFilenameFromPath(file.file) }}</span>
 
-                <ng-lottie 
+                <ng-lottie
                 *ngIf="file.type === 'interactive'"
                 [options]="lottieOptions"
                 width="75px"

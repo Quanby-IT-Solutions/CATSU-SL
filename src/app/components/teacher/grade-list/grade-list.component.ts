@@ -30,18 +30,6 @@ export class GradeListComponent implements OnInit {
   assignmentGrades: Map<string, AssignmentGrade> = new Map();
   attendanceHistory: Map<string, any> = new Map();
 
-  // [
-  //   {
-  //     name: 'Assignment 1',
-  //     grades: [
-  //       { studentName: 'Student A', grade: 'B' },
-  //       { studentName: 'Student B', grade: 'A-' },
-  //       // Add more grades for Assignment 1 here
-  //     ],
-  //   },
-  //   // Add more assignments here
-  // ];
-
   assignments: string[] = [];
   quizzes: string[] = [];
   labquizzes: string[] = [];

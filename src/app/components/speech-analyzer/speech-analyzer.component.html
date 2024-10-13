@@ -1,13 +1,13 @@
-<section class="min-h-screen px-4 py-12 bg-gradient-to-br from-amber-50 to-orange-100">
+<section class="min-h-screen px-4 py-12 ">
   <div class="max-w-5xl mx-auto">
     <header class="mb-12 text-center">
-      <h1 class="mb-2 text-4xl font-bold text-amber-800">Speech Analyzer</h1>
-      <p class="text-lg text-amber-700">Improve your language skills with real-time feedback</p>
+      <h1 class="mb-2 text-4xl font-bold text-[--secondary-color]">Speech Analyzer</h1>
+      <p class="text-lg text-[--primary-color]">Improve your language skills with real-time feedback</p>
     </header>
 
     <!-- Student Section -->
     <main *ngIf="getUserAccountType() === 0" class="overflow-hidden bg-white shadow-xl rounded-3xl" [@fadeIn]>
-      <div class="flex items-center justify-between p-6 bg-gradient-to-r from-amber-500 to-orange-600">
+      <div class="flex items-center justify-between p-6 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary-color)]">
         <h2 class="text-2xl font-semibold text-white">Student Practice</h2>
         <time class="text-sm text-white opacity-80">{{ currentDate | date:'longDate' }}</time>
       </div>
@@ -20,7 +20,7 @@
             <button *ngFor="let class of classes; let i = index" (click)="selectClass(class.class_id)"
               class="p-6 transition-all duration-300 rounded-lg shadow bg-amber-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500 hover:scale-105"
               [@slideIn]="{ value: '', params: { delay: i * 100 } }">
-              <span class="text-lg font-medium text-amber-800">{{class.class}}</span>
+              <span class="text-lg font-medium text-[--tertiary-color]">{{class.class}}</span>
             </button>
           </div>
         </div>
@@ -29,7 +29,7 @@
         <div *ngIf="selectedStudentClass && !speechSample && !analysisResult" class="mb-8" [@fadeIn]>
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-semibold text-gray-800">Choose a Practice Text</h3>
-            <button (click)="goBack()" class="px-4 py-2 transition-colors duration-300 rounded-md text-amber-600 bg-amber-100 hover:bg-amber-200">
+            <button (click)="goBack()" class="px-4 py-2 text-white transition-colors duration-300 rounded-md bg-[--secondary-color] hover:bg-[--primary-color]">
               <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-5 h-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
               </svg>
@@ -48,7 +48,7 @@
         <div *ngIf="speechSample && !analysisResult" class="text-center" [@fadeIn]>
           <div class="flex items-center justify-between mb-4">
             <p class="text-lg text-gray-600">Read the following sentence:</p>
-            <button (click)="goBack()" class="px-4 py-2 transition-colors duration-300 rounded-md text-amber-600 bg-amber-100 hover:bg-amber-200">
+            <button (click)="goBack()" class="px-4 py-2 transition-colors duration-300 rounded-md text-white bg-[--secondary-color] hover:bg-[--primary-color]">
               <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-5 h-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
               </svg>

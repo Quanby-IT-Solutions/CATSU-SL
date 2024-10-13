@@ -6,41 +6,41 @@
     <title>QLAB Language Proficiency Quiz</title>
     <!-- Make sure you have Tailwind CSS included in your project -->
 </head>
-<body class="bg-gray-100 min-h-screen w-full flex flex-col items-center overflow-y-auto bg-gradient-to-br from-blue-50 to-green-100">
-    <div class="w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg mx-auto my-8 marginthisbox">
+<body class="flex flex-col items-center w-full min-h-screen overflow-y-auto bg-gray-100 bg-gradient-to-br from-blue-50 to-amber-100">
+    <div class="w-full max-w-4xl p-6 mx-auto my-8 bg-white rounded-lg shadow-lg marginthisbox">
         <!-- Introductory Text -->
-        <div class="mx-auto p-8 bg-white shadow-md rounded-lg mb-8 border border-gray-200">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="w-full md:w-3/4 pr-0 md:pr-6">
-                    <h1 class="text-3xl font-bold mb-4 text-green-800">{{ title }}</h1>
+        <div class="p-8 mx-auto mb-8 bg-white border border-gray-200 rounded-lg shadow-md">
+            <div class="flex flex-col items-center md:flex-row">
+                <div class="w-full pr-0 md:w-3/4 md:pr-6">
+                    <h1 class="mb-4 text-3xl font-bold text-amber-800">{{ title }}</h1>
                     <p class="text-lg text-gray-600">{{ description }}</p>
                 </div>
                 <img
                     src="assets/quiz1.jpg"
                     alt="Quiz Image"
-                    class="w-full md:w-1/4 mt-4 md:mt-0 rounded-lg shadow-md"
+                    class="w-full mt-4 rounded-lg shadow-md md:w-1/4 md:mt-0"
                 />
             </div>
         </div>
 
         <!-- Timer -->
-        <div *ngIf="mode !='listening'" class="text-center mb-6">
-            <p class="text-xl font-semibold bg-green-100 inline-block px-4 py-2 rounded-full">
+        <div *ngIf="mode !='listening'" class="mb-6 text-center">
+            <p class="inline-block px-4 py-2 text-xl font-semibold rounded-full bg-amber-100">
                 Time Remaining:
-                <span class="text-red-600 font-bold">{{ secondsToMinutes(timeRemaining) }}</span>
+                <span class="font-bold text-red-600">{{ secondsToMinutes(timeRemaining) }}</span>
             </p>
         </div>
 
         <div *ngIf="currentQuestionIndex < questions.length">
             <ng-container *ngIf="mode === 'reading'; else listening">
-                <h2 class="text-2xl font-semibold mb-6 text-green-800 border-b-2 border-green-200 pb-2">
+                <h2 class="pb-2 mb-6 text-2xl font-semibold border-b-2 text-amber-800 border-amber-200">
                     {{ questions[currentQuestionIndex].question }}
                 </h2>
-                <img *ngFor="let file of questions[currentQuestionIndex].attachments" [src]="file" class="mx-auto w-auto max-h-60 mb-6 rounded-lg shadow-md">
+                <img *ngFor="let file of questions[currentQuestionIndex].attachments" [src]="file" class="w-auto mx-auto mb-6 rounded-lg shadow-md max-h-60">
             </ng-container>
             <ng-template #listening>
-                <div class="poppins flex flex-col w-full justify-center items-center gap-3 mb-6 bg-green-50 p-6 rounded-lg">
-                    <h2 class="text-2xl font-semibold text-green-800">
+                <div class="flex flex-col items-center justify-center w-full gap-3 p-6 mb-6 rounded-lg poppins bg-amber-50">
+                    <h2 class="text-2xl font-semibold text-amber-800">
                         <span *ngIf="!generating">
                             <i class="bx bx-headphone"></i> Listen Carefully
                         </span>
@@ -48,8 +48,8 @@
                             Wait for your question...
                         </span>
                     </h2>
-                    <button (click)="textToSpeech()" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition duration-300">
-                        <i class="bx text-2xl bx-play-circle"></i>
+                    <button (click)="textToSpeech()" class="flex items-center gap-2 px-4 py-2 text-white transition duration-300 rounded-full bg-amber-600 hover:bg-amber-700">
+                        <i class="text-2xl bx bx-play-circle"></i>
                         <span> Play Again</span>
                     </button>
                 </div>
@@ -57,15 +57,15 @@
 
             <!-- Choices Section (Only for Multiple Choice Questions) -->
             <div *ngIf="questions[currentQuestionIndex].type <= 1; else identification">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Choices:</h3>
-                <div class="poppins grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h3 class="mb-4 text-xl font-semibold text-gray-700">Choices:</h3>
+                <div class="grid grid-cols-1 gap-4 poppins md:grid-cols-2">
                     <button
                         *ngFor="
                         let choice of questions[currentQuestionIndex].choices;
                         trackBy: trackByFn;
                         let i = index
                         "
-                        class="py-3 px-5 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-blue-50 focus:bg-blue-100 focus:border-blue-500 transition-all duration-300"
+                        class="px-5 py-3 text-gray-700 transition-all duration-300 border-2 border-gray-300 rounded-lg hover:bg-blue-50 focus:bg-blue-100 focus:border-blue-500"
                         [ngClass]="{
                         'text-xl': mode != 'reading'
                         }"
@@ -73,7 +73,7 @@
                     >
                         <div class="flex flex-col items-center">
                         {{ choice.text }}
-                        <img *ngIf="choice.attachment" [src]="choice.attachment" class="mx-auto w-auto max-h-40 mt-4 rounded-md shadow-sm">
+                        <img *ngIf="choice.attachment" [src]="choice.attachment" class="w-auto mx-auto mt-4 rounded-md shadow-sm max-h-40">
                         </div>
                         <i *ngIf="showResult" class="ml-2"></i>
                     </button>
@@ -82,22 +82,22 @@
 
             <!-- Input box for the answer (for non-multiple choice questions) -->
             <ng-template #identification>
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Your Answer:</h3>
+                <h3 class="mb-4 text-xl font-semibold text-gray-700">Your Answer:</h3>
                 <input
                     type="text"
-                    class="w-full py-3 px-4 border-2 border-green-300 rounded-lg mb-6 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50"
+                    class="w-full px-4 py-3 mb-6 border-2 rounded-lg border-amber-300 focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50"
                     [(ngModel)]="questions[currentQuestionIndex].selectedAnswers[0]"
                     placeholder="Type your answer here"
                 />
             </ng-template>
 
             <!-- Navigation Buttons -->
-            <div class="mt-8 flex justify-between">
+            <div class="flex justify-between mt-8">
                 <button
-                    class="py-2 px-6 text-white rounded-full transition duration-300"
+                    class="px-6 py-2 text-white transition duration-300 rounded-full"
                     (click)="prevQuestion()"
                     [ngClass]="{
-                        'bg-green-500 hover:bg-green-600': backtracking,
+                        'bg-amber-500 hover:bg-amber-600': backtracking,
                         'bg-gray-400 cursor-not-allowed': !backtracking
                     }"
                     [disabled]="!backtracking"
@@ -105,7 +105,7 @@
                     Previous
                 </button>
                 <button
-                    class="py-2 px-6 bg-green-500 text-white rounded-full hover:bg-green-600 transition duration-300"
+                    class="px-6 py-2 text-white transition duration-300 rounded-full bg-amber-500 hover:bg-amber-600"
                     (click)="nextQuestion()"
                     [disabled]="isButtonDisabled"
                 >
@@ -115,8 +115,8 @@
         </div>
 
         <!-- Result Popup -->
-        <div *ngIf="showResult" class="mt-8 bg-green-50 p-6 rounded-lg">
-            <p class="score text-center text-3xl font-bold mb-6 text-green-800">
+        <div *ngIf="showResult" class="p-6 mt-8 rounded-lg bg-amber-50">
+            <p class="mb-6 text-3xl font-bold text-center score text-amber-800">
                 Quiz Result: {{ correctAnswers }}/{{ getRealTotal() }}
             </p>
 
@@ -124,21 +124,21 @@
             <ng-container *ngIf="showResult && review">
                 <div
                     *ngFor="let question of questions; let qIndex = index"
-                    class="poppins text-gray-700 mb-6 bg-white p-4 rounded-lg shadow-sm"
+                    class="p-4 mb-6 text-gray-700 bg-white rounded-lg shadow-sm poppins"
                 >
-                    <h3 class="text-xl font-semibold text-green-600 mb-2">Question {{ qIndex + 1 }}:</h3>
-                    <p class="text-white font-semibold bg-green-600 rounded-md p-3 mb-4">
+                    <h3 class="mb-2 text-xl font-semibold text-amber-600">Question {{ qIndex + 1 }}:</h3>
+                    <p class="p-3 mb-4 font-semibold text-white rounded-md bg-amber-600">
                         {{ qIndex + 1 }}. {{ question.question }}
                     </p>
-                    <img *ngFor="let file of questions[qIndex].attachments" [src]="file" class="mx-auto w-auto max-h-32 mb-4 rounded-md">
+                    <img *ngFor="let file of questions[qIndex].attachments" [src]="file" class="w-auto mx-auto mb-4 rounded-md max-h-32">
                     <ng-container *ngIf="question.type <= 1">
-                        <h4 class="text-lg font-semibold text-gray-600 mb-2">Options:</h4>
+                        <h4 class="mb-2 text-lg font-semibold text-gray-600">Options:</h4>
                         <ul class="space-y-2">
-                            <li 
+                            <li
                                 *ngFor="let choice of question.choices; let cIndex = index"
                                 class="p-2 rounded-md"
                                 [ngClass]="{
-                                    'bg-green-100': isAnswerCorrect(question, choice.id),
+                                    'bg-amber-100': isAnswerCorrect(question, choice.id),
                                     'bg-red-100': isAnswerIncorrect(question, choice.id),
                                     'font-semibold': isUserSelectedAnswer(question, choice.id)
                                 }"
@@ -147,37 +147,37 @@
                                     <span class="mr-2">{{ choice.text }}</span>
                                     <i
                                         *ngIf="isAnswerCorrect(question, cIndex)"
-                                        class="text-green-600 font-bold icon-check"
+                                        class="font-bold text-amber-600 icon-check"
                                     >✓</i>
                                     <i
                                         *ngIf="isAnswerIncorrect(question, cIndex)"
-                                        class="text-red-600 font-bold icon-times"
+                                        class="font-bold text-red-600 icon-times"
                                     >✗</i>
                                 </div>
-                                <img *ngIf="choice.attachment" [src]="choice.attachment" class="mx-auto w-auto max-h-40 mt-2 rounded-md shadow-sm">
+                                <img *ngIf="choice.attachment" [src]="choice.attachment" class="w-auto mx-auto mt-2 rounded-md shadow-sm max-h-40">
                             </li>
                         </ul>
                     </ng-container>
                     <p
                         *ngIf="isQuestionUnanswered(question)"
-                        class="text-orange-500 font-bold mt-2"
+                        class="mt-2 font-bold text-orange-500"
                     >
                         Unanswered
                     </p>
 
                     <ng-template #displayEssayAnswer>
-                        <h4 class="text-lg font-semibold text-gray-600 mt-4">Your Answer:</h4>
+                        <h4 class="mt-4 text-lg font-semibold text-gray-600">Your Answer:</h4>
                         <p class="mt-2">
-                            <span class="font-semibold">Your Answer:</span> {{ question.selectedAnswers[0] }} 
+                            <span class="font-semibold">Your Answer:</span> {{ question.selectedAnswers[0] }}
                         </p>
                     </ng-template>
                 </div>
             </ng-container>
 
             <!-- Centered "Done" button -->
-            <div class="text-center mt-8">
+            <div class="mt-8 text-center">
                 <button
-                    class="py-3 px-8 bg-green-600 text-white rounded-full text-lg font-semibold hover:bg-green-700 transition duration-300"
+                    class="px-8 py-3 text-lg font-semibold text-white transition duration-300 rounded-full bg-amber-600 hover:bg-amber-700"
                     (click)="resetQuiz()"
                 >
                     Done

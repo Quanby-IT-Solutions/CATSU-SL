@@ -32,15 +32,16 @@ export class AssignmentComponent implements OnInit, OnDestroy {
       const tasks: any = [];
       for (let task of data.output) {
         task.type = 'assignment';
-        task.done = 0;
+                  task.done = Number(task.done);
+
         task.deadline = newDate; // Temporarily using static deadline
         tasks.push(task);
       }
       this.getQuizzes$ = this.API.studentGetQuizzes().subscribe(data => {
         for (let task of data.output) {
           task.type = 'quiz';
-          task.done = 0;
-          task.deadline = newDate; // Temporarily using static deadline
+           task.done = Number(task.done);
+            task.deadline = this.parseDate(task.deadline);
           tasks.push(task);
         }
         this.getQuizPoints$ = this.API.studentQuizPoints().subscribe(data => {
