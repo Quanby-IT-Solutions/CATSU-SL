@@ -2,7 +2,7 @@
   <div class="button-container">
     <button class="poppins-b delete" (click)="delete()" *ngIf="selectedOption === 'Students' || selectedOption === 'Teachers' || selectedOption === 'Administrators'">
       <!-- <img src="assets/delete.png" alt="Delete Icon" /> -->
-      <i class='bx bx-trash mr-2'></i>
+      <i class='mr-2 bx bx-trash'></i>
       <span>Delete</span>
     </button>
     <button class="poppins-b" *ngIf="selectedOption === 'Teachers'" (click)="addTeachers()">
@@ -65,10 +65,10 @@
       </button>
     </div>
   </div>
-  
+
   <div class="table-container">
     <table>
-     
+
         <ng-container *ngIf="selectedOption == 'Students' else ifOption">
           <thead class="poppins-b">
             <tr>
@@ -102,7 +102,7 @@
           </tr>
           </tbody>
         </ng-container>
-        
+
         <ng-template  #ifOption>
         <ng-container *ngIf="selectedOption === 'Administrators'; else showTeachers">
           <thead class="poppins-b">
@@ -155,7 +155,7 @@
           </tr>
         </tbody>
         </ng-template>
-   
+
     </table>
   </div>
 </div>
