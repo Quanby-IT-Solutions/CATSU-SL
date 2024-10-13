@@ -156,7 +156,7 @@
         </ul>
       </div>
     </div>
-    <div class="flex items-center notifwrap">
+    <div class="flex items-center notifwrap gap-2">
 
 
       <button class="relative search-button1 notification sm:inline-block" (click)="toggleNotificationBox()">
@@ -170,13 +170,15 @@
         </div>
       </button>
 
-      <button>
+      <button class="w-fit h-fit">
 
-      <img (click)="gotoProfile()"
-        src="{{ reflectProfile() }}"
+        <img 
+        (click)="gotoProfile()"
+        [src]="reflectProfile() || 'assets/user.png'"
         alt="Profile Logo"
         class="object-cover border border-white border-solid rounded-full cursor-pointer lg:h-10 md:w-10 h-9 w-9 border-1"
       />
+      
       </button>
     </div>
   </div>
