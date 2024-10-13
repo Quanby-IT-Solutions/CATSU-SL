@@ -31,14 +31,14 @@ closeModal(close?:string) {
   this.activeModal.close(close);
   // You can pass any data you want back to the calling component here
 }
-createTask(){
+async createTask(){
   var attachments = undefined;
 
   this.API.justSnackbar('Creating task.....', 9999999);
   if(this.file != null){
     var fileparse = this.file.name.split(".");
     var serverLocation = this.API.createID36() + '.' + fileparse[fileparse.length-1];
-    this.API.uploadFile(this.file, serverLocation);
+    await this.API.uploadFileWithProgress(this.file, serverLocation);
     var filelocation = 'files/' + serverLocation;
     var filename = this.file.name;
     attachments = filelocation+'>'+filename; 

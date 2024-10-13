@@ -102,7 +102,7 @@ export class CommunicationComponent implements OnInit {
         return;
       }
 
-      this.API.uploadFile(this.broadcastContent, this.broadcastContent.name)
+      this.API.uploadFileWithProgress(this.broadcastContent, this.broadcastContent.name)
       this.API.notifyStudentsInClass(
         `[BROADCAST]${this.broadcastType =='Urgent'? 'URGENT! ':''}${this.API.getFullName()} sent a broadcast to <b>${this.classToBroadcast.class}</b>! ${this.broadcastType =='Urgent'? '[Urgent]':''}`,
         `<div class='broadcast-message'>

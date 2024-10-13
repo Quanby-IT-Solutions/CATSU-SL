@@ -195,21 +195,23 @@ export class ManageCourseComponent implements OnInit {
     if (!president?.esign) {
       this.API.failedSnackbar('President have not signed the certificate yet.');
     }
+   
+  
     const result = await Swal.fire({
       title: 'Certificate Preview',
       html: `
-        <div style="width: 740px;" class='select-none overflow-hidden'>
+        <div style="width: 740px; position: relative;" class='select-none overflow-hidden'>
           <div class='relative w-full h-[500px]'>
             <div class='absolute top-[54%] left-6 w-full flex justify-center z-10 font-semibold text-3xl text-black'>
               JUAN DE LA CRUZ
             </div>
-
+    
             <div class='absolute top-[64.8%] left-6 w-full flex justify-center z-10 font-bold text-xs text-black'>
               ${course.title.toUpperCase()}
             </div>
-
+    
             <div class='absolute bottom-[9.2%] left-[19%] w-full flex justify-center z-20'>
-              <img src ='${teacherSign ? this.API.getURL(teacherSign) : ''}' class=' h-24 w-32  object-contain ${teacherSign ? '' : 'hidden'}'>
+              <img src ='${teacherSign ? this.API.getURL(teacherSign) : ''}' class=' h-24 w-32 object-contain ${teacherSign ? '' : 'hidden'}'>
             </div>
             <div class='absolute bottom-[13%] left-[19%] w-full flex justify-center z-10 font-bold text-xs text-black'>
               ${this.API.getFullName().toUpperCase()}
@@ -220,43 +222,47 @@ export class ManageCourseComponent implements OnInit {
             <div class='absolute bottom-[13%] right-[10%] w-full flex justify-center z-10 font-bold text-xs text-black'>
               ${president ? president.firstname.toUpperCase() + ' ' + president.lastname.toUpperCase() : ''}
             </div>
-
-            <img src="${imageUrl}" alt="Certificate" class='absolute' style="height: 100%; width:100%; object-fit: contain;'>
+    
+            <!-- Adjust the image element here -->
+            <img src="${imageUrl}" alt="Certificate" style="position: relative; height: 100%; width:100%; object-fit: contain; z-index: 5;">
           </div>
-          <button id="distribute-btn" class="swal2-confirm swal2-styled" style="margin-top: 20px;">Distribute</button>
         </div>
       `,
-      showConfirmButton: false,
+      showConfirmButton: true,
+      confirmButtonText: 'Distribute',
       showCancelButton: true,
       cancelButtonText: 'Close',
       customClass: {
         popup: 'wide-popup',
       },
       width: '800px',
-      didOpen: () => {
-        const popup = Swal.getPopup();
-        if (popup) {
-          const distributeBtn = popup.querySelector('#distribute-btn');
-          if (distributeBtn) {
-            distributeBtn.addEventListener('click', () => {
-              Swal.fire({
-                title: 'Distribute Certificates',
-                text: 'Are you sure you want to distribute certificates to the eligible students?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, distribute',
-                cancelButtonText: 'Cancel'
-              }).then(async (confirmResult) => {
-                if (confirmResult.isConfirmed) {
-                  this.API.distributeCertificates(course.id)
-                  Swal.fire('Certificates Distributed', 'Certificates have been successfully distributed to eligible students.', 'success');
-                }
-              });
-            });
+      preConfirm: async () => {
+        return Swal.fire({
+          title: 'Distribute Certificates',
+          text: 'Are you sure you want to distribute certificates to the eligible students?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, distribute',
+          cancelButtonText: 'Cancel'
+        }).then(async (confirmResult) => {
+          if (confirmResult.isConfirmed) {
+            this.API.distributeCertificates(course.id)
+            Swal.fire('Certificates Distributed', 'Certificates have been successfully distributed to eligible students.', 'success');
           }
-        }
-      },
+        });
+      }
     });
+    
+    if (result.dismiss === Swal.DismissReason.cancel) {
+      console.log('Certificate preview closed without distribution.');
+    }
+    
+    
+    if (result.dismiss === Swal.DismissReason.cancel) {
+      console.log('Certificate preview closed without distribution.');
+    }
+    
+    
 
     if (result.dismiss === Swal.DismissReason.cancel) {
       console.log('Certificate preview closed without distribution.');

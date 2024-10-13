@@ -938,7 +938,7 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
         if (lesson.fileupload && !(typeof lesson.fileupload === 'string')) {
           const fileparse = lesson.fileupload.name.split('.');
           const serverLocation = uuidv4() + '.' + fileparse[fileparse.length - 1];
-          this.API.uploadFile(lesson.fileupload, serverLocation);
+          await this.API.uploadFileWithProgress(lesson.fileupload, serverLocation);
           const filelocation = 'files/' + serverLocation;
           const filename = lesson.fileupload.name;
           attachments = filelocation + '>' + filename;

@@ -26,6 +26,7 @@ import {
   EMPTY,
   ReplaySubject,
   Subject,
+  Subscriber,
   Subscription,
   catchError,
   firstValueFrom,
@@ -148,13 +149,13 @@ export class APIService implements OnDestroy, OnInit {
     }
   }
 
-  
+
   async analyzeSpeech(prompt: string): Promise<string> {
     try {
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
       const text = await response.text();
-  
+
       return text.trim();
     } catch (error) {
       console.error('Error generating content from speech:', error);
@@ -167,14 +168,14 @@ export class APIService implements OnDestroy, OnInit {
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
       const text = await response.text();
-  
+
       return text.trim();
     } catch (error) {
       console.error('Error generating content from speech:', error);
       throw new Error('Error generating content from speech. Please try again.');
     }
   }
-  
+
 
 
   getAttendanceHistory() {
@@ -587,7 +588,7 @@ export class APIService implements OnDestroy, OnInit {
   }
 
   generateManualId(): number {
-    return Math.floor(Math.random() * 1000000); 
+    return Math.floor(Math.random() * 1000000);
   }
 
   askGeminiTon(prompt: string) {
@@ -1119,57 +1120,64 @@ export class APIService implements OnDestroy, OnInit {
   //   );
   // }
 
-  uploadFile(file: File, filename: string) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = (reader.result as string).split(',')[1];
-      this.http
-        .post(environment.nodeserver + '/filehandler', {
-          key: environment.socketKey,
-          method: 'create_url',
-          file_content: base64String,
-          search_key: 'files/' + filename,
-        })
-        .subscribe();
-    };
-    reader.readAsDataURL(file);
-  }
 
 
-  uploadFileLoading(file: File, filename: string): Observable<number> {
-    const reader = new FileReader();
+  uploadFileLoading(file: File, filename: string, chunkSize: number = 1024 * 1024): Observable<number> {
+  return new Observable((subscriber: Subscriber<number>) => {
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    let uploadedChunks = 0; // Track uploaded chunks
 
-    return new Observable<number>((observer) => {
+    const uploadChunk = (chunkIndex: number) => {
+      const start = chunkIndex * chunkSize;
+      const end = Math.min(start + chunkSize, file.size);
+      const chunk = file.slice(start, end);
+
+      const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = (reader.result as string).split(',')[1];
-        const body = {
-          key: environment.socketKey,
-          method: 'create_url',
-          file_content: base64String,
-          search_key: 'files/' + filename,
-        };
 
         this.http
-          .post(environment.nodeserver + '/filehandler', body, {
-            reportProgress: true, // Enable progress reporting
-            observe: 'events',    // Observe the upload events
+          .post(environment.nodeserver + '/filehandler-progress', {
+            key: environment.socketKey,
+            app: environment.app,
+            method: 'create_url',
+            chunk: base64String,
+            fileName: 'files/' + filename,
+            chunkIndex: chunkIndex,
+            totalChunks: totalChunks,
           })
           .subscribe({
-            next: (event: HttpEvent<any>) => {
-              if (event.type === HttpEventType.UploadProgress) {
-                const progress = Math.round((100 * event.loaded) / (event.total ?? 1));
-                observer.next(progress); // Emit the progress
-              } else if (event.type === HttpEventType.Response) {
-                observer.complete(); // Complete the observable when done
+            next: () => {
+              uploadedChunks++;
+              const progress = Math.round((uploadedChunks / totalChunks) * 100);
+              subscriber.next(progress); // Emit progress
+
+              // Update the snackbar with the current progress
+              this.justSnackbar(`Uploading ${filename}... ${progress}%`, 99999999999999);
+
+              if (chunkIndex + 1 < totalChunks) {
+                // Upload next chunk
+                uploadChunk(chunkIndex + 1);
+              } else {
+                console.log(`File upload complete: ${filename}`);
+                subscriber.complete(); // Complete the observable when the upload is done
               }
             },
-            error: (error) => observer.error(error), // Emit error in case of failure
+            error: (err) => {
+              console.error('Error uploading chunk', err);
+              subscriber.error(err); // Emit error if there's an issue
+            },
           });
       };
 
-      reader.readAsDataURL(file);
-    });
-  }
+      reader.readAsDataURL(chunk);
+    };
+
+    // Start uploading the first chunk
+    uploadChunk(0);
+  });
+}
+
   public uploadProgress:number = 0;
 
   // uploadFileWithProgress(file: File, filename: string, chunkSize: number = 1024 * 1024): Promise<void> { // Default chunk size of 1MB
@@ -1242,6 +1250,7 @@ export class APIService implements OnDestroy, OnInit {
           this.http
             .post(environment.nodeserver + '/filehandler-progress', {
               key: environment.socketKey,
+              app: environment.app,
               method: 'create_url',
               chunk: base64String,
               fileName: 'files/' + filename,
@@ -1296,6 +1305,7 @@ export class APIService implements OnDestroy, OnInit {
           this.http
             .post(environment.nodeserver + '/filehandler-progress', {
               key: environment.socketKey,
+              app: environment.app,
               method: 'create_url',
               chunk: base64String,
               fileName: 'files/' + filename,
@@ -1311,7 +1321,7 @@ export class APIService implements OnDestroy, OnInit {
                   uploadChunk(chunkIndex + 1);
                 } else {
                   console.log(`File upload complete: ${filename}`);
-                  resolve(); 
+                  resolve();
                 }
               },
               error: (err) => {
@@ -1329,8 +1339,8 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
-  
-  
+
+
 
 
 
@@ -1628,7 +1638,7 @@ export class APIService implements OnDestroy, OnInit {
       data: JSON.stringify(postObject),
     });
   }
-  
+
 
   // before duration
 
@@ -3201,30 +3211,6 @@ export class APIService implements OnDestroy, OnInit {
 
 
 
-  uploadFilee(file: File, filename: string): Observable<any> {  // Changed to return Observable
-    return new Observable(observer => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = (reader.result as string).split(',')[1];
-        this.http
-          .post(environment.nodeserver + '/filehandler', {
-            key: environment.socketKey,
-            method: 'create_url',
-            file_content: base64String,
-            search_key: 'files/' + filename,
-          })
-          .subscribe({
-            next: (response) => {
-              observer.next(response);
-              observer.complete();
-            },
-            error: (error) => observer.error(error)
-          });
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
 
   deleteFile(file: string) {
     const obs = this.http
@@ -3969,9 +3955,9 @@ export class APIService implements OnDestroy, OnInit {
         audio_file: audioFile,
       }
     };
-  
+
     console.log('Creating audio file with manual ID:', postObject);
-  
+
     return this.post('create_entry', {
       data: JSON.stringify(postObject),
     }).pipe(
@@ -3981,8 +3967,8 @@ export class APIService implements OnDestroy, OnInit {
       catchError(this.handleError)
     );
   }
-  
-  
+
+
 
   getAudioFiles(): Observable<any> {
     const postObject = {
@@ -4043,9 +4029,9 @@ export class APIService implements OnDestroy, OnInit {
     );
   }
 
-  
 
- 
+
+
   createSpeechAnalyzerResult(
     audioId: number,
     fluency: number,
@@ -4067,9 +4053,9 @@ export class APIService implements OnDestroy, OnInit {
         areas_for_improvement: areasForImprovement,
       },
     };
-  
+
     console.log('Creating speech analyzer result with data:', postObject);
-  
+
     return this.post('create_entry', {
       data: JSON.stringify(postObject),
     }).pipe(
@@ -4077,8 +4063,8 @@ export class APIService implements OnDestroy, OnInit {
       catchError(this.handleError)
     );
   }
-  
-  
+
+
 
   getSpeechAnalyzerResults(): Observable<any> {
     const postObject = {
@@ -4121,25 +4107,25 @@ export class APIService implements OnDestroy, OnInit {
     deadline: string,
     attachments?: string,
     settings?: string,
-    lessonid?: string,  
+    lessonid?: string,
     topicid?: string,
-    classid?: string  
+    classid?: string
   ) {
     var attach = {};
     if (attachments != undefined) {
       attach = { Attachments: attachments };
     }
-  
+
     var det = '[NONE]';
     if (details.trim() != '') {
       det = details;
     }
-  
+
     var sett = {};
     if (settings != undefined) {
       sett = { Settings: settings };
     }
-  
+
     const postObject = {
       tables: 'assessments',
       values: Object.assign(
@@ -4151,9 +4137,9 @@ export class APIService implements OnDestroy, OnInit {
           Details: det,
           Timelimit: timelimit,
           Deadline: deadline,
-          lessonid: lessonid,  
+          lessonid: lessonid,
           topicid: topicid,
-          classid: classid,    
+          classid: classid,
         },
         attach,
         sett
@@ -4163,7 +4149,7 @@ export class APIService implements OnDestroy, OnInit {
       data: JSON.stringify(postObject),
     });
   }
-  
+
   updateQuiz(
     CourseID: string,
     ID: string,
@@ -4175,50 +4161,58 @@ export class APIService implements OnDestroy, OnInit {
     settings?: string,
     lessonid?: string,
     topicid?: string,
+    classid?: string // Added classid parameter
   ) {
     var attach = {};
     if (attachments != undefined) {
       attach = { Attachments: attachments };
     }
-  
+
     var det = '[NONE]';
     if (details.trim() != '') {
       det = details;
     }
-  
+
     var sett = {};
     if (settings != undefined) {
       sett = { Settings: settings };
     }
-  
+
     const postObject = {
       tables: 'assessments',
       values: Object.assign(
         {},
         {
           CourseID: CourseID,
-          ID: ID,
           Title: title,
           Details: det,
           Timelimit: timelimit,
           Deadline: deadline,
-          lessonid: lessonid,  // Add lessonid
-          topicid: topicid     // Add topicid
+          lessonid: lessonid,
+          topicid: topicid,
+          classid: classid, // Include classid in the update
         },
         attach,
         sett
       ),
-      conditions:{
-        WHERE:{
+      conditions: {
+        WHERE: {
           ID: ID,
-        }
-      }
+        },
+      },
     };
+
     return this.post('update_entry', {
       data: JSON.stringify(postObject),
-    });
+    }).pipe(
+      tap(response => console.log('Update quiz response:', response)),
+      catchError(error => {
+        console.error('Error updating quiz:', error);
+        return throwError(() => new Error('Failed to update quiz. Please try again.'));
+      })
+    );
   }
-  
+
 
   updateQuizItem(
     ID: string,
@@ -4315,25 +4309,34 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
-  teacherGetQuizzes() {
+  teacherGetQuizzes(courseId?: string, classId?: string) {
     const id = this.getUserData().id;
-    const postObject = {
+    const postObject: any = {
       selectors: ['assessments.*', 'COUNT(assessment_items.ID) as items'],
       tables: 'assessments',
       conditions: {
         'LEFT JOIN courses': 'ON assessments.CourseID = courses.ID',
-        'LEFT JOIN assessment_items':
-          'ON assessment_items.AssessmentID = assessments.ID',
+        'LEFT JOIN assessment_items': 'ON assessment_items.AssessmentID = assessments.ID',
         WHERE: {
           'courses.TeacherID': id,
         },
         'GROUP BY': 'assessments.ID',
       },
     };
+
+    if (courseId) {
+      postObject.conditions.WHERE['assessments.CourseID'] = courseId;
+    }
+
+    if (classId) {
+      postObject.conditions.WHERE['assessments.classid'] = classId;
+    }
+
     return this.post('get_entries', {
       data: JSON.stringify(postObject),
     });
   }
+
 
   teacherGetQuizItems(quizId:string){
     const postObject = {
@@ -5666,7 +5669,7 @@ export class APIService implements OnDestroy, OnInit {
   async loadComputers() {
     const rows: any[] = [];
     let pcIndex = 1;
-  
+
     // Create 5 rows with 7 PCs each
     for (let i = 0; i < 5; i++) {
       const row: any[] = [];
@@ -5681,7 +5684,7 @@ export class APIService implements OnDestroy, OnInit {
       }
       rows.push(row);
     }
-  
+
     // Create the last row with 5 PCs
     const lastRow: any[] = [];
     for (let i = 0; i < 5; i++) {
@@ -5694,11 +5697,11 @@ export class APIService implements OnDestroy, OnInit {
       pcIndex += 1;
     }
     rows.push(lastRow);
-  
+
     return rows;
   }
 
-  
+
 
   labID?: string;
   getStudentAssignedLab() {

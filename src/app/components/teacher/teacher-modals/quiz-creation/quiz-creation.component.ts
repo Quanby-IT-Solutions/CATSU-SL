@@ -12,12 +12,12 @@ import { duration } from 'html2canvas/dist/types/css/property-descriptors/durati
 })
 export class QuizCreationComponent implements OnInit {
   @Output() closed = new EventEmitter<void>();
-  
+
 
   closeModal() {
     this.closed.emit(); // Emit event to notify the parent component to close the modal
   }
-  
+
   @Input() myCustomClass: string = '';
   @Input() quiz: any = null;
   @Input() courses: any = [];
@@ -275,8 +275,8 @@ export class QuizCreationComponent implements OnInit {
       this.API.hideLoader();
     });
   }
-  
-  
+
+
 
 
   private createNewQuestion(): any {
@@ -411,11 +411,11 @@ export class QuizCreationComponent implements OnInit {
   onCourseChange(selectedClass: any) {
     this.course = selectedClass.courseid;  // Set the selected courseid
     this.selectedClassID = selectedClass.id;  // Store the associated class ID
-  
+
     this.lesson = '';
     this.topic = '';
     this.topics = [];
-  
+
     // Load lessons based on the selected course
     if (this.course) {
       this.API.teacherCourseLessons(this.course).subscribe(
@@ -431,7 +431,7 @@ export class QuizCreationComponent implements OnInit {
       this.lessons = [];
     }
   }
-  
+
 
   onLessonChange() {
     this.topic = '';
@@ -451,10 +451,10 @@ export class QuizCreationComponent implements OnInit {
   }
 
 
-  submit() {
+  async submit() {
     if (this.uploading) return;
     this.uploading = true;
-    var settings: any = '';
+    let settings: string = '';
 
     if(this.questions.length <= 0){
       this.API.failedSnackbar('Please add at least one question!');
@@ -471,203 +471,152 @@ export class QuizCreationComponent implements OnInit {
     for (let [key, active] of Object.entries(this.settings)) {
       if (active) {
         settings += ' ' + key;
-        settings = settings.trim();
       }
     }
+    settings = settings.trim();
 
-    if (settings.trim() == '') {
-      settings = undefined;
+    let attachments = undefined;
+    if (this.attachments) {
+      const fileparse = this.attachments.name.split('.');
+      const serverLocation = this.API.createID36() + '.' + fileparse[fileparse.length - 1];
+      await this.API.uploadFileWithProgress(this.attachments, serverLocation);
+      const filelocation = 'files/' + serverLocation;
+      attachments = filelocation + '>' + this.attachments.name;
     }
-    var attachments = undefined;
-    if (this.attachments != undefined) {
-      var fileparse = this.attachments.name.split('.');
-      var serverLocation =
-        this.API.createID36() + '.' + fileparse[fileparse.length - 1];
-      this.API.uploadFile(this.attachments, serverLocation);
-      var filelocation = 'files/' + serverLocation;
-      var filename = this.attachments.name;
-      attachments = filelocation + '>' + filename;
-    }
-    if (
-      !this.API.checkInputs([
-        this.course,
-        this.title,
-        this.timelimit,
-        this.deadline,
-      ])
-    ) {
-      this.API.failedSnackbar('Please fill out all the required fields!');
+    const quizData = {
+      course: this.course,
+      title: this.title,
+      description: this.description,
+      timelimit: this.timelimit!,
+      deadline: this.deadline,
+      attachments: attachments,
+      settings: settings,
+      lesson: this.lesson || undefined,
+      topic: this.topic || undefined,
+      classid: this.selectedClassID
+    };
+    try {
+      if (this.quiz) {
+        // Updating existing quiz
+        await this.updateExistingQuiz(quizData);
+      } else {
+        // Creating new quiz
+        await this.createNewQuiz(quizData);
+      }
+      this.API.successSnackbar('Quiz saved successfully!');
+      this.closeModal();
+    } catch (error) {
+      console.error('Error saving quiz:', error);
+      this.API.failedSnackbar('Failed to save quiz. Please try again.');
+    } finally {
       this.uploading = false;
-      return;
-    }
-    for (let item of this.questions) {
-      if (!this.API.checkInputs([(item.question.attachments.length > 0 ?'valid' : null) ?? item.question.value, item.answer])) {
-
-        this.API.failedSnackbar(
-          'Please fill out all the questions and answer fields!'
-        );
-        this.uploading = false;
-        return;
-      }
-      if (item.type == '0') {
-        if (!this.API.checkInputs(item.options.reduce((acc:any,curr:any)=>{
-          return [ curr.attachment ?? curr.value,...acc]
-        }, []))) {
-          console.log(item);
-          this.API.failedSnackbar(
-            'Please fill out all the question options fields!'
-          );
-          this.uploading = false;
-          return;
-        }
-      }
-    }
-    const id = this.API.createID32();
-    this.API.justSnackbar('Saving ... ', 999999999);
-    if(this.quiz){
-      this.API.updateQuiz(
-        this.course,
-        this.quiz.id,
-        this.title,
-        this.description,
-        this.timelimit!,
-        this.deadline,
-        attachments,
-        settings,
-        this.lesson || undefined,
-        this.topic || undefined,
-      ).subscribe(async () => {
-        for (let item of this.questions) {
-          var options: any = undefined;
-          if (item.type == '0') {
-            // check all options
-            options = '';
-            for (let option of item.options) {
-              let link;
-              if(option.attachment?.includes('base64') && option.attachment?.includes('data:image')){
-                link = await this.uploadImage(option.attachment);
-              }else{
-                link = option.attachment;
-              }
-
-              options += option.value +`::::${link??''}` + '\\n\\n' ;
-            }
-          }
-
-          // get all attachment in question
-
-          var questionAttachments = '::::';
-          for(let attachment of item.question.attachments){
-            let link;
-              if(attachment.includes('base64') && attachment.includes('data:image')){
-                link = await this.uploadImage(attachment);
-              }else{
-                link = attachment;
-              }
-            if(questionAttachments == '::::'){
-              questionAttachments += link
-            }else{
-              questionAttachments += '\\n\\n'+link
-            }
-          }
-
-          if(item.id){
-            await lastValueFrom(
-              this.API.updateQuizItem(
-                item.id,
-                item.type,
-                item.question.value + questionAttachments,
-                item.answer,
-                options
-              )
-            );
-          }else{
-            await lastValueFrom(
-              this.API.createQuizItem(
-                this.quiz.id,
-                item.type,
-                item.question.value + questionAttachments,
-                item.answer,
-                options
-              )
-            );
-          }
-        }
-
-        for(let item of this.removeList){
-          await lastValueFrom(this.API.deleteQuizItem(item));
-        }
-        this.API.successSnackbar('Saved quiz!');
-        
-      });
-    }else{
-      this.API.createQuiz(
-        this.course,
-        id,
-        this.title,
-        this.description,
-        this.timelimit!,
-        this.deadline,
-        attachments,
-        settings,
-        this.lesson || undefined,
-        this.topic || undefined,
-        this.selectedClassID 
-
-
-      ).subscribe(async () => {
-        for (let item of this.questions) {
-          var options: any = undefined;
-          if (item.type == '0') {
-            // check all options
-            options = '';
-            for (let option of item.options) {
-              const link = await this.uploadImage(option.attachment);
-              options += option.value +`::::${link??''}` + '\\n\\n' ;
-            }
-          }
-
-          // get all attachment in question
-
-          var questionAttachments = '::::';
-          for(let attachment of item.question.attachments){
-            const link = await this.uploadImage(attachment);
-            if(questionAttachments == '::::'){
-              questionAttachments += link
-            }else{
-              questionAttachments += '\\n\\n'+link
-            }
-          }
-
-          await lastValueFrom(
-            this.API.createQuizItem(
-              id,
-              item.type,
-              item.question.value + questionAttachments,
-              item.answer,
-              options
-            )
-          );
-        }
-        this.API.successSnackbar('Saved quiz!');
-        this.API.notifyStudentsInCourse(
-          `${this.API.getFullName()} uploaded a new quiz.`,
-          `${this.API.getFullName()} uploaded a new quiz titled, <b>'${
-            this.title
-          }'</b>. Make sure to study before the quiz! The quiz is due on <b>${this.API.parseDate(
-            this.deadline
-          )}</b>.`,
-          this.course
-        );
-       
-      });
-    }
-
-    if (!this.isTimeLimitValid()) {
-      this.API.failedSnackbar('Time limit must be greater than zero!');
-      return;
     }
   }
+  private async updateExistingQuiz(quizData: any) {
+    await lastValueFrom(this.API.updateQuiz(
+      quizData.course,
+      this.quiz.id,
+      quizData.title,
+      quizData.description,
+      quizData.timelimit,
+      quizData.deadline,
+      quizData.attachments,
+      quizData.settings,
+      quizData.lesson,
+      quizData.topic,
+      quizData.classid
+    ));
+
+    await this.saveQuizItems(this.quiz.id);
+  }
+
+  private async createNewQuiz(quizData: any) {
+    const id = this.API.createID32();
+    await lastValueFrom(this.API.createQuiz(
+      quizData.course,
+      id,
+      quizData.title,
+      quizData.description,
+      quizData.timelimit,
+      quizData.deadline,
+      quizData.attachments,
+      quizData.settings,
+      quizData.lesson,
+      quizData.topic,
+      quizData.classid
+    ));
+
+    await this.saveQuizItems(id);
+
+    this.API.notifyStudentsInCourse(
+      `${this.API.getFullName()} uploaded a new quiz.`,
+      `${this.API.getFullName()} uploaded a new quiz titled, <b>'${quizData.title}'</b>. Make sure to study before the quiz! The quiz is due on <b>${this.API.parseDate(quizData.deadline)}</b>.`,
+      quizData.course
+    );
+  }
+
+  private async saveQuizItems(quizId: string) {
+    for (let item of this.questions) {
+      const options = await this.prepareQuestionOptions(item);
+      const questionAttachments = await this.prepareQuestionAttachments(item.question);
+
+      if (item.id) {
+        await lastValueFrom(
+          this.API.updateQuizItem(
+            item.id,
+            item.type,
+            item.question.value + questionAttachments,
+            item.answer,
+            options
+          )
+        );
+      } else {
+        await lastValueFrom(
+          this.API.createQuizItem(
+            quizId,
+            item.type,
+            item.question.value + questionAttachments,
+            item.answer,
+            options
+          )
+        );
+      }
+    }
+
+    for (let itemId of this.removeList) {
+      await lastValueFrom(this.API.deleteQuizItem(itemId));
+    }
+  }
+
+  private async prepareQuestionOptions(item: any): Promise<string | undefined> {
+    if (item.type !== '0') return undefined;
+
+    let options = '';
+    for (let option of item.options) {
+      let link = option.attachment;
+      if (option.attachment?.includes('base64') && option.attachment?.includes('data:image')) {
+        link = await this.uploadImage(option.attachment);
+      }
+      options += option.value + `::::${link ?? ''}` + '\\n\\n';
+    }
+    return options;
+  }
+
+  private async prepareQuestionAttachments(question: any): Promise<string> {
+    let attachments = '::::';
+    for (let attachment of question.attachments) {
+      let link = attachment;
+      if (attachment.includes('base64') && attachment.includes('data:image')) {
+        link = await this.uploadImage(attachment);
+      }
+      attachments += (attachments === '::::' ? '' : '\\n\\n') + link;
+    }
+    return attachments;
+  }
+
+
+
+
   isTimeLimitValid(): boolean {
     return this.timelimit !== undefined && this.timelimit > 0;
   }
