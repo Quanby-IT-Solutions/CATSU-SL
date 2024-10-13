@@ -41,4 +41,5 @@ export const environment = {
   // new
 
   speech: '1b9759691ec9459182d10a47606a1309',
+  app: 'catsu'
 };
