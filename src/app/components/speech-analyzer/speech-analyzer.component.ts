@@ -530,7 +530,8 @@ parseAnalysisResult(analysisJson: string) {
         scores['intonation'] || 0,
         scores['grammar'] || 0,
         scores['vocabulary'] || 0,
-        this.summary
+        this.summary,
+        this.selectedStudentSpeech.id
       ));
       console.log('Speech analyzer result created:', response);
     } catch (error) {

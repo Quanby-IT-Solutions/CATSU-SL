@@ -245,4 +245,24 @@ export class QuizManagementComponent implements OnInit {
   get totalPages() {
     return Math.ceil(this.quizzes.length / this.itemsPerPage);
   }
+
+  deleteQuiz(quizId: string) {
+    if (confirm('Are you sure you want to delete this quiz?')) {
+      this.API.deleteQuiz(quizId).subscribe(
+        (response) => {
+          if (response.success) {
+            this.API.successSnackbar('Quiz successfully deleted!');
+            this.getQuizzes(); // Refresh the quiz list after deletion
+          } else {
+            this.API.failedSnackbar('Failed to delete quiz.');
+          }
+        },
+        (error) => {
+          console.error('Error deleting quiz:', error);
+          this.API.failedSnackbar('An error occurred while deleting the quiz.');
+        }
+      );
+    }
+  }
+  
 }

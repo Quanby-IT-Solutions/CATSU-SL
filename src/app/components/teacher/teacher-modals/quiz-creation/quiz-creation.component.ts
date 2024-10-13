@@ -25,6 +25,7 @@ export class QuizCreationComponent implements OnInit {
 
 
   course: string = '';
+  selectedClass: string = '';
   lesson: string = '';
   topic: string = '';
   title: string = '';
@@ -157,7 +158,7 @@ export class QuizCreationComponent implements OnInit {
     }
 
     // Load all courses (this might be needed for both new and existing quizzes)
-    this.loadCourses();
+    this.loadClasses();
   }
 
   private async loadLessonsAndTopics(): Promise<void> {
@@ -241,7 +242,6 @@ export class QuizCreationComponent implements OnInit {
           this.courses = data.output.map((course: any) => ({
             id: course.id,
             title: course.course,
-            // Add any other necessary course properties
           }));
         } else {
           this.API.failedSnackbar('Failed to load courses. Please refresh the page.');
@@ -253,6 +253,25 @@ export class QuizCreationComponent implements OnInit {
       }
     );
   }
+
+  classes:any
+
+
+
+  private loadClasses(): void {
+    this.API.showLoader();
+    this.API.teacherAllClasses().subscribe(data => {
+      if (data.success) {
+        this.classes = data.output;
+        console.log(data);
+      } else {
+        this.API.failedSnackbar('Unable to connect to the server.', 3000);
+      }
+      this.API.hideLoader();
+    });
+  }
+  
+
 
   private createNewQuestion(): any {
     return {
@@ -379,6 +398,8 @@ export class QuizCreationComponent implements OnInit {
       this.lessons = [];
     }
   }
+
+  onClassChange() {}
 
   onLessonChange() {
     this.topic = '';

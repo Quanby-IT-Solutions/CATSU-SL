@@ -26,32 +26,33 @@
               class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
               type="text" [(ngModel)]="deadline" name="deadline" id="deadline" placeholder="Deadline:"
               onfocus="this.type='date'" onblur="this.type='text'" required style="padding-left: 10px" />
-            <select
+          
+              <select
               class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
               [(ngModel)]="course" (ngModelChange)="onCourseChange()" name="course">
               <option value="" disabled selected hidden>Select Course</option>
-              <option *ngFor="let _course of courses" [value]="_course.id">
-                {{ _course.title }}
+              <option *ngFor="let _class of classes" [value]="_class.courseid">
+                {{ _class.course }} - {{ _class.class }}
               </option>
             </select>
+           
+              <select
+                class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
+                [(ngModel)]="lesson" (ngModelChange)="onLessonChange()" name="lesson">
+                <option value="" selected>Select Lesson</option>
+                <option *ngFor="let _lesson of lessons" [value]="_lesson.id">
+                  {{ _lesson.title }}
+                </option>
+              </select>
 
-            <select
-              class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
-              [(ngModel)]="lesson" (ngModelChange)="onLessonChange()" name="lesson">
-              <option value="" selected>Select Lesson</option>
-              <option *ngFor="let _lesson of lessons" [value]="_lesson.id">
-                {{ _lesson.title }}
-              </option>
-            </select>
-
-            <select
-              class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
-              [(ngModel)]="topic" name="topic">
-              <option value="" selected>Select Topic</option>
-              <option *ngFor="let _topic of topics" [value]="_topic.id">
-                {{ _topic.title }}
-              </option>
-            </select>
+              <select
+                class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
+                [(ngModel)]="topic" name="topic">
+                <option value="" selected>Select Topic</option>
+                <option *ngFor="let _topic of topics" [value]="_topic.id">
+                  {{ _topic.title }}
+                </option>
+              </select>
 
           </div>
           <div class="rightwrap">

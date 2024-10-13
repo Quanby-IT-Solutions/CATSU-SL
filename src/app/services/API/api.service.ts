@@ -4053,7 +4053,8 @@ export class APIService implements OnDestroy, OnInit {
     intonation: number,
     grammar: number,
     vocabulary: number,
-    areasForImprovement: string
+    areasForImprovement: string,
+    itemsId: number,
   ): Observable<any> {
     const postObject = {
       tables: 'result_speech_analyzer',
@@ -4065,6 +4066,7 @@ export class APIService implements OnDestroy, OnInit {
         grammar,
         vocabulary,
         areas_for_improvement: areasForImprovement,
+        speech_analyzer_items_id: itemsId,
       },
     };
   
