@@ -509,12 +509,9 @@ parseAnalysisResult(analysisJson: string) {
   }
 
 
-
-
   isScoreInvalid(score: number): boolean {
     return isNaN(score) || score < 0;
   }
-
 
  async createSpeechAnalyzerResultEntry(audioId: number, results: AnalysisResult[]): Promise<void> {
     const scores = results.reduce((acc, result) => {
@@ -531,7 +528,6 @@ parseAnalysisResult(analysisJson: string) {
         scores['grammar'] || 0,
         scores['vocabulary'] || 0,
         this.summary,
-        this.selectedStudentSpeech.id
       ));
       console.log('Speech analyzer result created:', response);
     } catch (error) {
