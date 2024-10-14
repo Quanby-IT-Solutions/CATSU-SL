@@ -50,12 +50,12 @@ export class CreateCourseComponent {
   selectedTechRequirements: string[] = [];
 
   // New Dropdown para sa Request ni Doc
-  audienceOptions: string[] = ['Nurse', 'Doctor', 'Caregiver', 'Patient'];
-  requirementsOptions: string[] = ['Internet',  'Phone', 'Tablet', 'Laptop', ];
-  selectedAudience: string[] = []; 
-  selectedRequirements: string[] = []; 
-  showAudienceDropdown = false; 
-  showRequirementsDropdown = false; 
+  audienceOptions: string[] = ['Student', 'Teacher', 'Principal', 'Parent'];
+  requirementsOptions: string[] = ['Internet', 'Phone', 'Tablet', 'Laptop'];
+  selectedAudience: string[] = [];
+  selectedRequirements: string[] = [];
+  showAudienceDropdown = false;
+  showRequirementsDropdown = false;
 
 
   constructor(public activeModal: NgbActiveModal, private API: APIService) {}
@@ -75,7 +75,7 @@ export class CreateCourseComponent {
         }
       }
     }
-    
+
 
   onSelectAudience(option: string) {
     if (this.selectedAudience.includes(option)) {
@@ -120,21 +120,21 @@ export class CreateCourseComponent {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-  
+
     input.onchange = (event: Event) => {
       const target = event.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
         const file = target.files[0];
         console.log('Selected File:', file); // Log the selected file
-  
+
         const reader = new FileReader();
         reader.onload = (e) => {
           const base64String = reader.result as string;  // Read the file as base64 string
           const fileRef = `files/${this.API.createID36()}.png`; // Generate a unique file reference
           console.log('Generated File Reference:', fileRef); // Debugging: Log the generated file reference
-  
+
           this.API.justSnackbar('Uploading Course Image....', 99999999);
-  
+
           // Use the correct function to upload the image
           const upload$ = this.API.uploadCourseImage(base64String, fileRef).subscribe((data: any) => {
             console.log('Response from Upload:', data); // Debugging: Log the server response
@@ -146,23 +146,23 @@ export class CreateCourseComponent {
             }
             upload$.unsubscribe();
           });
-  
+
           // Update image preview
           this.courseImagePreview = base64String;
         };
         reader.readAsDataURL(file);
       }
     };
-  
+
     input.click();
   }
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
 
   onFileSelected(event: Event, lesson: Lesson, type: FileType) {
     const inputElement = event.target as HTMLInputElement;
@@ -171,16 +171,16 @@ export class CreateCourseComponent {
     }
   }
 
-  showVideoModal: boolean = false; 
-  currentLesson: Lesson | null = null; 
-  currentFileType: FileType | null = null; 
+  showVideoModal: boolean = false;
+  currentLesson: Lesson | null = null;
+  currentFileType: FileType | null = null;
   interactiveVideoFile: File | null = null;
   interactiveVideoFileName: string = '';
-  isInteractiveVideoMode: boolean = false; 
-  selectedQuiz: string = '';  
-  quizOptions: string[] = ['Quiz 1', 'Quiz 2', 'Quiz 3']; 
-  videoTimestamp: number | null = null; 
-  
+  isInteractiveVideoMode: boolean = false;
+  selectedQuiz: string = '';
+  quizOptions: string[] = ['Quiz 1', 'Quiz 2', 'Quiz 3'];
+  videoTimestamp: number | null = null;
+
 
 
   attachFile(lesson: Lesson, type: FileType) {
@@ -194,13 +194,13 @@ export class CreateCourseComponent {
       this.currentFileType = type;
     }
   }
-  
-  
+
+
   handleVideoOption(option: 'video' | 'interactive') {
     if (!this.currentLesson || !this.currentFileType) {
       return; // Exit if currentLesson or currentFileType is not set
     }
-  
+
     if (option === 'video') {
       // Handle video only option
       this.openFileSelector(this.currentLesson, this.currentFileType);
@@ -212,8 +212,8 @@ export class CreateCourseComponent {
       this.openFileSelector(this.currentLesson, this.currentFileType, true);
     }
   }
-  
-  
+
+
   openFileSelector(lesson: Lesson, type: FileType, isInteractive: boolean = false) {
     const input = document.createElement('input');
     input.type = 'file';
@@ -228,19 +228,19 @@ export class CreateCourseComponent {
     };
     input.click();
   }
-  
-  
+
+
   openInteractiveVideoModal() {
     console.log('Open Interactive Video Modal');
   }
-  
+
   previewVideo() {
     if (this.interactiveVideoFile) {
       const fileURL = URL.createObjectURL(this.interactiveVideoFile);
       window.open(fileURL, '_blank');
     }
   }
-  
+
   goBackToOptions() {
     this.isInteractiveVideoMode = false;  // Switch back to video type options
   }
@@ -255,14 +255,14 @@ saveInteractiveVideoSettings() {
     this.API.failedSnackbar('Please select a quiz and input a video timestamp.');
     return;
   }
-  
+
   // Perform any additional save operations as needed
   console.log('Interactive Video Settings Saved:', {
     videoFile: this.interactiveVideoFileName,
     quiz: this.selectedQuiz,
     timestamp: this.videoTimestamp
   });
-  
+
   this.showVideoModal = false;  // Close the modal after saving
   this.API.successSnackbar('Interactive Video settings saved successfully!');
 }
@@ -315,7 +315,7 @@ saveInteractiveVideoSettings() {
 
   async submit() {
     const modeString = 'LRSW';
-  
+
     if (this.courseTitle.trim() === '') {
       this.API.failedSnackbar('Course title should not be empty!');
       return;
@@ -325,25 +325,25 @@ saveInteractiveVideoSettings() {
       this.API.failedSnackbar('Please upload a Course Photo / Background!');
       return;
     }
-  
+
     const defaultLanguage = 'English';
     const languageId = this.languages.get(defaultLanguage)?.id;
-  
+
     if (!languageId) {
       this.API.failedSnackbar('Invalid language selected!');
       return;
     }
-  
+
     for (let lesson of this.lessons) {
       if (lesson.lessonName.trim() === '') {
         this.API.failedSnackbar('Lesson titles should be completely filled.');
         return;
       }
     }
-  
+
     const genID = this.API.createID32();
     this.API.justSnackbar('Creating course, Please Wait...', 99999999999999);
-  
+
     try {
       // Call createCourse API with properly formatted input fields
       await lastValueFrom(
@@ -359,12 +359,12 @@ saveInteractiveVideoSettings() {
           this.selectedRequirements  // Pass array directly
         )
       );
-  
+
       for (let lesson of this.lessons) {
         let attachments: string | undefined = undefined;
         let imageupload: string | undefined = undefined;
-        lesson.complexity = (Number(lesson.complexity) + 1) * (5 / 3);  
-  
+        lesson.complexity = (Number(lesson.complexity) + 1) * (5 / 3);
+
         if (lesson.description.trim() === '') {
           lesson.description = '[NONE]';
         }
@@ -376,7 +376,7 @@ saveInteractiveVideoSettings() {
           const filename = lesson.fileupload.name;
           attachments = filelocation + '>' + filename;
         }
-  
+
         if (lesson.coverImage) {
           const fileparse = lesson.coverImage.name.split('.');
           const serverLocation = uuidv4() + '.' + fileparse[fileparse.length - 1];
@@ -395,7 +395,7 @@ saveInteractiveVideoSettings() {
           )
         );
       }
-  
+
       this.API.successSnackbar('Done!');
       this.activeModal.close('update');
     } catch (error) {
@@ -403,7 +403,7 @@ saveInteractiveVideoSettings() {
       this.API.failedSnackbar('Failed to create course. Please try again.');
     }
   }
-  
+
 
   closeModal() {
     this.activeModal.close();
