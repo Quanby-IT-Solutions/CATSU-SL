@@ -30,7 +30,6 @@ export class PracticeContainerComponent implements OnInit {
         
         this.array = [];
         for (let lesson of data.output) {
-          alert();
           const isTeacherRoute = this.API.getUserType() == '1';
           this.array.push({
             id: lesson.id,

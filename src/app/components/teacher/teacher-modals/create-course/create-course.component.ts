@@ -346,7 +346,7 @@ saveInteractiveVideoSettings() {
 
     try {
       // Call createCourse API with properly formatted input fields
-      await lastValueFrom(
+      const response = await lastValueFrom(
         this.API.createCourse(
           genID,
           this.courseTitle,
@@ -359,6 +359,7 @@ saveInteractiveVideoSettings() {
           this.selectedRequirements  // Pass array directly
         )
       );
+      console.log(response);
 
       for (let lesson of this.lessons) {
         let attachments: string | undefined = undefined;
