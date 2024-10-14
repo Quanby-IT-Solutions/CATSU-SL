@@ -133,24 +133,24 @@ export class HeaderzComponent implements OnInit, OnDestroy {
     const accountType = this.API.getUserData().accountType;
     switch (accountType) {
       case 0: // Student
-        this.displayedItems = this.studentDashboardItems;
-        this.mainItemKeys = ['DASHBOARD', 'LAB', 'TASKS', 'SPEECH LAB']; // Main items
-        this.specialItemKeys = ['DICTIONARY', 'SPEECH ANALYZER']; // Special items after separator
-        break;
-      case 1: // Teacher
-        this.displayedItems = this.teacherDashboardItems;
-        this.mainItemKeys = ['DASHBOARD', 'MANAGE COURSES', 'MANAGE CLASS', 'GRADES', 'SPEECH LAB']; // Main items
-        this.specialItemKeys = ['DICTIONARY', 'SPEECH ANALYZER']; // Special items after separator
-        break;
-      case 2:
-        this.displayedItems = this.adminDashboardItems;
-        this.mainItemKeys = ['DASHBOARD', 'USERS', 'COUNT', 'SPEECH LAB']; // Main items
-        break;
-        case 3:
-        this.displayedItems = this.principalDashboardItems
-        this.mainItemKeys = ['DASHBOARD', 'USERS', 'COUNT', 'SPEECHLAB']; // Main items
-        break;
-                default:
+      this.displayedItems = this.studentDashboardItems;
+      this.mainItemKeys = ['DASHBOARD', 'LAB','MEET', 'TASKS',  'SPEECH LAB']; // Main items
+      this.specialItemKeys = ['DICTIONARY','TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
+      break;
+    case 1: // Teacher
+      this.displayedItems = this.teacherDashboardItems;
+      this.mainItemKeys = ['DASHBOARD', 'MANAGE COURSES', 'MANAGE CLASS',  'MEET' ,'GRADES','SPEECH LAB']; // Main items
+      this.specialItemKeys = ['DICTIONARY','TEXT TO SPEECH', 'SPEECH ANALYZER']; // Special items after separator
+      break;
+    case 2:
+      this.displayedItems = this.adminDashboardItems;
+      this.mainItemKeys = ['DASHBOARD', 'USERS', 'COUNT', 'SPEECHLAB']; // Main items
+      break;
+      case 3:
+      this.displayedItems = this.principalDashboardItems
+      this.mainItemKeys = ['DASHBOARD', 'USERS', 'COUNT', 'SPEECHLAB']; // Main items
+      break;
+      default:
           this.API.failedSnackbar('System Error');
           return;
     }
