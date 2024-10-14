@@ -1142,7 +1142,7 @@ export class APIService implements OnDestroy, OnInit {
             app: environment.app,
             method: 'create_url',
             chunk: base64String,
-            fileName: filename,
+            fileName: 'files/' +filename,
             chunkIndex: chunkIndex,
             totalChunks: totalChunks,
           })
@@ -1253,7 +1253,7 @@ export class APIService implements OnDestroy, OnInit {
               app: environment.app,
               method: 'create_url',
               chunk: base64String,
-              fileName: filename,
+              fileName: 'files/'+ filename,
               chunkIndex: chunkIndex,
               totalChunks: totalChunks,
             })
@@ -1308,7 +1308,7 @@ export class APIService implements OnDestroy, OnInit {
               app: environment.app,
               method: 'create_url',
               chunk: base64String,
-              fileName: filename,
+              fileName: 'files/'+filename,
               chunkIndex: chunkIndex,
               totalChunks: totalChunks,
             })
