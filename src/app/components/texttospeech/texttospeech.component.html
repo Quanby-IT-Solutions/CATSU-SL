@@ -79,7 +79,8 @@
 
       <!-- Audio with Equalizer -->
       <div class="w-full shadow-boxz rounded relative">
-        <div class="absolute top-0 right-0 m-4">
+        <div class="absolute top-0 right-0 m-4 flex flex-row gap-4 justify-center items-center text-primary-2">
+          <i class="fa-solid {{ audioPlaying ? 'fa-pause' : 'fa-play' }}" (click)="playTheAudio()"></i>
           <!-- Example SVG for a download icon; replace with your icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer download-icon" viewBox="0 0 24 24"
             fill="white" stroke="var(--secondary-color)" (click)="download()">
@@ -107,7 +108,7 @@
           <div class="overlap-group recs">
             <div class="ellipse"></div>
             <!-- <img class="microphone" src="assets/record.png" /> -->
-            <svg class="text-primary-2 bg-white rounded-full border-8 border-primary-2"
+            <svg class="{{!recording ? 'text-primary-2 border-primary-2' : 'text-red-500 pulse border-red-500 animate-pulse'}} bg-white rounded-full border-8 "
               xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24">
               <path fill="currentColor"
                 d="M12 2a5.75 5.75 0 0 0-5.75 5.75v3a5.75 5.75 0 0 0 11.452.75H13a.75.75 0 0 1 0-1.5h4.75V8.5H13A.75.75 0 0 1 13 7h4.701A5.75 5.75 0 0 0 12 2" />
@@ -116,7 +117,7 @@
                 clip-rule="evenodd" />
             </svg>
           </div>
-          <div class="text-xl font-bold text-primary-2">{{ recording ? 'Recording...' : 'Record Audio' }}</div>
+          <div class="text-xl font-bold {{!recording ? 'text-primary-2' : 'text-red-500'}}">{{ recording ? 'Recording...' : 'Record Audio' }}</div>
         </div>
 
         <!-- Content 3 -->
@@ -124,13 +125,13 @@
           [class.pulse]="playing">
           <div class="overlap-group1">
             <div class="ellipse1 gradient-color" [ngClass]="{ 'animate-wave1': playing }"></div>
-            <svg class="text-primary-2 bg-white rounded-full border-8 border-primary-2"
+            <svg class="bg-white rounded-full border-8 {{!playing ? 'text-primary-2 border-primary-2' : 'text-red-500 pulse border-red-500 animate-pulse'}}"
               xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 512 512">
               <path fill="currentColor"
                 d="M411.16 97.46C368.43 55.86 311.88 32 256 32S143.57 55.86 100.84 97.46C56.45 140.67 32 197 32 256c0 26.67 8.75 61.09 32.88 125.55S137 473 157.27 477.41c5.81 1.27 12.62 2.59 18.73 2.59a60.06 60.06 0 0 0 30-8l14-8c15.07-8.82 19.47-28.13 10.8-43.35l-86.92-152.57a31.73 31.73 0 0 0-43.57-11.76l-13.69 8a56.5 56.5 0 0 0-14 11.59a4 4 0 0 1-7-2A115 115 0 0 1 64 256c0-50.31 21-98.48 59.16-135.61C160 84.55 208.39 64 256 64s96 20.55 132.84 56.39C427 157.52 448 205.69 448 256a115 115 0 0 1-1.68 17.91a4 4 0 0 1-7 2a56.5 56.5 0 0 0-14-11.59l-13.69-8a31.73 31.73 0 0 0-43.57 11.76L281.2 420.65c-8.67 15.22-4.27 34.53 10.8 43.35l14 8a60.06 60.06 0 0 0 30 8c6.11 0 12.92-1.32 18.73-2.59C375 473 423 446 447.12 381.55S480 282.67 480 256c0-59-24.45-115.33-68.84-158.54" />
             </svg>
           </div>
-          <div class="text-xl font-bold text-primary-2">{{ playing ? 'Stop' : 'Play' }} the Audio</div>
+          <div class="text-xl font-bold {{!playing ? 'text-primary-2' : 'text-red-500'}}">{{ playing ? 'Stop' : 'Play' }} the Audio</div>
         </div>
 
 
