@@ -7,9 +7,9 @@
       </div>
     </div>
     <div class="w-full h-full overflow-y-auto">
-      <div class="w-full flex flex-col gap-4 p-2">
+      <div class="flex flex-col w-full gap-4 p-2">
         <!-- first row -->
-        <div class="flex md:flex-row flex-col w-full gap-2">
+        <div class="flex flex-col w-full gap-2 md:flex-row">
           <div class="flex flex-col flex-1 gap-2">
             <input
               class="rounded-lg bg-slate-50 border-2 border-solid border-[var(--secondary-color)] outline-[var(--tertiary-color)] p-2"
@@ -26,7 +26,7 @@
               class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
               type="text" [(ngModel)]="deadline" name="deadline" id="deadline" placeholder="Deadline:"
               onfocus="this.type='date'" onblur="this.type='text'" required style="padding-left: 10px" />
-          
+
               <!-- <select
               class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
               [(ngModel)]="course" (ngModelChange)="onCourseChange()" name="course">
@@ -35,11 +35,11 @@
                 {{ _class.course }} - {{ _class.class }}
               </option>
             </select> -->
-           
+
             <select
             class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
             [(ngModel)]="course"
-            (ngModelChange)="onCourseChange($event)" 
+            (ngModelChange)="onCourseChange($event)"
             name="course"
           >
             <option value="" disabled selected hidden>Select Course</option>
@@ -47,7 +47,7 @@
               {{ _class.course }} - {{ _class.class }}
             </option>
           </select>
-          
+
 
               <select
                 class="p-2 border-2 border-[var(--secondary-color)] border-solid rounded-lg bg-slate-50 outline-[var(--tertiary-color)]"
@@ -92,8 +92,8 @@
         </div>
 
         <!-- start of que section -->
-        <div class="leftwrap flex flex-col w-full gap-8">
-          <div *ngFor="let question of questions; let i = index" class="flex md:flex-row flex-col w-full gap-2 mt-3">
+        <div class="flex flex-col w-full gap-8 leftwrap">
+          <div *ngFor="let question of questions; let i = index" class="flex flex-col w-full gap-2 mt-3 md:flex-row">
             <div class="md:flex-[2_2_1%] flex flex-col gap-2">
               <!-- first row in que section -->
               <div class="flex items-center">
@@ -192,20 +192,20 @@
             <div *ngIf="question.type == '0'" class="options flex-[3_3_1%] mt-3 w-full">
               <h1 class="poppins-b">Options</h1>
               <!-- Container 1 -->
-              <div class="flex gap-3 mt-2 w-full">
+              <div class="flex w-full gap-3 mt-2">
 
                 <!-- Item 1 -->
-                <div class="flex flex-col flex-1 gap-3 w-full">
-                  <div class="flex flex-col gap-2 w-full">
-                    <div class="flex flex-row items-center gap-2 w-full">
+                <div class="flex flex-col flex-1 w-full gap-3">
+                  <div class="flex flex-col w-full gap-2">
+                    <div class="flex flex-row items-center w-full gap-2">
                       <input
-                        class="w-full flex-1 p-2 border-2 border-solid rounded-lg border-amber-600 bg-slate-50 outline-amber-400"
+                        class="flex-1 w-full p-2 border-2 border-solid rounded-lg border-amber-600 bg-slate-50 outline-amber-400"
                         [(ngModel)]="question.options[0].value" type="text" placeholder="Option #1:" />
                       <input [(ngModel)]="question.options[0].active" class="w-5 h-5"
                         (change)="setMultipleAnswer('0', question)" type="checkbox" />
                     </div>
                     <div
-                      class="w-full flex flex-col items-center justify-center gap-2 px-1 py-1 mr-6 border-2 rounded border-slate-500 hover:bg-amber-50 ">
+                      class="flex flex-col items-center justify-center w-full gap-2 px-1 py-1 mr-6 border-2 rounded border-slate-500 hover:bg-amber-50 ">
 
                       <div class="flex flex-col" *ngIf="question.options[0].attachment">
                         <img [src]="question.options[0].attachment" class="w-auto max-h-36">
@@ -220,18 +220,18 @@
                   </div>
 
                   <!-- Item 2 -->
-                  <div class="w-full flex flex-col gap-2">
-                    <div class="w-full flex items-center gap-2">
+                  <div class="flex flex-col w-full gap-2">
+                    <div class="flex items-center w-full gap-2">
                       <input
-                        class="w-full flex-1 p-2 border-2 border-solid rounded-lg border-amber-600 bg-slate-50 outline-amber-400"
+                        class="flex-1 w-full p-2 border-2 border-solid rounded-lg border-amber-600 bg-slate-50 outline-amber-400"
                         [(ngModel)]="question.options[1].value" type="text" placeholder="Option #2:" />
                       <input [(ngModel)]="question.options[1].active" (change)="setMultipleAnswer('1', question)"
                         class="w-5 h-5" type="checkbox" />
                     </div>
 
                     <div
-                      class="w-full flex flex-col items-center justify-center gap-2 px-1 py-1 mr-6 border-2 rounded border-slate-500 hover:bg-amber-50 ">
-                      <div class="w-full flex flex-col" *ngIf="question.options[1].attachment">
+                      class="flex flex-col items-center justify-center w-full gap-2 px-1 py-1 mr-6 border-2 rounded border-slate-500 hover:bg-amber-50 ">
+                      <div class="flex flex-col w-full" *ngIf="question.options[1].attachment">
                         <img [src]="question.options[1].attachment" class="w-auto max-h-36">
                         <button (click)="removeOptionAttachment(question.options[1])"
                           class="px-3 py-1 text-xs text-white bg-red-500 hover:bg-red-400"> Remove</button>
@@ -244,19 +244,19 @@
                   </div>
                 </div>
                 <!-- Container 2 -->
-                <div class="w-full flex flex-col flex-1 gap-3">
+                <div class="flex flex-col flex-1 w-full gap-3">
                   <!-- Item 3 -->
-                  <div class="w-full flex flex-col gap-2">
-                    <div class="w-full flex items-center gap-2">
+                  <div class="flex flex-col w-full gap-2">
+                    <div class="flex items-center w-full gap-2">
                       <input
-                        class="w-full flex-1 p-2 border-2 border-solid rounded-lg border-amber-600 bg-slate-50 outline-amber-400"
+                        class="flex-1 w-full p-2 border-2 border-solid rounded-lg border-amber-600 bg-slate-50 outline-amber-400"
                         [(ngModel)]="question.options[2].value" type="text" placeholder="Option #3:" />
                       <input [(ngModel)]="question.options[2].active" (change)="setMultipleAnswer('2', question)"
                         class="w-5 h-5" type="checkbox" />
                     </div>
                     <div
-                      class="w-full flex flex-col items-center justify-center gap-2 px-1 py-1 mr-6 border-2 rounded border-slate-500 hover:bg-amber-50 ">
-                      <div class="w-full flex flex-col" *ngIf="question.options[2].attachment">
+                      class="flex flex-col items-center justify-center w-full gap-2 px-1 py-1 mr-6 border-2 rounded border-slate-500 hover:bg-amber-50 ">
+                      <div class="flex flex-col w-full" *ngIf="question.options[2].attachment">
                         <img [src]="question.options[2].attachment" class="w-auto max-h-36">
                         <button (click)="removeOptionAttachment(question.options[2])"
                           class="px-3 py-1 text-xs text-white bg-red-500 hover:bg-red-400"> Remove</button>
@@ -268,17 +268,17 @@
                     </div>
                   </div>
                   <!-- Item 4 -->
-                  <div class="w-full flex flex-col gap-2">
-                    <div class="w-full flex items-center gap-2">
+                  <div class="flex flex-col w-full gap-2">
+                    <div class="flex items-center w-full gap-2">
                       <input
-                        class="w-full flex-1 p-2 border-2 border-solid rounded-lg border-amber-600 bg-slate-50 outline-amber-400"
+                        class="flex-1 w-full p-2 border-2 border-solid rounded-lg border-amber-600 bg-slate-50 outline-amber-400"
                         [(ngModel)]="question.options[3].value" type="text" placeholder="Option #4:" />
                       <input [(ngModel)]="question.options[3].active" (change)="setMultipleAnswer('3', question)"
                         class="w-5 h-5" type="checkbox" />
                     </div>
                     <div
-                      class="w-full flex flex-col items-center justify-center gap-2 px-1 py-1 mr-6 border-2 rounded border-slate-500 hover:bg-amber-50 ">
-                      <div class="w-full flex flex-col" *ngIf="question.options[3].attachment">
+                      class="flex flex-col items-center justify-center w-full gap-2 px-1 py-1 mr-6 border-2 rounded border-slate-500 hover:bg-amber-50 ">
+                      <div class="flex flex-col w-full" *ngIf="question.options[3].attachment">
                         <img [src]="question.options[3].attachment" class="w-auto max-h-36">
                         <button (click)="removeOptionAttachment(question.options[3])"
                           class="px-3 py-1 text-xs text-white bg-red-500 hover:bg-red-400"> Remove</button>
@@ -323,17 +323,17 @@
       </div>
     </div>
 
-    <div class="flex flex-row  justify-between items-center gap-4">
+    <div class="flex flex-row items-center justify-between gap-4">
       <button (click)="addNewItem()"
         class="add hover:scale-105 poppins-b text-[var(--secondary-color)] shadow-sm border-[1px] border-[var(--tertiary-color)] text-sm py-2 rounded-md w-full whitespace-nowrap max-w-40">
         ADD NEW QUESTION
-      </button> 
-      <div class="flex justify-end w-fit gap-2">
-        <button (click)="submit()" class="text-sm w-20 py-2 font-medium text-white bg-blue-500 rounded-md save hover:scale-105"
+      </button>
+      <div class="flex justify-end gap-2 w-fit">
+        <button (click)="submit()" class="w-20 py-2 text-sm font-medium text-white bg-blue-500 rounded-md save hover:scale-105"
           [disabled]="loading">
           Save
         </button>
-        <button class="text-sm w-20 py-2 text-white font-medium bg-red-500 rounded-md cancel hover:scale-105"
+        <button class="w-20 py-2 text-sm font-medium text-white bg-red-500 rounded-md cancel hover:scale-105"
           (click)="closeModal()">Cancel</button>
       </div>
     </div>

@@ -1,17 +1,24 @@
 <div class="main-container">
   <div class="button-container">
     <button class="poppins-b delete" (click)="delete()" *ngIf="selectedOption === 'Students' || selectedOption === 'Teachers' || selectedOption === 'Administrators'">
-      <!-- <img src="assets/delete.png" alt="Delete Icon" /> -->
-      <i class='bx bx-trash mr-2'></i>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="mr-2 icon">
+        <path d="M3 6h18v2H3V6zm2 2v14h12V8H5zm4 2h2v10H9V10zm4 0h2v10h-2V10z"/>
+        <path fill="none" d="M0 0h24v24H0z"/>
+      </svg>
       <span>Delete</span>
     </button>
     <button class="poppins-b" *ngIf="selectedOption === 'Teachers'" (click)="addTeachers()">
-      <img src="assets/add.png" alt="Add Icon" />
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        <path fill="none" d="M0 0h24v24H0z"/>
+      </svg>
       <span>Add Teacher</span>
     </button>
     <button class="poppins-b" *ngIf="selectedOption === 'Administrators'" (click)="addPrincipal()">
-      <img src="assets/add.png" alt="Add Icon" />
-      <span>Add Admin</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        <path fill="none" d="M0 0h24v24H0z"/>
+      </svg>      <span>Add Admin</span>
     </button>
 
     <!-- <button class="poppins-b" *ngIf="selectedOption === 'Students'" (click)="addStudents()">
@@ -20,16 +27,19 @@
     </button> -->
 
     <button class="poppins-b add2" *ngIf="selectedOption === 'Teachers'" (click)="editDetailsTeacher()">
-      <img src="assets/edit.png" alt="Edit Icon" />
-      <span>Edit</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
+        <path d="M3 17.25V21h3.75l11.07-11.07-3.75-3.75L3 17.25zm18-11.66l-2.34-2.34a1.03 1.03 0 00-1.46 0l-2.34 2.34 3.75 3.75 2.34-2.34a1.03 1.03 0 000-1.46z"/>
+      </svg>      <span>Edit</span>
     </button>
     <button class="poppins-b add2" *ngIf="selectedOption === 'Students'" (click)="editDetailsStudent()">
-      <img src="assets/edit.png" alt="Edit Icon" />
-      <span>Edit</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
+        <path d="M3 17.25V21h3.75l11.07-11.07-3.75-3.75L3 17.25zm18-11.66l-2.34-2.34a1.03 1.03 0 00-1.46 0l-2.34 2.34 3.75 3.75 2.34-2.34a1.03 1.03 0 000-1.46z"/>
+      </svg>      <span>Edit</span>
     </button>
     <button class="poppins-b add2" *ngIf="selectedOption === 'Administrators'" (click)="editDetailsPrincipal()">
-      <img src="assets/edit.png" alt="Edit Icon" />
-      <span>Edit</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
+        <path d="M3 17.25V21h3.75l11.07-11.07-3.75-3.75L3 17.25zm18-11.66l-2.34-2.34a1.03 1.03 0 00-1.46 0l-2.34 2.34 3.75 3.75 2.34-2.34a1.03 1.03 0 000-1.46z"/>
+      </svg>      <span>Edit</span>
     </button>
 
     <div class="button-container dropdown">
@@ -38,8 +48,9 @@
         (click)="toggleDropdown()"
         [ngClass]="{ active: isDropdownOpen }"
       >
-        <img src="assets/dropdown-icon.png" alt="Dropdown Icon" />
-        <span *ngIf="selectedOption === 'Students'">Students</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
+        <path d="M7 10l5 5 5-5H7z"/>
+      </svg>        <span *ngIf="selectedOption === 'Students'">Students</span>
         <span *ngIf="selectedOption === 'Teachers'">Teachers</span>
         <span *ngIf="selectedOption === 'Administrators'">Admin</span>
         <div *ngIf="isDropdownOpen" class="dropdown-content">
@@ -65,10 +76,10 @@
       </button>
     </div>
   </div>
-  
+
   <div class="table-container">
     <table>
-     
+
         <ng-container *ngIf="selectedOption == 'Students' else ifOption">
           <thead class="poppins-b">
             <tr>
@@ -102,7 +113,7 @@
           </tr>
           </tbody>
         </ng-container>
-        
+
         <ng-template  #ifOption>
         <ng-container *ngIf="selectedOption === 'Administrators'; else showTeachers">
           <thead class="poppins-b">
@@ -155,7 +166,7 @@
           </tr>
         </tbody>
         </ng-template>
-   
+
     </table>
   </div>
 </div>

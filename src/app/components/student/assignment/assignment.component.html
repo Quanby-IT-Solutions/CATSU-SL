@@ -2,8 +2,8 @@
   <div class="w-full h-full max-w-[85%] mx-auto flex flex-col gap-10 py-10">
 
     <!-- Header Section -->
-    <div class="flex flex-col items-center w-full gap-6 h-fit">
-      <h1 class="text-6xl font-extrabold text-[#212529] tracking-tight flex items-center space-x-4">
+    <div class="flex flex-col items-start w-full gap-6 h-fit">
+      <h1 class="xl:text-6xl lg:text-5xl text-4xl font-extrabold text-[#212529] tracking-tight flex items-center space-x-4">
         <i class="fas fa-tasks text-[#f5a425]"></i>
         <span>Your Tasks</span>
       </h1>
@@ -11,20 +11,20 @@
     </div>
 
     <!-- Filter Bar -->
-    <div class="flex justify-center space-x-6">
+    <div class="flex justify-start space-x-4">
       <button (click)="setFilterType('all')"
         [ngClass]="{'bg-gradient-to-r from-[#f5a425] to-[#f0a500] text-white': filterType === 'all', 'bg-white text-[#212529] border border-[#e5e7eb]': filterType !== 'all'}"
-        class="px-8 py-4 transition-all rounded-full shadow-lg hover:shadow-xl">
+        class="px-4 py-2 transition-all rounded-full shadow-lg hover:shadow-xl">
         <i class="mr-2 fas fa-list-ul"></i> All
       </button>
       <button (click)="setFilterType('assignment')"
         [ngClass]="{'bg-gradient-to-r from-[#f5a425] to-[#f0a500] text-white': filterType === 'assignment', 'bg-white text-[#212529] border border-[#e5e7eb]': filterType !== 'assignment'}"
-        class="px-8 py-4 transition-all rounded-full shadow-lg hover:shadow-xl">
+        class="px-4 py-2 transition-all rounded-full shadow-lg hover:shadow-xl">
         <i class="mr-2 fas fa-book"></i> Assignments
       </button>
       <button (click)="setFilterType('quiz')"
         [ngClass]="{'bg-gradient-to-r from-[#f5a425] to-[#f0a500] text-white': filterType === 'quiz', 'bg-white text-[#212529] border border-[#e5e7eb]': filterType !== 'quiz'}"
-        class="px-8 py-4 transition-all rounded-full shadow-lg hover:shadow-xl">
+        class="px-4 py-2 transition-all rounded-full shadow-lg hover:shadow-xl">
         <i class="mr-2 fas fa-question-circle"></i> Quizzes
       </button>
     </div>

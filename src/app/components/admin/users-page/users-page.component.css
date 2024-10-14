@@ -4,6 +4,7 @@
   gap: 1rem;
   margin: 0 2.5rem;
 }
+
 .button-container {
   display: flex;
   justify-content: flex-end;
@@ -13,6 +14,7 @@
   margin: 5px;
   height: 100%;
 }
+
 .accept-btn,
 .cancel-btn {
   transition: transform 0.3s ease;
@@ -24,11 +26,11 @@
 }
 
 .button-container button {
-  color: #34b0b5;
-  background-color: #fff;
+  color: var(--tertiary-color); /* Bright orange for button text */
+  background-color: var(--text-color-light); /* White background */
   border-radius: 5px;
-  border: 1px solid #8787875e;
-  box-shadow: 4px 4px 2px 0 rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--text-muted); /* Soft border color */
+  box-shadow: 4px 4px 2px 0 var(--box-shadow-color);
   padding: 10px;
   display: flex;
   align-items: center;
@@ -54,45 +56,67 @@
 
 .dropdown-content .dropdown-value {
   font-size: 12px;
-  background-color: none;
+  background-color: var(
+    --secondary-color
+  ); /* Deep Blue for dropdown background */
+  color: var(--text-color-light); /* White text */
   text-align: center;
   cursor: pointer;
   width: 100%;
 }
+
 .table-container {
   border-collapse: collapse;
 }
+
 .table-container table {
   width: 100%;
   height: 100%;
 }
+
 .table-container tbody {
-  background-color: #e1f3fd;
-  border-top: 10px solid #fff;
+  background-color: var(--background-light); /* Light blue background */
+  border-top: 10px solid var(--text-color-light); /* White for separating rows */
 }
+
 .table-container th {
-  color: #fff;
+  color: var(--text-color-light); /* White text */
   background-image: linear-gradient(
     to right,
-    rgb(1, 114, 175) 0%,
-    rgb(116, 254, 189) 100%
-  );
-  padding: 10px;
-  text-align: center;
-}
-.table-container td {
-  color: #878787;
-  font-size: small;
-  border: 1px solid #fff;
+    var(--secondary-color) 0%,
+    var(--secondary-color) 100%
+  ); /* Gradient with Deep Blue and Bright Orange */
   padding: 10px;
   text-align: center;
 }
 
-/* Add this in your CSS or SCSS file */
-.selected {
-  background-color: rgb(93, 87, 171); /* You can choose your preferred color */
-  color: white; /* You can choose your preferred text color */
+.table-container td {
+  color: var(--text-muted); /* Muted dark gray text */
+  font-size: small;
+  border: 1px solid var(--text-color-light); /* White borders */
+  padding: 10px;
+  text-align: center;
 }
-.selected td{
-  color: white; /* You can choose your preferred text color */
+
+.selected {
+  background-color: var(--primary-color); /* Dark Gray for selected rows */
+  color: var(--text-color-light); /* White text */
+}
+
+.selected td {
+  color: var(--text-color-light); /* White text in selected row cells */
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between search box and buttons */
+}
+
+.search-box {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
 }

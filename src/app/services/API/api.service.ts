@@ -4040,7 +4040,6 @@ export class APIService implements OnDestroy, OnInit {
     grammar: number,
     vocabulary: number,
     areasForImprovement: string,
-    itemsId: number,
   ): Observable<any> {
     const postObject = {
       tables: 'result_speech_analyzer',
@@ -4052,7 +4051,6 @@ export class APIService implements OnDestroy, OnInit {
         grammar,
         vocabulary,
         areas_for_improvement: areasForImprovement,
-        speech_analyzer_items_id: itemsId,
       },
     };
 
@@ -4163,6 +4161,7 @@ export class APIService implements OnDestroy, OnInit {
     settings?: string,
     lessonid?: string,
     topicid?: string,
+    classid?: string // Added classid parameter
   ) {
     var attach = {};
     if (attachments != undefined) {
@@ -4190,7 +4189,8 @@ export class APIService implements OnDestroy, OnInit {
           Timelimit: timelimit,
           Deadline: deadline,
           lessonid: lessonid,
-          topicid: topicid
+          topicid: topicid,
+          classid: classid, // Include classid in the update
         },
         attach,
         sett
@@ -4204,7 +4204,13 @@ export class APIService implements OnDestroy, OnInit {
 
     return this.post('update_entry', {
       data: JSON.stringify(postObject),
-    });
+    }).pipe(
+      tap(response => console.log('Update quiz response:', response)),
+      catchError(error => {
+        console.error('Error updating quiz:', error);
+        return throwError(() => new Error('Failed to update quiz. Please try again.'));
+      })
+    );
   }
 
 
