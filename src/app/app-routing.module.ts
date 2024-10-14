@@ -178,7 +178,7 @@ const routes: Routes = [
         {path: 'modules' , component: ModuleParentComponent},
         {path: 'practice1' , component: Practice1Component},
         {path: 'quiztemplate', component: QuizTemplateComponent},
-        {path: 'paractice-parent', component:PracticeParentComponent},
+        {path: 'practice-parent', component:PracticeParentComponent},
         {path: 'drag1', component:Drag1Component},
         {path: 'quiz-template', component: QuizTemplateComponent}
         ]

@@ -41,10 +41,15 @@
             (click)="submission.attachments ? openFile(submission.attachments.split('>')[0]) : null"
             aria-label="Download Attachment"
           >
-            <img class="w-6 h-6" src="assets/download.png" alt="Download Icon" />
-          </button>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="var(--tertiary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Download Icon">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+
+                    </button>
           <button
-            class="px-4 py-2 text-sm font-medium text-white transition bg-[var(--[primary]-color)] rounded-md shadow hover:bg-[var(--secondary-color)]"
+            class="px-4 py-2 text-sm font-medium text-white transition bg-[--secondary-color] rounded-md shadow hover:bg-[--primary-color]"
             (click)="navigateToTeacherView(submission)"
           >
             View
@@ -63,14 +68,14 @@
       </div>
 
       <!-- Dropdown & New Task Button -->
-      <div class="flex items-center justify-between gap-4 mb-6 flex-row">
+      <div class="flex flex-row items-center justify-between gap-4 mb-6">
         <!-- Course Filter Dropdown -->
         <div ngbDropdown class="relative">
           <button
             type="button"
             id="dropdownBasic1"
             ngbDropdownToggle
-            class="inline-flex items-center justify-between md:w-44 w-fit px-4 py-2 text-base font-medium bg-gray-100 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100"
+            class="inline-flex items-center justify-between px-4 py-2 text-base font-medium bg-gray-100 border border-gray-300 rounded-md shadow-sm md:w-44 w-fit hover:bg-gray-100"
             >
             Filter: {{ filterCourse === "" ? "All" : courses.get(filterCourse).course }}
             <span class="material-icons">expand_more</span>

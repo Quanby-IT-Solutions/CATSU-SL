@@ -81,7 +81,7 @@ export class EditCourseComponent implements OnInit {
   currentLessonId: string | null = null;
 
   // Dropdowns and Modal States
-  audienceOptions: string[] = ['Nurse', 'Doctor', 'Caregiver', 'Patient'];
+  audienceOptions: string[] = ['Student', 'Teacher', 'Principal', 'Parent'];
   requirementsOptions: string[] = ['Internet', 'Phone', 'Tablet', 'Laptop'];
   selectedAudience: string[] = [];
   selectedRequirements: string[] = [];
@@ -110,21 +110,21 @@ export class EditCourseComponent implements OnInit {
       console.error('Course information is not available.');
       return;
     }
-  
+
     console.log('Course Info:', this.info);
-  
+
     this.courseTitle = this.info.title || '';
     this.courseDesc = this.info.description || '';
     this.courseObjective = this.info.objectives || '';
-  
+
     this.selectedAudience = this.parseArrayString(this.info.targetAudience);
     this.selectedRequirements = this.parseArrayString(this.info.technicalRequirements);
-  
+
     if (this.info.image) {
       this.courseImageURL = this.info.image;
       this.courseImagePreview = this.getURL(this.courseImageURL);
     }
-  
+
     this.API.teacherCourseLessons(this.info.id).subscribe(
       (data) => {
         this.lessons = data.output.map((lesson: any) => ({
@@ -136,7 +136,7 @@ export class EditCourseComponent implements OnInit {
           complexity: this.mapComplexity(Number(lesson.difficulty)),
           topics: [], // Initialize topics as an empty array
         }));
-  
+
         // Fetch topics for each lesson
         this.lessons.forEach((lesson) => {
           if (lesson.id) {
@@ -145,7 +145,7 @@ export class EditCourseComponent implements OnInit {
                 console.log(`Topics for Lesson ${lesson.id}:`, topicsData.output);
                 // Sort topics by ID when they are fetched
                 lesson.topics = topicsData.output.sort((a: any, b: any) => a.id - b.id);
-  
+
                 // Fetch attachments for each topic
                 if (lesson.topics) {  // Check if topics are defined
                   lesson.topics.forEach((topic: any) => {
@@ -164,7 +164,7 @@ export class EditCourseComponent implements OnInit {
                         this.API.failedSnackbar(`Failed to fetch attachments for topic ${topic.topicid}.`);
                       }
                     );
-                    
+
                   });
                 }
               },
@@ -180,10 +180,10 @@ export class EditCourseComponent implements OnInit {
       }
     );
   }
-  
-  
-  
-  
+
+
+
+
 
   closeTopicModal(): void {
     this.showTopicModal = false;
@@ -212,7 +212,7 @@ async saveTopic(): Promise<void> {
   this.isSaving = true;
   this.API.showLoader();
 
-  
+
 
   try {
     console.log('Saving topic:', this.newTopic);
@@ -224,10 +224,10 @@ async saveTopic(): Promise<void> {
       if (attachment instanceof File) {
         const serverLocation = uuidv4() + '-' + attachment.name;
 
-     
+
         this.API.justSnackbar(`Uploading file`, this.uploadProgress);
 
-      
+
         await this.API.uploadFileWithProgress(attachment, serverLocation);
         attachments.push({
           filePath: 'files/' + serverLocation,
@@ -240,9 +240,9 @@ async saveTopic(): Promise<void> {
       } else if (typeof attachment === 'object' && 'file' in attachment) {
         const serverLocation = uuidv4() + '-' + attachment.file.name;
 
-        
+
         this.uploadInProgress = true;
-       
+
 
         await this.API.uploadFileWithProgress(attachment.file,serverLocation);
         if (attachment.metadata.type === 'interactive') {
@@ -365,7 +365,7 @@ attachFile(type: 'mp4' | 'pdf' | 'any'): void {
   }
 }
 
-  
+
 saveInteractiveVideo(): void {
   if (this.interactiveVideoFile && this.selectedQuiz && this.videoTimestamp) {
     const interactiveAttachment: InteractiveVideoAttachment = {
@@ -448,7 +448,7 @@ deleteAttachment(index: number): void {
   if (this.editingTopic && this.newTopic.topicId) {
     // If we're editing an existing topic, we need to delete the attachment from the server
     const attachmentToDelete = this.newTopic.attachments[index];
-    
+
     if (typeof attachmentToDelete === 'string') {
       // It's an existing file path, so we need to delete it from the server
       this.API.deleteTopicAttachments(this.newTopic.topicId).subscribe(
@@ -626,18 +626,18 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
 
   if (editing && topic) {
     // Parse attachments string into an array if necessary
-    const parsedAttachments = typeof topic.attachments === 'string' 
-      ? topic.attachments.split(',').map((attachment: string) => attachment.trim()) 
+    const parsedAttachments = typeof topic.attachments === 'string'
+      ? topic.attachments.split(',').map((attachment: string) => attachment.trim())
       : topic.attachments || [];
-      
+
     // Populate the modal with the topic's data
     this.newTopic = {
       title: topic.title || '',
       details: topic.details || '',
-      attachments: parsedAttachments.map((attachment: any) => 
+      attachments: parsedAttachments.map((attachment: any) =>
         typeof attachment === 'string' ? attachment : {
-          file: attachment.file, 
-          metadata: attachment.metadata 
+          file: attachment.file,
+          metadata: attachment.metadata
         }
       ),
       topicId: topic.topicid || undefined,
@@ -650,7 +650,7 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
   }
 }
 
-  
+
 
 
   toggleDropdown(type: string) {
@@ -680,7 +680,7 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
   getURL(file: string): string {
     return this.API.getURL(file); // Use the same logic as in lessons component
   }
-  
+
 
   parseArrayString(str: string): string[] {
     try {
@@ -725,35 +725,35 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
   //   input.click();
   // }
 
-  
+
   uploadProgress: number = 0; // Store the upload progress percentage
   uploadInProgress: boolean = false; // Track whether the upload is currently in progress
-  
+
 
 
   uploadCourseImage() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-  
+
     input.onchange = (event: Event) => {
       const target = event.target as HTMLInputElement;
       if (target.files && target.files.length > 0) {
         const file = target.files[0];
         const filename = uuidv4() + '.' + file.name.split('.').pop();
-  
+
         // Reset progress and start file upload
         this.uploadProgress = 0;
         this.uploadInProgress = true;
-  
+
         // Show the initial snackbar with 0% progress
         this.API.justSnackbar(`Uploading file... 0%`, 99999999999999); // Long duration until upload is done
-  
+
         // Start the file upload and update the snackbar with progress
         this.API.uploadFileLoading(file, filename).subscribe({
           next: (progress: number) => {
             this.uploadProgress = progress; // Update the progress value
-  
+
             // Update the snackbar message with current progress
             this.API.justSnackbar(`Uploading file... ${progress}%`, 99999999999999);
           },
@@ -769,12 +769,12 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
         });
       }
     };
-  
+
     input.click();
   }
-  
-  
-  
+
+
+
 
   thisLesson() {
     const newLesson: Lesson = {
@@ -862,7 +862,7 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
     }
   }
 
-  
+
 
   onInteractiveVideoSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
@@ -983,7 +983,7 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
     if (!file) return ''; // Handle empty or undefined file case
     return file.split('>').length > 1 ? file.split('>')[1] : file;
   }
-  
+
 
   selectLanguage(langID: string) {
     this.language = langID!;
@@ -993,7 +993,7 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
     this.activeModal.close();
   }
 
-  
+
 
   openFileSelector(lesson: Lesson, type: FileType, isInteractive: boolean = false) {
     const input = document.createElement('input');
@@ -1023,7 +1023,7 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
 
 
 
-  // Quiz 
+  // Quiz
   quizOptions: any = [];
   quiz: any = [];
 

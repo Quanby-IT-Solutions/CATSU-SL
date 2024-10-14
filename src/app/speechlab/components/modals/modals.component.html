@@ -4,9 +4,9 @@
     <div class="flex flex-row justify-center w-full gap-6">
       <!-- One vs One Button -->
       <button [disabled]="!hasMeet() || solo"
-        class="relative flex items-center justify-center w-full px-6 py-3 text-sm text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-blue-500"
+        class="relative flex items-center justify-center w-full px-6 py-3 text-sm text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color]"
         [ngClass]="{
-            'bg-blue-500': solo,
+            'bg-[--secondary-color]': solo,
             'opacity-50 cursor-not-allowed': !hasMeet()
           }" (click)="openSolo()">
         <i class="mr-2 fa-solid fa-user"></i> One vs One
@@ -30,9 +30,9 @@
 
       <!-- Groupings Button -->
       <button [disabled]="!hasMeet() || groupings"
-        class="relative flex items-center justify-center w-full text-sm text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-blue-500"
+        class="relative flex items-center justify-center w-full text-sm text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color]"
         [ngClass]="{
-            'bg-blue-500': groupings,
+            'bg-[--secondary-color]': groupings,
             'opacity-50 cursor-not-allowed': !hasMeet()
           }" (click)="openGroupings()">
         <i *ngIf="!groupings" class="mr-2 fa-solid fa-users"></i> <span *ngIf="!groupings">By Group</span>
@@ -40,7 +40,7 @@
         <!-- Groupings Management -->
         <div *ngIf="groupings" class="flex items-center justify-center my-2 gap-x-4">
           <!-- Minus Button -->
-          <button class="w-8 h-8 bg-teal-300 rounded-full shadow-boxz hover:bg-teal-400"
+          <button class="w-8 h-8 rounded-full bg-amber-300 shadow-boxz hover:bg-amber-400"
             (click)="bawasStudentGrouping()">
             <p class="text-white"><i class="fa-solid fa-user-minus"></i></p>
           </button>
@@ -48,7 +48,7 @@
             {{ groupingItems.length }} / {{ maxGrouping }}
           </p>
           <!-- Add Button -->
-          <button class="w-8 h-8 bg-teal-300 rounded-full shadow-boxz hover:bg-teal-400" (click)="addStudentGrouping()">
+          <button class="w-8 h-8 rounded-full bg-amber-300 shadow-boxz hover:bg-amber-400" (click)="addStudentGrouping()">
             <p class="text-white"><i class="fa-solid fa-user-plus"></i></p>
           </button>
         </div>
@@ -71,10 +71,10 @@
 
       <!-- Chat Button -->
       <button [ngClass]="{
-            'hover:!bg-teal-300': hasMeet(),
+            'hover:!bg-amber-300': hasMeet(),
             'opacity-25': !hasMeet()
           }" [disabled]="!hasMeet()" (click)="toggleModal()"
-        class="flex items-center justify-center w-full px-6 py-3 text-sm text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-blue-500 hover:text-white">
+        class="flex items-center justify-center w-full px-6 py-3 text-sm text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
         <i class="mr-2 fa-solid fa-comment-dots"></i> Chat
       </button>
     </div>
@@ -82,9 +82,9 @@
     <!-- Teacher's Desk -->
     <div class="flex justify-center w-full">
       <div
-        class="flex gap-4 items-center justify-center w-full p-6 text-white bg-blue-600 rounded-lg shadow-md xl:w-1/3">
+        class="flex items-center justify-center w-full gap-4 p-6 text-white bg-[--secondary-color] rounded-lg shadow-md xl:w-1/3">
         <i class="text-4xl fa-solid fa-chalkboard-teacher"></i>
-        <p class=" text-2xl font-semibold">Teacher's Desk</p>
+        <p class="text-2xl font-semibold ">Teacher's Desk</p>
       </div>
     </div>
 
@@ -99,24 +99,24 @@
                 class="flex flex-col items-center p-6 transition-transform transform bg-white rounded-lg shadow-md h-fit w-fit hover:-translate-y-1">
                 <!-- Computer Icon -->
                 <div>
-                  <p class="my-2 text-5xl font-thin text-center text-blue-600 lg:text-6xl" *ngIf="layout">
+                  <p class="my-2 text-5xl font-thin text-center text-[--secondary-color] lg:text-6xl" *ngIf="layout">
                     <i class="fa-solid fa-tv"></i>
                   </p>
                   <!-- Solo Selection -->
                   <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="editedLayout"
-                    [ngClass]="{ 'text-teal-300': getSolo() == item, 'animate-bounce' : getSolo() == item }">
+                    [ngClass]="{ 'text-amber-300': getSolo() == item, 'animate-bounce' : getSolo() == item }">
                     <i class="fa-solid fa-tv"></i>
                   </p>
                   <!-- Group Selection -->
                   <p class="my-2 text-5xl font-thin text-center lg:text-6xl" *ngIf="editedLayoutGroupings"
-                    [ngClass]="{ 'text-blue-500': groupColor === 'blue' && groupingItems.includes(item) }">
+                    [ngClass]="{ 'text-amber-300': groupColor === 'blue' && groupingItems.includes(item) }">
                     <i class="fa-solid fa-tv"></i>
                   </p>
                   <!-- Button for 1v1 Selection -->
                   <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="solo">
                     <button [ngClass]="{
-                    'hover:text-teal-300': getAssignedName(item) != 'None',
-                    'text-teal-300': getSolo() == item
+                    'hover:text-amber-300': getAssignedName(item) != 'None',
+                    'text-amber-300': getSolo() == item
                   }" [disabled]="getAssignedName(item) === 'None'" (click)="soloGropings(item)">
                       <i class="fa-solid fa-tv"></i>
                     </button>
@@ -124,7 +124,7 @@
                   <!-- Button for Group Selection -->
                   <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="groupings">
                     <button [ngClass]="{
-                    'text-blue-500': groupColor === 'blue' && groupingItems.includes(item)
+                    'text-amber-300': groupColor === 'blue' && groupingItems.includes(item)
                   }" [disabled]="getAssignedName(item) === 'None'" (click)="dakolGroupings(item)">
                       <i class="fa-solid fa-tv"></i>
                     </button>
@@ -153,24 +153,24 @@
                 class="flex flex-col items-center p-4 transition-transform transform bg-white rounded-lg shadow-md h-fit w-fit hover:-translate-y-1">
                 <!-- Computer Icon -->
                 <div>
-                  <p class="my-2 text-5xl font-thin text-center text-blue-600 lg:text-6xl" *ngIf="layout">
+                  <p class="my-2 text-5xl font-thin text-center text-[--secondary-color] lg:text-6xl" *ngIf="layout">
                     <i class="fa-solid fa-tv"></i>
                   </p>
                   <!-- Solo Selection -->
                   <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="editedLayout"
-                    [ngClass]="{ 'text-teal-300': getSolo() == item, '' : getSolo() == item }">
+                    [ngClass]="{ 'text-amber-300': getSolo() == item, '' : getSolo() == item }">
                     <i class="fa-solid fa-tv"></i>
                   </p>
                   <!-- Group Selection -->
                   <p class="my-2 text-5xl font-thin text-center lg:text-6xl" *ngIf="editedLayoutGroupings"
-                    [ngClass]="{ 'text-blue-500': groupColor === 'blue' && groupingItems.includes(item) }">
+                    [ngClass]="{ 'text-amber-300': groupColor === 'blue' && groupingItems.includes(item) }">
                     <i class="fa-solid fa-tv"></i>
                   </p>
                   <!-- Button for 1v1 Selection -->
                   <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="solo">
                     <button [ngClass]="{
-                    'hover:text-teal-300': getAssignedName(item) != 'None',
-                    'text-teal-300': getSolo() == item
+                    'hover:text-amber-300': getAssignedName(item) != 'None',
+                    'text-amber-300': getSolo() == item
                   }" [disabled]="getAssignedName(item) === 'None'" (click)="soloGropings(item)">
                       <i class="fa-solid fa-tv"></i>
                     </button>
@@ -178,7 +178,7 @@
                   <!-- Button for Group Selection -->
                   <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="groupings">
                     <button [ngClass]="{
-                    'text-blue-500': groupColor === 'blue' && groupingItems.includes(item)
+                    'text-amber-300': groupColor === 'blue' && groupingItems.includes(item)
                   }" [disabled]="getAssignedName(item) === 'None'" (click)="dakolGroupings(item)">
                       <i class="fa-solid fa-tv"></i>
                     </button>
@@ -205,18 +205,18 @@
       </button>
     </div>
     <!-- If No Meeting, Show Meeting Options -->
-    <div *ngIf="!hasMeet()" class="absolute top-0 left-0  inset-0 z-10 bg-opacity-50 backdrop-filter backdrop-blur">
+    <div *ngIf="!hasMeet()" class="absolute inset-0 top-0 left-0 z-10 bg-opacity-50 backdrop-filter backdrop-blur">
       <div class="flex items-center justify-center h-full gap-x-4">
         <button *ngIf="!showStartMeetingButton && speechLabs.length > 0" (click)="showStartMeeting(0)"
-          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-blue-500 hover:text-white">
+          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
           <p class="text-lg font-semibold">Speech Lab 1</p>
         </button>
         <button *ngIf="!showStartMeetingButton && speechLabs.length > 0" (click)="showStartMeeting(1)"
-          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-blue-500 hover:text-white">
+          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
           <p class="text-lg font-semibold">Speech Lab 2</p>
         </button>
         <button *ngIf="showStartMeetingButton"
-          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-blue-500 hover:text-white"
+          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white"
           (click)="startClass()">
           <p class="text-lg font-semibold">Start Meeting</p>
         </button>
@@ -274,7 +274,7 @@
               </div>
             </div>
             <div class="flex items-center justify-end mb-4" *ngIf="message.senderID == particpantID">
-              <div class="w-full p-3 text-white bg-blue-500 rounded-lg">
+              <div class="w-full p-3 text-white bg-[--secondary-color] rounded-lg">
                 <p class="text-sm text-right">{{ message.message }}</p>
               </div>
               <img
@@ -289,7 +289,7 @@
           <div class="flex items-center">
             <input #messageInput type="text" (keyup)="texthandler($event)" placeholder="Type your message..."
               class="flex-1 px-4 py-2 text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-500" />
-            <button (click)="sendMessage()" class="px-4 py-2 ml-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+            <button (click)="sendMessage()" class="px-4 py-2 ml-2 text-white bg-[--secondary-color] rounded-lg hover:bg-[--secondary-color]">
               Send
             </button>
           </div>
