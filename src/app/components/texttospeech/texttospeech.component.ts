@@ -121,6 +121,25 @@ selectLanguage(lang: string, langName: string) {
     }
   }
 
+  audioPlaying: boolean = false;
+  playTheAudio() {
+    if (this.audio == null) {
+      this.API.showSnackbar('Record some audio to play.', 'OK', 3000);
+      return;
+    }
+    if (this.audioPlaying) {
+      this.audioPlaying = false;
+      this.audio.pause();
+    } else {
+      this.audioPlaying = true;
+      this.audio.play();
+      this.API.showSnackbar('Listening to recording', 'OK', 3000); // Snackbar for playback
+      this.audio.onended = () => {
+        this.audioPlaying = false;
+      };
+    }
+  }
+
 
 
   generatingspeech:boolean = false;

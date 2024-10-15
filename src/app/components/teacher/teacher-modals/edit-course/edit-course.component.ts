@@ -1036,4 +1036,50 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
       this.API.hideLoader();
     });
   }
+
+  getFileIcon(file: any): string {
+    if (this.isImage(file)) return 'fas fa-image text-blue-500';
+    if (this.isVideo(file)) return 'fas fa-video text-purple-500';
+    if (this.isPDF(file)) return 'fas fa-file-pdf text-red-500';
+    return 'fas fa-file text-gray-500';
+  }
+
+  getFileType(file: any): string {
+    if (this.isImage(file)) return 'Image';
+    if (this.isVideo(file)) return 'Video';
+    if (this.isPDF(file)) return 'PDF';
+    return 'File';
+  }
+
+  isPreviewable(file: any): boolean {
+    return this.isImage(file) || this.isVideo(file) || this.isPDF(file);
+  }
+
+  isImage(file: any): boolean {
+    return /\.(jpeg|jpg|gif|png)$/i.test(this.getFilePath(file));
+  }
+
+  isVideo(file: any): boolean {
+    return /\.(mp4|webm|ogg)$/i.test(this.getFilePath(file));
+  }
+
+  isPDF(file: any): boolean {
+    return /\.(pdf)$/i.test(this.getFilePath(file));
+  }
+
+  isInteractiveVideo(file: any): boolean {
+    return file && file.type === 'interactive';
+  }
+
+  getFilePath(file: any): string {
+    if (typeof file === 'string') return file;
+    if (file && file.file) return file.file;
+    return '';
+  }
+
+  getOriginalFilename(file: any): string {
+    const fullPath = this.getFilePath(file);
+    const filename = fullPath.split('/').pop() || fullPath;
+    return filename.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/, '');
+  }
 }

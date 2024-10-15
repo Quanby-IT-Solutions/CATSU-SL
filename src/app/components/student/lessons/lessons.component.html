@@ -4,101 +4,134 @@
       class="px-4 py-2 text-lg font-semibold transition duration-300 ease-in-out bg-white border rounded-lg shadow-md text-amber-700 border-amber-500 hover:bg-amber-100"
       (click)="navigateBack()"
     >
-      Back
+      <i class="mr-2 fas fa-arrow-left"></i> Back
     </button>
   </div>
 
-  <!-- Loop through lessons -->
-  <div *ngFor="let lesson of lessons; let i = index" class="relative p-6 mb-8 bg-white border-l-4 shadow-md rounded-xl border-amber-600">
-    <!-- Lesson-level quiz indicator -->
-    <div *ngIf="lesson.hasQuiz" class="absolute top-2 right-2">
-      <ng-lottie
-      [options]="lottieOptions"
-      width="75px"
-      height="75px"
-      title="This lesson has a quiz">
-    </ng-lottie>
-    </div>
+  <!-- Lessons -->
+  <div *ngFor="let lesson of lessons; let i = index" class="mb-8">
+    <div class="p-6 bg-white border-l-4 shadow-lg rounded-xl border-amber-600">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h2 class="flex items-center text-2xl font-bold text-gray-800">
+            <i class="mr-3 text-3xl fas fa-book text-amber-600"></i>
+            Lesson #{{i + 1}}: {{lesson.title}}
 
+            <!-- Highlight if the lesson has a quiz -->
+            <span *ngIf="lesson.hasQuiz" class="px-2 py-1 ml-3 text-xs font-semibold text-white bg-[--secondary-color] rounded-full">
+              <i class="mr-1 fas fa-question-circle"></i> Has Quiz
+            </span>
+          </h2>
 
+          <div class="flex items-center mt-2 text-gray-600">
+            <i class="mr-2 fas fa-user"></i>
+            <span>{{lesson.firstname}} {{lesson.lastname}}</span>
+            <span class="mx-2">•</span>
+            <i class="mr-2 fas fa-clock"></i>
+            <span>{{parseTime(lesson.time)}}</span>
+          </div>
+        </div>
 
-    <div class="flex items-start justify-between mb-4">
-      <div>
-        <h2 class="flex items-center text-2xl font-bold text-gray-800">
-          <i class="mr-3 text-3xl fas fa-book text-amber-600"></i>
-          Lesson #{{i + 1}}: {{lesson.title}}
-        </h2>
-        <div class="flex items-center mt-2 text-gray-600">
-          <span>{{lesson.firstname}} {{lesson.lastname}}</span>
-          <span class="mx-2">•</span>
-          <span>{{parseTime(lesson.time)}}</span>
+        <!-- Action buttons: Mark as Done or Completed -->
+        <div class="flex items-center">
+          <button *ngIf="lesson.hasQuiz" class="px-4 py-2 mr-3 text-sm font-semibold text-white bg-[--secondary-color] rounded-md hover:bg-[--primary-color]"
+                  (click)="navigateToQuizManagement()">
+            <i class="mr-2 fas fa-tasks"></i> Manage Quiz
+          </button>
+          <button *ngIf="!isDone(lesson) && !hideMarkAsDone" (click)="markAsDone(lesson)"
+                  class="px-4 py-2 font-medium text-white transition duration-300 bg-blue-500 rounded-md hover:bg-blue-600">
+            <i class="mr-2 fas fa-check"></i> Mark as done
+          </button>
+          <button *ngIf="isDone(lesson)"
+                  class="px-4 py-2 font-medium text-white transition duration-300 bg-green-500 rounded-md hover:bg-green-600">
+            <i class="mr-2 fas fa-check-double"></i> Completed
+          </button>
         </div>
       </div>
-      <div class="flex items-center">
-        <button *ngIf="!isDone(lesson) && !hideMarkAsDone" (click)="markAsDone(lesson)" class="px-4 py-2 mr-2 font-medium text-white transition duration-300 bg-blue-500 rounded-md hover:bg-blue-600">
-          Mark as done
-        </button>
-        <button *ngIf="isDone(lesson)" class="px-4 py-2 mr-2 font-medium text-white transition duration-300 rounded-md bg-amber-500 hover:bg-amber-600">
-          Done
-        </button>
-      </div>
-    </div>
 
-    <p class="mb-6 leading-relaxed text-gray-700">{{lesson.details}}</p>
+      <p class="mb-6 leading-relaxed text-gray-700">{{lesson.details}}</p>
 
-    <div>
-      <h4 class="mb-4 text-lg font-semibold text-amber-700">Topics</h4>
-      <div *ngIf="lesson.topics && lesson.topics.length > 0; else noTopics">
-        <!-- Loop through topics -->
-        <div *ngFor="let topic of lesson.topics; let idx = index" class="relative p-4 mb-4 border border-gray-200 rounded-lg shadow-sm bg-gray-50">
-          <!-- Topic-level quiz indicator -->
-          <div *ngIf="topic.hasQuiz" class="absolute top-2 right-2">
-            <ng-lottie
-            [options]="lottieOptions"
-            width="75px"
-            height="75px"
-            title="This lesson has a quiz">
-          </ng-lottie>          </div>
+      <!-- Topics -->
+      <div *ngIf="lesson.topics && lesson.topics.length > 0">
+        <h4 class="mb-4 text-lg font-semibold text-amber-700">
+          <i class="mr-2 fas fa-list"></i> Topics
+        </h4>
+        <div class="space-y-4">
+          <div *ngFor="let topic of lesson.topics; let idx = index"
+               class="p-4 transition-all duration-300 border border-gray-200 rounded-lg shadow-sm hover:shadow-md bg-gray-50">
+            <div class="flex items-center justify-between mb-2">
+              <h5 class="text-lg font-semibold text-amber-700">
+                Topic #{{ idx + 1 }}: {{ topic.title }}
 
-          <div class="flex items-center justify-between mb-2">
-            <h5 class="text-lg font-semibold text-amber-700">Topic #{{ idx + 1 }}: {{ topic.title }}</h5>
-          </div>
+                <!-- Highlight if the topic has a quiz -->
+                <span *ngIf="topic.hasQuiz" class="px-2 py-1 ml-2 text-xs font-semibold text-white bg-red-500 rounded-full">
+                  <i class="mr-1 fas fa-question-circle"></i> Has Quiz
+                </span>
+              </h5>
+            </div>
 
-          <!-- Check each line, only display bullet if line starts with '-' -->
-          <div class="mb-4 text-gray-600">
-            <ng-container *ngFor="let line of topic.details.split('\n')">
-              <div *ngIf="line.trim().startsWith('-'); else softBreak">
-                <ul class="pl-5 list-disc">
-                  <li>{{ line.replace('-', '').trim() }}</li>
-                </ul>
+            <div class="mb-4 text-gray-600">
+              <ng-container *ngFor="let line of topic.details.split('\n')">
+                <div *ngIf="line.trim().startsWith('-'); else softBreak">
+                  <ul class="pl-5 list-disc">
+                    <li>{{ line.replace('-', '').trim() }}</li>
+                  </ul>
+                </div>
+                <ng-template #softBreak>
+                  <p>{{ line }}</p>
+                </ng-template>
+              </ng-container>
+            </div>
+
+            <!-- Attachments -->
+            <div *ngIf="topic.attachments && topic.attachments.length > 0" class="mt-4">
+              <h6 class="mb-2 text-sm font-semibold text-amber-500">
+                <i class="mr-2 fas fa-paperclip"></i> Attachments:
+              </h6>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                <div *ngFor="let file of topic.attachments"
+                     (click)="handleFileClick(file, topic)"
+                     class="p-3 transition-all duration-300 bg-white border border-gray-200 rounded-lg cursor-pointer hover:shadow-md">
+                  <div class="flex items-center mb-2">
+                    <i [class]="getFileIcon(file)" class="mr-3 text-2xl"></i>
+                    <div class="overflow-hidden">
+                      <p class="font-medium text-blue-600 truncate" [title]="getOriginalFilename(file)">
+                        {{ getOriginalFilename(file) }}
+                      </p>
+                      <p class="text-xs text-gray-500">{{ getFileType(file) }}</p>
+                    </div>
+                  </div>
+                  <div class="relative w-full h-32 overflow-hidden bg-gray-100 rounded">
+                    <ng-container [ngSwitch]="true">
+                      <ng-container *ngSwitchCase="isImage(file)">
+                        <img [src]="file.file" alt="Preview" class="object-cover w-full h-full"
+                             (error)="handleImageError($event)">
+                        <div class="absolute inset-0 flex items-center justify-center text-gray-400">
+                          <i class="text-4xl fas fa-image"></i>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="isVideo(file)">
+                        <video [src]="file.file" class="object-cover w-full h-full" controls></video>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="isPDF(file)">
+                        <div class="flex items-center justify-center w-full h-full">
+                          <i class="text-4xl text-red-500 fas fa-file-pdf"></i>
+                        </div>
+                      </ng-container>
+                    </ng-container>
+                  </div>
+                  <span *ngIf="file.type === 'interactive'" class="block mt-2 text-xs font-semibold text-green-500">
+                    <i class="mr-1 fas fa-hand-pointer"></i> Interactive
+                  </span>
+                </div>
               </div>
-              <ng-template #softBreak>
-                <span>{{ line }}</span><br />
-              </ng-template>
-            </ng-container>
-          </div>
-
-          <div *ngIf="topic.attachments && topic.attachments.length > 0" class="mt-2">
-            <h6 class="text-sm font-semibold text-amber-500">Attachments:</h6>
-            <ul class="ml-5 list-disc">
-              <li *ngFor="let file of topic.attachments" (click)="handleFileClick(file, topic)" class="flex items-center text-blue-600 cursor-pointer hover:underline">
-                <span>{{ getFilenameFromPath(file.file) }}</span>
-
-                <ng-lottie
-                *ngIf="file.type === 'interactive'"
-                [options]="lottieOptions"
-                width="75px"
-                height="75px"
-                title="This lesson has a quiz">
-              </ng-lottie>
-              </li>
-            </ul>
+            </div>
           </div>
         </div>
       </div>
-      <ng-template #noTopics>
-        <p class="text-gray-500">No topics available.</p>
-      </ng-template>
+      <div *ngIf="!lesson.topics || lesson.topics.length === 0" class="text-gray-500">
+        <i class="mr-2 fas fa-info-circle"></i> No topics available.
+      </div>
     </div>
   </div>
 </div>

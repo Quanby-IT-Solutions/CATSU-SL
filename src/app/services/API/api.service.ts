@@ -1142,7 +1142,7 @@ export class APIService implements OnDestroy, OnInit {
             app: environment.app,
             method: 'create_url',
             chunk: base64String,
-            fileName: 'files/' + filename,
+            fileName: 'files/' +filename,
             chunkIndex: chunkIndex,
             totalChunks: totalChunks,
           })
@@ -1253,7 +1253,7 @@ export class APIService implements OnDestroy, OnInit {
               app: environment.app,
               method: 'create_url',
               chunk: base64String,
-              fileName: 'files/' + filename,
+              fileName: 'files/'+ filename,
               chunkIndex: chunkIndex,
               totalChunks: totalChunks,
             })
@@ -1308,7 +1308,7 @@ export class APIService implements OnDestroy, OnInit {
               app: environment.app,
               method: 'create_url',
               chunk: base64String,
-              fileName: 'files/' + filename,
+              fileName: 'files/'+filename,
               chunkIndex: chunkIndex,
               totalChunks: totalChunks,
             })
@@ -2114,6 +2114,10 @@ export class APIService implements OnDestroy, OnInit {
           LastName: student.lastname,
           Email: student.email,
           VisibleID: student.visibleid,
+          BirthDate: student.birthdate,
+          Gender: student.gender,
+          Nationality: student.nationality,
+          Address: student.address
         },
         password
       ),
@@ -2503,7 +2507,7 @@ export class APIService implements OnDestroy, OnInit {
   getURL(file: string) {
     if (file) {
       if (file.includes('http')) return file;
-      return environment.server + '/' + file ;
+      return environment.server +'/'+ environment.app +'/' + file ;
     }
     return file;
   }
@@ -3151,7 +3155,7 @@ export class APIService implements OnDestroy, OnInit {
           key: environment.socketKey,
           method: 'create_url',
           file_content: base64String,
-          search_key: 'temp/' + uniqID,
+          search_key: environment.app+ '/temp/' + uniqID,
         })
         .subscribe((data: any) => {
           // console.log(data);
@@ -3217,7 +3221,7 @@ export class APIService implements OnDestroy, OnInit {
       .post(environment.nodeserver + '/filehandler', {
         key: environment.socketKey,
         method: 'delete_url',
-        search_key: file,
+        search_key: environment.app + '/' + file,
       })
       .subscribe((data) => {
         obs.unsubscribe();
@@ -3252,7 +3256,7 @@ export class APIService implements OnDestroy, OnInit {
           key: environment.socketKey,
           method: 'create_url',
           file_content: base64String,
-          search_key: 'image_upload/' + filename,
+          search_key: environment.app+'/image_upload/' + filename,
         });
 
         obs$.subscribe(
@@ -3277,7 +3281,7 @@ export class APIService implements OnDestroy, OnInit {
         key: environment.socketKey,
         method: 'create_url',
         file_content: base64String,
-        search_key: name,
+        search_key: environment.app +'/'+ name,
       })
       .subscribe();
   }
@@ -3289,7 +3293,7 @@ export class APIService implements OnDestroy, OnInit {
         key: environment.socketKey,
         method: 'create_url',
         file_content: base64String,
-        search_key: name,
+        search_key:  environment.app + '/' + name,
       }));
   }
 
@@ -3334,7 +3338,8 @@ export class APIService implements OnDestroy, OnInit {
       key: environment.socketKey,
       method: 'create_url',
       file_content: base64String,
-      search_key: `${name}`,
+      search_key: `${environment.app}/${name}`,
+
     });
   }
 
@@ -3344,7 +3349,7 @@ export class APIService implements OnDestroy, OnInit {
       key: environment.socketKey,
       method: 'create_url',
       file_content: base64String,
-      search_key: `${name}`,
+      search_key: `${environment.app}/${name}`,
     });
   }
 
@@ -3670,7 +3675,7 @@ export class APIService implements OnDestroy, OnInit {
       };
 
       const modalRef = this.modalService.open(ViewerComponent, modalOptions);
-      modalRef.componentInstance.link = environment.server + '/' + file; // Pass the custom class name
+      modalRef.componentInstance.link = environment.server +'/' + environment.app + '/' + file; // Pass the custom class name
       // console.log(environment.server + '/' + file);
     }
 
@@ -3683,7 +3688,7 @@ export class APIService implements OnDestroy, OnInit {
       };
 
       const modalRef = this.modalService.open(ViewerComponent, modalOptions);
-      modalRef.componentInstance.link = environment.server + '/' + file;
+      modalRef.componentInstance.link = environment.server +'/'+ environment.app +'/' + file;
       modalRef.componentInstance.interactive = type === 'interactive'; // Determine if it is interactive
       modalRef.componentInstance.timestamp = timestamp; // Set the timestamp for interactive videos if needed
       modalRef.componentInstance.quizID = quizID; // Set the quizID for interactive videos
@@ -5076,7 +5081,7 @@ export class APIService implements OnDestroy, OnInit {
               key: environment.socketKey,
               method: 'create_url',
               file_content: base,
-              search_key: link,
+              search_key:  environment.app+'/' + link,
             })
           );
           // const reader = new FileReader();
@@ -5147,7 +5152,7 @@ export class APIService implements OnDestroy, OnInit {
         key: environment.socketKey,
         method: 'create_url',
         file_content: base,
-        search_key: location,
+        search_key: environment.app + '/' + location,
       })
     );
   }
@@ -5159,7 +5164,7 @@ export class APIService implements OnDestroy, OnInit {
         key: environment.socketKey,
         method: 'create_url',
         file_content: base64String,
-        search_key: name,
+        search_key: environment.app + '/' + name,
       })
       .subscribe();
   }

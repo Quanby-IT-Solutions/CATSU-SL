@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef,HostListener, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { VideoSDK } from '@videosdk.live/js-sdk';
@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 })
 export class ModalsComponent {
 getURL(arg0: string) {
-throw new Error('Method not implemented.');
+ return this.API.getURL(arg0);
 }
   solo= false;
   // choosenSolo: any;
@@ -339,6 +339,15 @@ async initMeeting() {
       }
       obs$.unsubscribe();
     });
+  }
+
+  // HostListener for handling 'Enter' key press
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && document.activeElement === this.messageInput?.nativeElement) {
+      this.sendMessage();  // Call sendMessage when Enter is pressed
+      event.preventDefault();  // Prevent default Enter key behavior
+    }
   }
 
   sendMessage(){

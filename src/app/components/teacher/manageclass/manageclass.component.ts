@@ -82,16 +82,42 @@ export class ManageclassComponent implements OnInit {
 
 
     toggleEdit() {
+      if (this.editing) {
+        // Prepare the student object for update
+        const studentToUpdate = {
+          id: this.student.id,
+          firstname: this.student.firstname,
+          lastname: this.student.lastname,
+          email: this.student.email,
+          visibleid: this.student.visibleid,
+          birthdate: this.student.birthdate,
+          gender: this.student.gender,
+          nationality: this.student.nationality,
+          address: this.student.address
+        };
+
+        const obs$ = this.API.updateStudentInfo(studentToUpdate).subscribe(
+          (response) => {
+            this.API.successSnackbar("Student information updated successfully");
+            this.updateStudentInList(studentToUpdate);
+            obs$.unsubscribe();
+          },
+          (error) => {
+            this.API.failedSnackbar("Failed to update student information");
+            obs$.unsubscribe();
+          }
+        );
+      }
       this.editing = !this.editing;
-      if (!this.editing) {
-        const obs$ = this.API.updateFromTeacher(
-          this.student.id,
-          this.student.firstname,
-          this.student.lastname
-        ).subscribe(()  => {
-          this.API.successSnackbar("Updated");
-          obs$.unsubscribe();
-        });
+    }
+
+    updateStudentInList(updatedStudent: any) {
+      const index = this.students.findIndex(s => s.id === updatedStudent.id);
+      if (index !== -1) {
+        // Update the student in the main list
+        this.students[index] = { ...this.students[index], ...updatedStudent };
+        // Update filtered students if necessary
+        this.applyFilters();
       }
     }
 
@@ -150,7 +176,15 @@ export class ManageclassComponent implements OnInit {
     }
 
     closeStudentProfileModal() {
+      if (this.editing) {
+        // Discard changes
+        const originalStudent = this.students.find(s => s.id === this.selectedStudentId);
+        if (originalStudent) {
+          this.student = JSON.parse(JSON.stringify(originalStudent));
+        }
+      }
       this.editStudentProfile = false;
+      this.editing = false;
     }
 
     yesEditProfile() {
@@ -175,11 +209,9 @@ export class ManageclassComponent implements OnInit {
 
     viewStudentProfile(student: any) {
       this.selectedStudentId = student.id;
-      this.student = student;
+      this.student = JSON.parse(JSON.stringify(student)); // Create a deep copy
       this.editStudentProfile = true;
     }
-
-
 
     openConfirmDelete(student: any) {
       this.confirmDelete = true;
@@ -298,5 +330,14 @@ export class ManageclassComponent implements OnInit {
       }
 
 
+    }
+
+    updateLocalStorage(updatedStudent: any) {
+      const currentUser = this.API.getUserData();
+      if (currentUser && currentUser.id === updatedStudent.id) {
+        // Update the local storage with new user data
+        const updatedUserData = { ...currentUser, ...updatedStudent };
+        this.API.updateLocalUserData(JSON.stringify(updatedUserData));
+      }
     }
 }

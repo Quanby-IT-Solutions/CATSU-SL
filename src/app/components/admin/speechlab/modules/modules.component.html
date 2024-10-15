@@ -4,13 +4,6 @@
             <img src="assets/add.png" alt="Add Icon" />
             <span>Add Lesson</span>
           </button>
-    
-        <!-- <button class="poppins-b" *ngIf="selectedOption === 'Students'" (click)="addStudents()">
-            <img src="assets/add.png" alt="Add Icon" />
-            <span>Add Student</span>
-        </button> -->
-<!-- Import FormsModule in your Angular module to enable two-way data binding -->
-<!-- Example: import { FormsModule } from '@angular/forms'; and add it to the imports array in @NgModule -->
 <div>
 <button class="poppins-b" (click)="addModule()">
 
@@ -20,7 +13,7 @@
 
 </div>
     </div>
-    <div class="h-20 bg-blue-500 text-2xl text-white font-bold flex justify-center items-center w-full">
+    <div class="flex items-center justify-center w-full h-20 text-2xl font-bold text-white bg-[--secondary-color]">
       MODULES
     </div>
     <div class="table-container">
@@ -46,7 +39,7 @@
       </table>
     </div>
 
-    <div class="h-20 bg-blue-500 text-2xl text-white font-bold flex justify-center items-center w-full">
+    <div class="flex items-center justify-center w-full h-20 text-2xl font-bold text-white bg-[--secondary-color]">
       LESSONS
     </div>
 
@@ -82,4 +75,3 @@
       </table>
     </div>
   </div>
-  
