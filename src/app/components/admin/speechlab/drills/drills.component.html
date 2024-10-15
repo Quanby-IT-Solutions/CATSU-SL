@@ -1,100 +1,133 @@
 <div class="main-container">
-    <div class="button-container">
-        <button class="poppins-b" (click)="openModal()">
-            <img src="assets/add.png" alt="Add Icon" />
-            <span>Add Drill</span>
-          </button>
+  <!-- Buttons for adding practices and drills -->
+  <div class="flex justify-end gap-4 mt-5">
+    <button class="flex items-center px-4 py-2 font-bold text-white transition duration-300 bg-[--secondary-color] rounded hover:bg-[--primary-color]" (click)="openModal()">
+      <!-- Plus SVG Icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      <span>Add Drill</span>
+    </button>
 
-<div>
-<button class="poppins-b" (click)="addModule()">
+    <button class="flex items-center px-4 py-2 font-bold text-white transition duration-300 bg-[--secondary-color] rounded hover:bg-[--primary-color]" (click)="addModule()">
+      <!-- Plus SVG Icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      <span>Add Practice</span>
+    </button>
+  </div>
 
-    <span>Add Practice</span>
+
+  <!-- Practice Table Header -->
+  <div class="section-header">
+    Practice
+  </div>
+
+  <!-- Practice Table -->
+  <div class="table-container">
+    <table>
+      <thead class="poppins-b">
+        <tr>
+          <th>ID</th>
+          <th>Practice Name</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody class="poppins">
+        <ng-container>
+          <tr *ngFor="let t of paginatedPractices">
+            <td>{{t.id}}</td>
+              <td>{{t.name}}</td>
+              <td>{{t.timestamp}}</td>
+              <td>
+                <button class="btn-delete" (click)="deleteModule(t.id)">DELETE</button>
+                <button class="btn-edit" (click)="openEdit(content)">EDIT</button>
+              </td>
+              <!-- Edit Modal -->
+              <ng-template #content let-modal>
+                <div class="modal-content">
+                  <!-- Modal Header -->
+                  <div class="modal-header">
+                    <h4 class="modal-title" id="modal-basic-title">Edit Practice</h4>
+              <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
 </button>
 
+                  </div>
 
-</div>
-    </div>
-    <div class="h-20 bg-blue-500 text-2xl text-white font-bold flex justify-center items-center w-full">
-      Practice
-    </div>
-    <div class="table-container">
-      <table>
-        <thead class="poppins-b">
-          <tr>
-            <th>ID</th>
-            <th>Practice Name</th>
-            <th>Date</th>
-            <th>Action</th>
+                  <!-- Modal Body -->
+                  <div class="modal-body">
+                    <label for="practice-name" class="form-label">Practice Name</label>
+                    <input id="practice-name" type="text" [(ngModel)]="t.name" class="form-control" placeholder="Enter practice name">
+                  </div>
+
+                  <!-- Modal Footer -->
+                  <div class="modal-footer">
+                    <button type="button" class="btn-secondary" (click)="modal.dismiss('Cross click')">Cancel</button>
+                    <button type="button" class="btn-primary" (click)="savePractice(t); modal.dismiss('Cross click')">Save</button>
+                  </div>
+                </div>
+              </ng-template>
+
+
+
           </tr>
-        </thead>
-        <tbody class="poppins">
-          <ng-container>
-            <tr *ngFor="let t of practices">
-                <td>{{t.id}}</td>
-                <td>{{t.name}}</td>
-                <td>{{t.timestamp}}</td>
-                <td><button class="border border-2-[black] p-2 rounded-md hover:bg-[skyblue]" (click)="deleteModule(t.id)">DELETE</button>
-                <button class="border border-2-[black] p-2 rounded-md hover:bg-[skyblue]" (click)="openEdit(content)">Edit</button></td>
-
-                <!-- Edit Modal -->
-    <ng-template #content let-modal>
-      <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Edit Practice</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-      </div>
-      <div class="modal-body">
-        <label>Edit Practice Name</label><br>
-        <input type="text" [(ngModel)]="t.name" class="border border-gray-100 text-[grey]">
-      </div>
-      <button (click)="savePractice(t);modal.dismiss('Cross click')" >SAVE</button>
-    </ng-template>
-
-
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </div>
-
-
-
-
-
-
-    <div class="h-20 bg-blue-500 text-2xl text-white font-bold flex justify-center items-center w-full">
-      Drills
-    </div>
-
-    <div class="table-container">
-      <table>
-        <thead class="poppins-b">
-          <tr>
-            <th>ID</th>
-            <th>Practice</th>
-            <th>Drill Name</th>
-            <th>Drill File Name</th>
-            <th>Audio File Name</th>
-            <th>Date</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody class="poppins">
-          <ng-container>
-            <tr *ngFor="let item of drills">
-                <td>{{item.id}}</td>
-                <td>{{item.practice}}</td>
-                <td>{{item.description}}</td>
-                <td>{{item.drillfile.split('>')[1]}}</td>
-                <td>{{item.audiofile.split('>')[1]}}</td>
-                <td>{{item.timestamp}}</td>
-                <td>
-                  <button class="border border-2-[black] p-2 rounded-md hover:bg-[skyblue]" (click)="deleteLesson(item)">DELETE</button>
-                  <button class="border border-2-[black] p-2 rounded-md hover:bg-[#ebe487]" (click)="editLesson(item)" >EDIT</button>
-                </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </div>
+        </ng-container>
+      </tbody>
+    </table>
   </div>
- 
+
+
+  <!-- Pagination Controls for Practices -->
+<div class="pagination-controls">
+  <button class="btn-prev" (click)="prevPagePractices()" [disabled]="practicePage === 1">Previous</button>
+  <span>Page {{practicePage}}</span>
+  <button class="btn-next" (click)="nextPagePractices()" [disabled]="(practicePage * practicePageSize) >= practices.length">Next</button>
+</div>
+
+  <!-- Drills Table Header -->
+  <div class="section-header">
+    Drills
+  </div>
+
+  <!-- Drills Table -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Practice</th>
+          <th>Drill Name</th>
+          <th>Drill File Name</th>
+          <th>Audio File Name</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of paginatedDrills">
+          <td>{{item.id}}</td>
+          <td>{{item.practice}}</td>
+          <td>{{item.description}}</td>
+          <td>{{item.drillfile.split('>')[1]}}</td>
+          <td>{{item.audiofile.split('>')[1]}}</td>
+          <td>{{item.timestamp | date:'mediumDate'}}</td>
+          <td>
+            <button class="btn-delete" (click)="deleteLesson(item)">DELETE</button>
+            <button class="btn-edit" (click)="editLesson(item)">EDIT</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination-controls">
+    <button class="btn-prev" (click)="prevPageDrills()" [disabled]="drillPage === 1">Previous</button>
+    <span>Page {{drillPage}}</span>
+    <button class="btn-next" (click)="nextPageDrills()" [disabled]="(drillPage * drillPageSize) >= drills.length">Next</button>
+  </div>
+</div>
