@@ -43,6 +43,9 @@ export class StudentProfileComponent implements OnInit {
 
   userType: any;
 
+  editingPersonalInfo: boolean = false;
+
+
 
   showSignatureModal = false;
   signPad: any;
@@ -163,7 +166,7 @@ getUserSignature(){
   }
 
   toggleEdit() {
-    
+
     this.editing = !this.editing;
     if (!this.editing) {
       this.API.updateLocalUserData(JSON.stringify(this.user));
@@ -189,9 +192,9 @@ getUserSignature(){
           this.API.failedSnackbar("Can't update");
         }
       );
-      
+
     }
-    
+
   }
 
   toggleEditEmail() {
@@ -213,6 +216,28 @@ getUserSignature(){
     }
   }
 
+
+  toggleEditPersonalInfo() {
+    if (this.editingPersonalInfo) {
+      this.savePersonalInfo();
+    }
+    this.editingPersonalInfo = !this.editingPersonalInfo;
+  }
+
+
+  savePersonalInfo() {
+    this.API.updateStudentInfo(this.user).subscribe(
+      (response) => {
+        this.API.successSnackbar('Personal information updated successfully');
+        this.editingPersonalInfo = false;
+        // Update local storage with new user data
+        this.API.updateLocalUserData(JSON.stringify(this.user));
+      },
+      (error) => {
+        this.API.failedSnackbar('Failed to update personal information');
+      }
+    );
+  }
   toggleEditPassword() {
     this.editingPassword = !this.editingPassword;
     if (!this.editingPassword) {
@@ -241,9 +266,9 @@ getUserSignature(){
   //     reader.onload = (e) => {
   //       const base64String = reader.result as string;
   //       const fileRef = `profiles/${this.API.createID36()}.png`;
-        
+
   //       this.API.justSnackbar('Updating Profile....', 99999999);
-       
+
   //       const upload$ = this.API.uploadProfilePicture(
   //         base64String,
   //         fileRef
@@ -267,22 +292,22 @@ getUserSignature(){
   //   }
   // }
 
-  // end 
+  // end
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
       const file = input.files[0];
       console.log('Selected File:', file); // Log the selected file
-  
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const base64String = reader.result as string;
         const fileRef = `profiles/${this.API.createID36()}.png`;
         console.log('Generated File Reference:', fileRef); // Log the generated file reference link
-  
+
         this.API.justSnackbar('Updating Profile....', 99999999);
-  
+
         const upload$ = this.API.uploadProfilePicture(
           base64String,
           fileRef
@@ -290,7 +315,7 @@ getUserSignature(){
           console.log('Response from Upload:', data); // Log the server response
           this.user.profile = fileRef;
           this.API.updateLocalUserData(JSON.stringify(this.user));
-          
+
           const obs$ = this.API.updateProfileImage(
             this.user.id,
             fileRef
@@ -300,13 +325,13 @@ getUserSignature(){
             upload$.unsubscribe();
           });
         });
-  
+
         // this.user = this.API.userData;
       };
       reader.readAsDataURL(file);
     }
   }
-  
+
 
   noProfile() {
     return this.API.noProfile();

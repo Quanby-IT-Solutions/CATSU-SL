@@ -2114,6 +2114,10 @@ export class APIService implements OnDestroy, OnInit {
           LastName: student.lastname,
           Email: student.email,
           VisibleID: student.visibleid,
+          BirthDate: student.birthdate,
+          Gender: student.gender,
+          Nationality: student.nationality,
+          Address: student.address
         },
         password
       ),
