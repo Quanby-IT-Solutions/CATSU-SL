@@ -80,7 +80,7 @@
       <!-- Audio with Equalizer -->
       <div class="w-full shadow-boxz rounded relative">
         <div class="absolute top-0 right-0 m-4 flex flex-row gap-4 justify-center items-center text-primary-2">
-          <i class="fa-solid {{ audioPlaying ? 'fa-pause' : 'fa-play' }}" (click)="playTheAudio()"></i>
+          <i class="fa-solid cursor-pointer {{ audioPlaying ? 'fa-pause' : 'fa-play' }}" (click)="playTheAudio()"></i>
           <!-- Example SVG for a download icon; replace with your icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer download-icon" viewBox="0 0 24 24"
             fill="white" stroke="var(--secondary-color)" (click)="download()">
