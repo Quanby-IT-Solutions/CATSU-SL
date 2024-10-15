@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { VideoSDK } from '@videosdk.live/js-sdk';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -59,7 +59,7 @@ export class LabContainerComponent implements OnInit, OnDestroy {
   }
 
   getURL(file:string){
-    return file;
+    return this.API.getURL(file);
   }
 
 
@@ -67,6 +67,15 @@ export class LabContainerComponent implements OnInit, OnDestroy {
     this.message = event.target.value;
   }
 
+
+  // HostListener for handling 'Enter' key press
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && document.activeElement === this.messageInput?.nativeElement) {
+      this.sendMessage();  // Call sendMessage when Enter is pressed
+      event.preventDefault();  // Prevent default Enter key behavior
+    }
+  }
   sendMessage(){
     if(this.API.meeting == null){
       this.clearInput();

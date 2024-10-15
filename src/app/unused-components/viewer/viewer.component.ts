@@ -1,7 +1,8 @@
 import { AfterContentInit, Component, Input, ViewChild, ElementRef } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PopupQuizPageComponent } from 'src/app/components/student/popup-quiz-page/popup-quiz-page.component';
-
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-viewer',
@@ -21,10 +22,15 @@ export class ViewerComponent implements AfterContentInit {
   addSec: boolean = false;
   quizShown: boolean = false;
 
-  constructor(private modalService: NgbModal) {}
+  constructor(
+    private modalService: NgbModal,
+    private activeModal: NgbActiveModal,
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngAfterContentInit(): void {
-    if (this.interactive) {
+    if (this.interactive && this.isVideoFile()) {
       this.setupInteractiveVideo();
     }
   }
@@ -36,28 +42,15 @@ export class ViewerComponent implements AfterContentInit {
     });
   }
 
-  // checkTimestamp(videoPlayer: HTMLVideoElement): void {
-  //   if (this.interactive && videoPlayer.currentTime >= this.timestamp && !this.quizShown) {
-  //     videoPlayer.pause();
-  //     this.startCountdown(videoPlayer);
-  //     this.quizShown = true;
-  //   }
-  // }
-
   checkTimestamp(videoPlayer: HTMLVideoElement): void {
     if (this.interactive && !this.quizShown) {
-      if (videoPlayer.currentTime === this.timestamp) {
-        videoPlayer.pause();
-        this.startCountdown(videoPlayer);
-        this.quizShown = true;
-      } else if (videoPlayer.currentTime > this.timestamp) {
+      if (videoPlayer.currentTime >= this.timestamp) {
         videoPlayer.pause();
         this.startCountdown(videoPlayer);
         this.quizShown = true;
       }
     }
   }
-
 
   startCountdown(videoPlayer: HTMLVideoElement): void {
     this.showCountdown = true;
@@ -68,7 +61,6 @@ export class ViewerComponent implements AfterContentInit {
         clearInterval(interval);
         this.showCountdown = false;
         this.showQuizModal(this.quizID, videoPlayer);
-
         this.countdown = 3;
       }
     }, 1000);
@@ -93,5 +85,44 @@ export class ViewerComponent implements AfterContentInit {
     }).catch((error) => {
       console.error('Modal dismissed with error:', error);
     });
+  }
+
+  close() {
+    this.activeModal.dismiss();
+  }
+
+  downloadFile() {
+    this.http.get(this.link, { responseType: 'blob' }).subscribe(blob => {
+      const a = document.createElement('a');
+      const objectUrl = URL.createObjectURL(blob);
+      a.href = objectUrl;
+      a.download = this.getFileName();
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    });
+  }
+
+  getFileName(): string {
+    return this.link.split('/').pop() || 'File';
+  }
+
+  isVideoFile(): boolean {
+    return /\.(mp4|webm|ogg)$/i.test(this.link);
+  }
+
+  isPdfFile(): boolean {
+    return /\.pdf$/i.test(this.link);
+  }
+
+  isImageFile(): boolean {
+    return /\.(jpg|jpeg|png|gif|bmp|svg)$/i.test(this.link);
+  }
+
+  isOtherSupportedFile(): boolean {
+    return /\.(html|txt)$/i.test(this.link);
+  }
+
+  isUnsupportedFile(): boolean {
+    return !this.isVideoFile() && !this.isPdfFile() && !this.isImageFile() && !this.isOtherSupportedFile();
   }
 }

@@ -1,134 +1,129 @@
 <!-- materials.component.html -->
-<div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6" style="--primary-color: #212529; --secondary-color: #1f2e4d; --tertiary-color: #f5a425;">
-  <button
-    class="mb-4 flex items-center text-sm font-medium text-[var(--primary-color)] hover:text-[var(--tertiary-color)] transition duration-150 ease-in-out"
-    (click)="navigateBack()"
-  >
-    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-    </svg>
-    Back
-  </button>
-
-  <!-- Assignment Details -->
-  <div class="bg-white shadow-md rounded-lg overflow-hidden">
-    <div class="px-6 py-4">
-      <h1 class="text-2xl font-bold text-[var(--primary-color)]">{{ assignmentTitle }}</h1>
-      <p class="mt-1 text-sm" [ngClass]="{'text-[var(--tertiary-color)]': overdue && !submitted, 'text-gray-500': !overdue || submitted}">
-        Due Date: {{ dueDate }}
+<div class="min-h-screen py-8 bg-gray-100" style="--primary-color: #2c3e50; --secondary-color: #34495e; --accent-color: #3498db;">
+  <div class="max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] p-6 text-white">
+      <button
+        class="mb-4 flex items-center text-sm font-medium text-white hover:text-[var(--accent-color)] transition duration-150 ease-in-out"
+        (click)="navigateBack()"
+      >
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back
+      </button>
+      <h1 class="text-3xl font-bold">{{ assignmentTitle }}</h1>
+      <p class="mt-2 text-lg" [ngClass]="{'text-red-300': overdue && !submitted, 'text-gray-300': !overdue || submitted}">
+        Due: {{ dueDate }}
       </p>
     </div>
 
-    <div class="border-t border-gray-200 px-6 py-4">
-      <dl>
-        <!-- Description Section -->
-        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-          <dt class="text-sm font-medium text-[var(--secondary-color)]">Description</dt>
-          <dd class="mt-1 text-sm text-[var(--primary-color)] sm:mt-0 sm:col-span-2">{{ description }}</dd>
-        </div>
+    <!-- Assignment Details -->
+    <div class="p-6">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold text-[var(--primary-color)] mb-2">Description</h2>
+        <p class="text-gray-700">{{ description }}</p>
+      </div>
 
-        <!-- Attachments Section -->
-        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4" *ngIf="attachments[0]">
-          <dt class="text-sm font-medium text-[var(--secondary-color)]">Attachments</dt>
-          <dd class="mt-1 text-sm text-[var(--primary-color)] sm:mt-0 sm:col-span-2">
-            <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
-              <li class="pl-3 pr-4 py-2 flex items-center justify-between text-sm">
-                <div class="w-0 flex-1 flex items-center">
-                  <svg class="flex-shrink-0 h-5 w-5 text-[var(--secondary-color)]" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="ml-2 flex-1 w-0 truncate">{{ attachments[0].split('>')[1] }}</span>
-                </div>
-                <div class="ml-4 flex-shrink-0">
-                  <a (click)="openFile(attachments[0].split('>')[0])" class="font-medium text-[var(--tertiary-color)] hover:text-orange-600 cursor-pointer">
-                    Open
-                  </a>
-                </div>
-              </li>
-            </ul>
-          </dd>
-        </div>
-
-        <!-- Teacher Comment Section -->
-        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4" *ngIf="teacherComment != null">
-          <dt class="text-sm font-medium text-[var(--secondary-color)]">{{ teachername }}</dt>
-          <dd class="mt-1 text-sm text-[var(--primary-color)] sm:mt-0 sm:col-span-2">{{ teacherComment }}</dd>
-        </div>
-      </dl>
-    </div>
-  </div>
-
-  <!-- Submission Section -->
-  <div class="mt-6 bg-white shadow-md rounded-lg">
-    <div class="px-6 py-4">
-      <h3 class="text-lg leading-6 font-medium text-[var(--primary-color)]">
-        Submit Assignment
-        <span *ngIf="grade!=null" class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-          Grade: {{ grade }}
-        </span>
-      </h3>
-
-      <div class="mt-4">
-        <form class="space-y-4">
-          <!-- File Upload Section -->
-          <div *ngIf="!submitted">
-            <label for="file" class="block text-sm font-medium text-[var(--primary-color)]">Upload File</label>
-            <div class="mt-2 flex justify-center px-4 pt-4 pb-4 border-2 border-gray-300 border-dashed rounded-md">
-              <div class="text-center space-y-1">
-                <svg class="mx-auto h-10 w-10 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <div class="flex text-sm text-gray-600">
-                  <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-[var(--tertiary-color)] hover:text-orange-600">
-                    <span>Upload a file</span>
-                    <input [readOnly]="submitted" (change)="onFileSelected($event)" id="file-upload" name="file-upload" type="file" class="sr-only">
-                  </label>
-                  <p class="pl-1">or drag and drop</p>
-                </div>
-                <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
-              </div>
+      <!-- Attachments Section -->
+      <div class="mb-6" *ngIf="attachments[0]">
+        <h2 class="text-xl font-semibold text-[var(--primary-color)] mb-2">Attachments</h2>
+        <div class="p-4 rounded-lg bg-gray-50">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <svg class="h-6 w-6 text-[var(--secondary-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+              </svg>
+              <span class="ml-2 text-sm font-medium text-gray-700">{{ attachments[0].split('>')[1] }}</span>
             </div>
-          </div>
-
-          <!-- Uploaded File Section -->
-          <div *ngIf="submitted" class="bg-gray-50 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-            <dt class="text-sm font-medium text-[var(--secondary-color)]">Uploaded File</dt>
-            <dd class="mt-1 text-sm text-[var(--primary-color)] sm:mt-0 sm:col-span-2">
-              <ul class="border border-gray-200 rounded-md divide-y divide-gray-200">
-                <li class="pl-3 pr-4 py-2 flex items-center justify-between text-sm">
-                  <div class="w-0 flex-1 flex items-center">
-                    <svg class="flex-shrink-0 h-5 w-5 text-[var(--secondary-color)]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
-                    </svg>
-                    <span class="ml-2 flex-1 w-0 truncate">{{ uploaded ? uploaded.split('>')[1] : '[No attachment]' }}</span>
-                  </div>
-                  <div class="ml-4 flex-shrink-0">
-                    <a (click)="uploaded ? openFile(uploaded.split('>')[0]) : null" class="font-medium text-[var(--tertiary-color)] hover:text-orange-600 cursor-pointer">
-                      Open
-                    </a>
-                  </div>
-                </li>
-              </ul>
-            </dd>
-          </div>
-
-          <!-- Comment Section -->
-          <div>
-            <label for="comment" class="block text-sm font-medium text-[var(--primary-color)]">Comments</label>
-            <textarea [(ngModel)]="comments" id="comment" name="comment" rows="3" class="shadow-sm focus:ring-[var(--tertiary-color)] focus:border-[var(--tertiary-color)] block w-full sm:text-sm border-gray-300 rounded-md" [readOnly]="submitted"></textarea>
-          </div>
-
-          <!-- Submit Button -->
-          <div>
-            <button type="submit" (click)="submit()"
-              [ngClass]="{'bg-green-600 hover:bg-green-700': submitted, 'bg-[var(--tertiary-color)] hover:bg-orange-600': !submitted}"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
-              [attr.disabled]="submitted ? true : null">
-              {{ submitted ? 'Submitted' : 'Submit' }}
+            <button (click)="openFile(attachments[0].split('>')[0])" class="text-sm font-medium text-[var(--accent-color)] hover:text-[var(--secondary-color)] transition duration-150 ease-in-out">
+              Open
             </button>
           </div>
-        </form>
+        </div>
       </div>
+
+      <!-- Teacher Comment Section -->
+      <div class="mb-6" *ngIf="teacherComment != null">
+        <h2 class="text-xl font-semibold text-[var(--primary-color)] mb-2">Teacher Feedback</h2>
+        <div class="bg-blue-50 border-l-4 border-[var(--accent-color)] p-4 rounded-lg">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-[var(--accent-color)]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-[var(--secondary-color)]">{{ teachername }}</h3>
+              <p class="mt-2 text-sm text-gray-700">{{ teacherComment }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submission Section -->
+    <div class="p-6 border-t border-gray-200 bg-gray-50">
+      <h2 class="text-2xl font-bold text-[var(--primary-color)] mb-4">
+        Submit Assignment
+        <span *ngIf="grade!=null" class="inline-flex items-center px-3 py-1 ml-2 text-sm font-medium text-green-800 bg-green-100 rounded-full">
+          Grade: {{ grade }}
+        </span>
+      </h2>
+
+      <form class="space-y-6">
+        <!-- File Upload Section -->
+        <div *ngIf="!submitted">
+          <label for="file-upload" class="block text-sm font-medium text-[var(--secondary-color)]">Upload File</label>
+          <div class="flex justify-center px-6 pt-5 pb-6 mt-1 border-2 border-gray-300 border-dashed rounded-md">
+            <div class="space-y-1 text-center">
+              <svg class="w-12 h-12 mx-auto text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <div class="flex text-sm text-gray-600">
+                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-[var(--accent-color)] hover:text-[var(--secondary-color)] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[var(--accent-color)]">
+                  <span>Upload a file</span>
+                  <input [readOnly]="submitted" (change)="onFileSelected($event)" id="file-upload" name="file-upload" type="file" class="sr-only">
+                </label>
+                <p class="pl-1">or drag and drop</p>
+              </div>
+              <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Uploaded File Section -->
+        <div *ngIf="submitted" class="p-4 bg-gray-100 rounded-lg">
+          <h3 class="text-lg font-medium text-[var(--secondary-color)] mb-2">Uploaded File</h3>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <svg class="h-6 w-6 text-[var(--secondary-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+              </svg>
+              <span class="ml-2 text-sm font-medium text-gray-700">{{ uploaded ? uploaded.split('>')[1] : '[No attachment]' }}</span>
+            </div>
+            <button (click)="uploaded ? openFile(uploaded.split('>')[0]) : null" class="text-sm font-medium text-[var(--accent-color)] hover:text-[var(--secondary-color)] transition duration-150 ease-in-out">
+              Open
+            </button>
+          </div>
+        </div>
+
+        <!-- Comment Section -->
+        <div>
+          <label for="comment" class="block text-sm font-medium text-[var(--secondary-color)]">Comments</label>
+          <textarea [(ngModel)]="comments" id="comment" name="comment" rows="4" class="mt-1 block w-full shadow-sm focus:ring-[var(--accent-color)] focus:border-[var(--accent-color)] sm:text-sm border-gray-300 rounded-md" [readOnly]="submitted"></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <button type="submit" (click)="submit()"
+            [ngClass]="{'bg-green-600 hover:bg-green-700': submitted, 'bg-[var(--accent-color)] hover:bg-[var(--secondary-color)]': !submitted}"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--accent-color)]"
+            [attr.disabled]="submitted ? true : null">
+            {{ submitted ? 'Submitted' : 'Submit Assignment' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

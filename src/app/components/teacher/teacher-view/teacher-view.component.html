@@ -1,82 +1,100 @@
+<div class="min-h-screen py-8 bg-gray-100" style="--primary-color: #2c3e50; --secondary-color: #34495e; --accent-color: #3498db;">
+  <div class="max-w-6xl mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-[var(--primary-color)] to-[var(--secondary-color)] p-6 text-white">
+      <h1 class="text-3xl font-bold">{{ task.title }}</h1>
+      <p class="mt-2 text-gray-300">Submitted on: {{ task.submittedTime }} by {{ task.by }}</p>
+    </div>
 
-<div class="w-full bg-white p-4 rounded-md shadow-md mx-3 relative">
-  <div class="container mx-auto p-4 md:p-8">
-    <div class="flex flex-col md:flex-row">
-      <!-- Left Column (Task Details) -->
-      <div class="md:w-2/3 md:pr-8">
-        <div class="mb-6">
-          <h1 class="text-3xl md:text-4xl font-bold text-gray-800 pb-2">{{ task.title }}</h1>
-          <p class="text-gray-500">Submitted on: {{ task.submittedTime }}</p>
-          <p class="text-gray-500">Submitted by: {{ task.by }}</p>
-        </div>
-        <hr class="my-4 border-t border-black">
-        <div class="mb-6">
-          <p class="text-gray-800">Description:</p>
-          <p class="text-gray-600">{{ task.description }}</p>
-        </div>
-
-        <div class="mb-6">
-          <p *ngIf="task.attachedFiles?.length" class="text-gray-800">Attached Files:</p>
-          <ul class="list-disc list-inside text-gray-600">
-            <li *ngFor="let file of task.attachedFiles">
-              <a (click)="openFile(file.url)" target="_blank" class="text-blue-500">{{ file.name }}</a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="mb-6">
-          <p *ngIf="task.submittedFiles?.length" class="text-gray-800">Submitted by Student:</p>
-          <ul class="list-disc list-inside text-gray-600">
-            <li *ngFor="let file of task.submittedFiles">
-              <a (click)="openFile(file.url)" target="_blank" class="text-blue-500">{{ file.name }}</a>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Student Comments Section -->
-        <div class="mb-6">
-          <p *ngIf="task.userComment" class="text-gray-800 font-semibold">Student Comment:</p>
-          <!-- <div *ngFor="let studentComment of task.comment"> -->
-            <p class="text-gray-600">{{ task.userComment }}</p>
-          <!-- </div> -->
-        </div>
-      </div>
-
-      <!-- Right Column (Grading and Comment) -->
-      <div class="w-full md:w-1/3 mt-4 md:mt-0 mb-5">
-        <div class="bg-white p-4 md:p-6 rounded-md shadow-md">
-          <h2 class="text-2xl md:text-3xl font-bold mb-4 flex align-middle justify-between text-gray-800">
-            Grading and Comment
-          </h2>
-
-          <!-- Grading Section -->
-          <div class="mb-4">
-            <label for="grading" class="block text-sm font-medium text-gray-600">Grading</label>
-            <textarea [(ngModel)]="gradingText" id="grading" name="grading" rows="3"
-              class="mt-1 p-2 border w-full focus:outline-none focus:border-blue-500"></textarea>
+    <div class="p-6">
+      <div class="flex flex-col lg:flex-row">
+        <!-- Left Column (Task Details) -->
+        <div class="lg:w-2/3 lg:pr-8">
+          <div class="mb-6">
+            <h2 class="text-xl font-semibold text-[var(--primary-color)] mb-2">Description</h2>
+            <p class="text-gray-700">{{ task.description }}</p>
           </div>
 
-          <!-- Comment Section -->
-          <div class="mb-4">
-            <label for="comment" class="block text-sm font-medium text-gray-600">Comment</label>
-            <textarea [(ngModel)]="commentText" id="comment" name="comment" rows="3"
-              class="mt-1 p-2 border w-full focus:outline-none focus:border-blue-500"></textarea>
+          <!-- Attached Files Section -->
+          <div class="mb-6" *ngIf="task.attachedFiles?.length">
+            <h2 class="text-xl font-semibold text-[var(--primary-color)] mb-2">Attached Files</h2>
+            <ul class="p-4 rounded-lg bg-gray-50">
+              <li *ngFor="let file of task.attachedFiles" class="mb-2 last:mb-0">
+                <a (click)="openFile(file.url)" class="flex items-center text-[var(--accent-color)] hover:text-[var(--secondary-color)] transition duration-150 ease-in-out">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                  </svg>
+                  {{ file.name }}
+                </a>
+              </li>
+            </ul>
           </div>
 
-          <!-- Submit Button -->
-          <button type="submit" (click)="submitGrades()"
-            [ngClass]="{'bg-green-400': graded,'hover:bg-green-500': graded}"
-            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full focus:outline-none focus:shadow-outline-blue">
-            {{graded? 'Submitted':'Submit'}}
-          </button>
+          <!-- Submitted Files Section -->
+          <div class="mb-6" *ngIf="task.submittedFiles?.length">
+            <h2 class="text-xl font-semibold text-[var(--primary-color)] mb-2">Submitted by Student</h2>
+            <ul class="p-4 rounded-lg bg-gray-50">
+              <li *ngFor="let file of task.submittedFiles" class="mb-2 last:mb-0">
+                <a (click)="openFile(file.url)" class="flex items-center text-[var(--accent-color)] hover:text-[var(--secondary-color)] transition duration-150 ease-in-out">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                  </svg>
+                  {{ file.name }}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Student Comments Section -->
+          <div class="mb-6" *ngIf="task.userComment">
+            <h2 class="text-xl font-semibold text-[var(--primary-color)] mb-2">Student Comment</h2>
+            <div class="p-4 rounded-lg bg-gray-50">
+              <p class="text-gray-700">{{ task.userComment }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column (Grading and Comment) -->
+        <div class="mt-6 lg:w-1/3 lg:mt-0">
+          <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary-color)]">Grading and Comment</h2>
+
+            <!-- Grading Section -->
+            <div class="mb-4">
+              <label for="grading" class="block text-sm font-medium text-[var(--secondary-color)] mb-1">Grade</label>
+              <div class="flex items-center">
+                <input [(ngModel)]="gradingText" type="text" id="grading" name="grading"
+                  class="block w-20 rounded-md border-gray-300 shadow-sm focus:border-[var(--accent-color)] focus:ring focus:ring-[var(--accent-color)] focus:ring-opacity-50 text-center"
+                  placeholder="Grade">
+                <span class="ml-2 text-sm text-gray-500">/ 100</span>
+              </div>
+            </div>
+
+            <!-- Comment Section -->
+            <div class="mb-4">
+              <label for="comment" class="block text-sm font-medium text-[var(--secondary-color)]">Comment</label>
+              <textarea [(ngModel)]="commentText" id="comment" name="comment" rows="3"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--accent-color)] focus:ring focus:ring-[var(--accent-color)] focus:ring-opacity-50"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" (click)="submitGrades()"
+              [ngClass]="{'bg-green-500 hover:bg-green-600': graded, 'bg-[var(--accent-color)] hover:bg-[var(--secondary-color)]': !graded}"
+              class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--accent-color)] transition duration-150 ease-in-out">
+              {{ graded ? 'Submitted' : 'Submit Grades' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Back Button -->
-    <div class="absolute bottom-2 right-4">
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded m-8" (click)="goBack()">
-        <i class="fas fa-arrow-left mr-2"></i> Back
+    <div class="p-6 border-t border-gray-200 bg-gray-50">
+      <button class="bg-[var(--accent-color)] hover:bg-[var(--secondary-color)] text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out" (click)="goBack()">
+        <svg class="inline-block w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back
       </button>
     </div>
   </div>

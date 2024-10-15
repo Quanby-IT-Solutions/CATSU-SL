@@ -111,7 +111,7 @@ const routes: Routes = [
       {
         path: 'speechlab', component:AdashboardComponent,
         children: [
-          {path: '', redirectTo: 'Modules', pathMatch: 'full'},
+          {path: '', redirectTo: 'drills', pathMatch: 'full'},
           {path: 'Modules', component: ModulesComponent},
           {path: 'Lab', component: AlabComponent},
           {path: 'drills', component: DrillsComponent},
@@ -237,7 +237,6 @@ const routes: Routes = [
           {path: 'practice-parent', component:PracticeParentComponent},
           {path: 'practice', component: PracticeContainerComponent},
           {path: 'quiztemplate', component: QuizTemplateComponent},
-
         ]
       },
       {

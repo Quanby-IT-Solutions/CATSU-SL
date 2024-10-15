@@ -2,47 +2,66 @@ import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { APIService } from 'src/app/services/API/api.service';
 import { UploadDrillComponent } from '../modal/upload-drill/upload-drill.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
 @Component({
   selector: 'app-drills',
   templateUrl: './drills.component.html',
   styleUrls: ['./drills.component.css']
 })
 export class DrillsComponent {
+  private unsubscribe$ = new Subject<void>();
+  showForm = false;
+  practiceName = '';
+
+    // Pagination parameters for practices
+    practicePage = 1;
+    practicePageSize = 10;
+
+    // Pagination parameters for drills
+  drillPage = 1;
+  drillPageSize = 10;
+
   constructor(private modalService:NgbModal, private API:APIService){}
 
   ngOnInit(): void {
     this.loadModules();
   }
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
   practices:any[] =[];
   drills:any[] =[];
 
-  loadModules(){
+  loadModules() {
     this.API.showLoader();
-    const $obs =  this.API.loadSpeechAllModules(true).subscribe( data=>{
-      if(data.success){
-        this.drills = [];
-      
-        this.practices = data.output;
-        this.loadLessons()
-      }else{
-        this.API.hideLoader();
-      } 
-      $obs.unsubscribe();
-    })
+    this.API.loadSpeechAllModules(true)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(data => {
+        if (data.success) {
+          this.drills = [];
+          this.practices = data.output;
+          this.loadLessons();
+        } else {
+          this.API.hideLoader();
+        }
+      });
   }
 
-  loadLessons(){
-    const $obs =  this.API.loadSpeechAllLessons(true).subscribe( data=>{
-      if(data.success){
-        console.log('HERE',data.output);
-        this.drills = data.output;
+  loadLessons() {
+    this.API.loadSpeechAllLessons(true)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(data => {
+        if (data.success) {
+          console.log('HERE', data.output);
+          this.drills = data.output;
+        }
         this.API.hideLoader();
-      }else{
-        this.API.hideLoader();
-      } 
-      $obs.unsubscribe();
-    })
+      });
   }
 
   // loadLesson:any[] = [{
@@ -57,7 +76,41 @@ export class DrillsComponent {
   // }]
 
 
+  // Pagination methods for practices and drills
+  get paginatedPractices() {
+    const start = (this.practicePage - 1) * this.practicePageSize;
+    return this.practices.slice(start, start + this.practicePageSize);
+  }
 
+  get paginatedDrills() {
+    const start = (this.drillPage - 1) * this.drillPageSize;
+    return this.drills.slice(start, start + this.drillPageSize);
+  }
+
+  // Methods for handling pagination changes
+  nextPagePractices() {
+    if (this.practicePage * this.practicePageSize < this.practices.length) {
+      this.practicePage++;
+    }
+  }
+
+  prevPagePractices() {
+    if (this.practicePage > 1) {
+      this.practicePage--;
+    }
+  }
+
+  nextPageDrills() {
+    if (this.drillPage * this.drillPageSize < this.drills.length) {
+      this.drillPage++;
+    }
+  }
+
+  prevPageDrills() {
+    if (this.drillPage > 1) {
+      this.drillPage--;
+    }
+  }
 
   openEdit(content: any) {
     this.modalService.open(content);
@@ -93,13 +146,13 @@ export class DrillsComponent {
   }
 
   addModule(){
-    
+
     const obs=  this.API.createSpeechModule(`Practice ${this.practices.length+1}`, true ).subscribe(data=>{
       this.API.successSnackbar("Practice Added!")
       obs.unsubscribe();
       this.loadModules();
     })
-    
+
   }
 
   deleteModule(practiceID:string){
@@ -134,8 +187,6 @@ export class DrillsComponent {
       obs$.unsubscribe();
     })
   }
-  showForm = false;
-  practiceName: string = ''; // This variable will hold the value of the input field
 
   toggleForm() {
     this.showForm = !this.showForm;
