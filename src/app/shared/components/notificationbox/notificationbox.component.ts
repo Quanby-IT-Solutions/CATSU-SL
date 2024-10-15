@@ -1,129 +1,169 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { APIService } from 'src/app/services/API/api.service';
 import Swal from 'sweetalert2';
 import { SurveyCertComponent } from 'src/app/components/student/student-modals/survey-cert/survey-cert.component';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval, Subscription } from 'rxjs';
 import * as jspdf from 'jspdf';
 import html2canvas from 'html2canvas';
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  timestamp: string | number;
+  status: 'seen' | 'unseen';
+  clientTimestamp?: number;
+  timeAgo?: string;
+}
+
 @Component({
   selector: 'app-notificationbox',
   templateUrl: './notificationbox.component.html',
   styleUrls: ['./notificationbox.component.css']
 })
-export class NotificationboxComponent {
-  @Input() notifications:any = [];
-  constructor(private API :APIService, private modalService: NgbModal,){}
-  originalText: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua";
+export class NotificationboxComponent implements OnInit, OnDestroy {
+  @Input() set notifications(value: Notification[]) {
+    this._notifications = value.map(notif => ({
+      ...notif,
+      clientTimestamp: Date.now() // Add current timestamp when notifications are set
+    }));
+    this.refreshTimestamps();
+  }
+  get notifications(): Notification[] {
+    return this._notifications;
+  }
 
-  shortenedText!: string;
+  private _notifications: Notification[] = [];
+  private refreshSubscription: Subscription | undefined;
+
+  constructor(
+    private API: APIService,
+    private modalService: NgbModal,
+    private cdr: ChangeDetectorRef
+  ) {}
+
 
   ngOnInit() {
-    // Set the maximum length you want for the text
-    const maxLength = 20;
-
-    // Shorten the text
-    this.shortenedText = this.originalText.length > maxLength
-      ? this.originalText.substring(0, maxLength) + '...'
-      : this.originalText;
-
     this.markAllasInbox();
+    this.refreshTimestamps();
+    this.refreshSubscription = interval(60000).subscribe(() => {
+      this.refreshTimestamps();
+    });
   }
 
 
-  getNotifications(){
-    return this.API.notifications;
-  }
-  isUrgent(notif:string){
-    return (notif.includes('[Urgent]'))
+  ngOnDestroy() {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
   }
 
-  removeTag(notif:string){
+  refreshTimestamps() {
+    const now = Date.now();
+    this._notifications = this._notifications.map(notif => ({
+      ...notif,
+      timeAgo: this.getTimeAgo(notif.clientTimestamp || now, now)
+    }));
+    this.cdr.detectChanges();
+  }
+
+  getTimeAgo(timestamp: number, now: number): string {
+    const seconds = Math.floor((now - timestamp) / 1000);
+
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+    if (seconds < 2592000) return `${Math.floor(seconds / 86400)} days ago`;
+    return new Date(timestamp).toLocaleDateString();
+  }
+  getNotifications() {
+    return this.notifications;
+  }
+
+  isUrgent(notif: string) {
+    return notif.includes('[Urgent]');
+  }
+
+  removeTag(notif: string) {
     return notif.replace('[Urgent]', '').replace('[BROADCAST]','').replace('[ALERT]', '').replace('[CERT]', '');
   }
 
-  removeBodyTags(notif:string){
-    return notif.split('[COURSEID]')[0]
+  removeBodyTags(notif: string) {
+    return notif.split('[COURSEID]')[0];
   }
 
-  markAllAsRead(){
-    this.API.markAllAsRead();
-    for(let notification of this.notifications){
-      if(notification.status != 'seen') notification.status = 'seen';
-    }
-    if(this.API.inbox <= 0){
+  markAllAsRead() {
+    if (this.API.inbox <= 0) {
       this.API.justSnackbar('You have no new notifications to be marked as read');
       return;
     }
-    this.API.inbox =0 ;
+    this.API.markAllAsRead();
+    this.notifications.forEach(notification => {
+      if (notification.status !== 'seen') notification.status = 'seen';
+    });
+    this.API.inbox = 0;
     this.API.successSnackbar('All notifications have been marked as read');
   }
 
-  markAllasInbox(){
+  markAllasInbox() {
     this.API.markAllAsInbox();
   }
 
-  markAsRead(notification:any){
+  markAsRead(notification: Notification) {
     this.API.markAsRead(notification.id);
   }
 
-  parseDate(date:string){
-    // return this.API.parseDateTime(date)
-    return this.API.parseDateFromNow(date);
-  }
+  certInfo: any;
 
-  certInfo:any
-
-  async openMial(notification:any, index:number){
-    if(this.notifications.status !='seen'){
-      this.API.inbox -= 1;
+  async openMial(notification: Notification, index: number) {
+    if (this.notifications[index].status !== 'seen') {
+      this.API.inbox = Math.max(0, (this.API.inbox || 0) - 1);
     }
     this.notifications[index].status = 'seen';
     this.markAsRead(notification);
-    if(notification.title.includes('[CERT]')){
-      var courseID = notification.message.split("[COURSEID]")[1];
-      var survey = await this.API.getAnsweredSurveyStudent(courseID);
-      this.certInfo =  await this.API.getSurveyEntryStudent(courseID);
+    if (notification.title.includes('[CERT]')) {
+      const courseID = notification.message.split("[COURSEID]")[1];
+      const survey = await this.API.getAnsweredSurveyStudent(courseID);
+      this.certInfo = await this.API.getSurveyEntryStudent(courseID);
       Swal.fire({
         title: this.removeTag(notification.title),
         html: this.removeBodyTags(notification.message),
-        icon: 'question', // Default icon, you can remove this line if you don't want the default icon
-        iconHtml: '<img  src="assets/Notificationbox/mail_fill.png" alt="Custom Icon" style="width: 40px; height: 40px;">',
-        confirmButtonText:  survey.length > 0 ? 'Claim Certificate' : 'Complete Survey',
+        icon: 'question',
+        iconHtml: '<img src="assets/Notificationbox/mail_fill.png" alt="Custom Icon" style="width: 40px; height: 40px;">',
+        confirmButtonText: survey.length > 0 ? 'Claim Certificate' : 'Complete Survey',
         cancelButtonText: 'Close',
         showCancelButton: true,
-      }).then( async (result)=>{
-        if(result.isConfirmed){
-            const modalOptions: NgbModalOptions = {
-              centered: false,
-              // You can add other options here if needed
-            };
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const modalOptions: NgbModalOptions = {
+            centered: false,
+          };
 
-            if(survey.length <= 0 ){
-              const modalRef = this.modalService.open(
-                SurveyCertComponent,
-                modalOptions
-              );
-              modalRef.componentInstance.certInfo  = this.certInfo
-            }else{
-              await this.showCertificateModal(this.certInfo)
-            }
+          if (survey.length <= 0) {
+            const modalRef = this.modalService.open(
+              SurveyCertComponent,
+              modalOptions
+            );
+            modalRef.componentInstance.certInfo = this.certInfo;
+          } else {
+            await this.showCertificateModal(this.certInfo);
           }
+        }
       });
-    }else{
+    } else {
       Swal.fire({
         title: this.removeTag(notification.title),
         html: this.removeBodyTags(notification.message),
-        icon: 'question', // Default icon, you can remove this line if you don't want the default icon
-        iconHtml: '<img  src="assets/Notificationbox/mail_fill.png" alt="Custom Icon" style="width: 40px; height: 40px;">'
+        icon: 'question',
+        iconHtml: '<img src="assets/Notificationbox/mail_fill.png" alt="Custom Icon" style="width: 40px; height: 40px;">'
       });
     }
-
-}
+  }
 
 async showCertificateModal(course: any) {
   console.log(course);
-  const imageUrl = 'assets/cert/catsu-cert.png'; 
+  const imageUrl = 'assets/cert/catsu-cert.png';
   const teacherSign = course.esign;
   console.log(teacherSign);
   const response = await firstValueFrom(this.API.getCNSCPresident());
