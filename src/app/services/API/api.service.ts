@@ -3335,7 +3335,7 @@ export class APIService implements OnDestroy, OnInit {
       method: 'create_url',
       file_content: base64String,
       search_key: `${environment.app}/${name}`,
-      
+
     });
   }
 

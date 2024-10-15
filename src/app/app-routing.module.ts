@@ -237,7 +237,6 @@ const routes: Routes = [
           {path: 'practice-parent', component:PracticeParentComponent},
           {path: 'practice', component: PracticeContainerComponent},
           {path: 'quiztemplate', component: QuizTemplateComponent},
-
         ]
       },
       {

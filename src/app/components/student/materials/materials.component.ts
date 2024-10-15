@@ -38,7 +38,7 @@ export class MaterialsComponent implements OnInit {
     }
 
     this.API.showLoader();
-    
+
 
     // this.API.justSnackbar('Loading content....',999999);
     this.API.studentGetAssignmentByID(taskID!).subscribe(data => {
@@ -53,7 +53,7 @@ export class MaterialsComponent implements OnInit {
           this.comments = data.output[0].comments;  // Populate student comments
           this.grade = data.output[0].grade;
           this.submitted = true;
-          
+
           this.teacherComment = data.output[0].feedback;
         }
 
@@ -111,7 +111,7 @@ export class MaterialsComponent implements OnInit {
      this.API.uploadFileWithProgress( this.fileUpload, serverLocation);
      var filelocation = 'files/' + serverLocation;
      var filename =  this.fileUpload.name;
-      attachments = filelocation+'>'+filename; 
+      attachments = filelocation+'>'+filename;
     }
 
     this.API.studentSubmitAssignment(this.task.id, comment, attachments).subscribe(data => {
@@ -133,7 +133,7 @@ export class MaterialsComponent implements OnInit {
   //     this.API.uploadFile( this.fileUpload, serverLocation);
   //     var filelocation = 'files/' + serverLocation;
   //     var filename =  this.fileUpload.name;
-  //     attachments = filelocation+'>'+filename; 
+  //     attachments = filelocation+'>'+filename;
   //   }
   //   console.log(comment);
   //   this.API.studentSubmitAssignment(this.task.id, comment, attachments).subscribe(data=>{
@@ -142,8 +142,8 @@ export class MaterialsComponent implements OnInit {
   //     this.API.successSnackbar('Submitted output!');
   //   });
   // }
-  
-  
+
+
   // You can fetch the actual data from your backend or set them dynamically
   // based on your application logic.
 
