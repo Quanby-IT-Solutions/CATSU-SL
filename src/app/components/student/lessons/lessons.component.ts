@@ -23,7 +23,7 @@ interface Topic {
   title: string;
   details: string;
   attachments: { file: string; type: string; timestamp?: number; quiz_id?: string }[];
-  hasQuiz?: boolean; 
+  hasQuiz?: boolean;
   hasAttachmentQuiz?: boolean;
 }
 
@@ -51,6 +51,9 @@ export class LessonsComponent implements OnInit {
     private location: Location
   ) {}
 
+  navigateToQuizManagement(): void {
+    this.router.navigate(['/teacher/quiz-management']);
+  }
   navigateBack(): void {
     this.location.back();
   }
@@ -158,12 +161,68 @@ export class LessonsComponent implements OnInit {
     }
   }
 
-  getFilenameFromPath(filePath: string): string {
-    return filePath.split('>').length > 1 ? filePath.split('>')[1] : filePath;
+
+
+ getOriginalFilename(file: any): string {
+    const fullName = this.getFilenameFromPath(file.file);
+    // This regex looks for a UUID pattern followed by a hyphen, and removes it
+    return fullName.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/, '');
+  }
+
+  getFilenameFromPath(path: string): string {
+    return path.split('/').pop() || path;
   }
 
   hasDash(details: string): boolean {
     // Check if any line starts with a dash (-)
     return details.split('\n').some(line => line.trim().startsWith('-'));
+  }
+
+  getFileIcon(file: any): string {
+    if (this.isImage(file)) return 'fas fa-image';
+    if (this.isVideo(file)) return 'fas fa-video';
+    if (this.isPDF(file)) return 'fas fa-file-pdf';
+    return 'fas fa-file';
+  }
+
+  getFileType(file: any): string {
+    if (this.isImage(file)) return 'Image';
+    if (this.isVideo(file)) return 'Video';
+    if (this.isPDF(file)) return 'PDF';
+    return 'File';
+  }
+
+  isPreviewable(file: any): boolean {
+    return this.isImage(file) || this.isVideo(file) || this.isPDF(file);
+  }
+
+  isImage(file: any): boolean {
+    return file.file.match(/\.(jpeg|jpg|gif|png)$/i) != null;
+  }
+
+  isVideo(file: any): boolean {
+    return file.file.match(/\.(mp4|webm|ogg)$/i) != null;
+  }
+
+  isPDF(file: any): boolean {
+    return file.file.match(/\.(pdf)$/i) != null;
+  }
+
+  truncateFilename(filename: string, maxLength: number): string {
+    if (filename.length <= maxLength) return filename;
+
+    const parts = filename.split('.');
+    const extension = parts.length > 1 ? parts.pop() : '';
+    const name = parts.join('.');
+
+    if (name.length <= maxLength - 3) {
+      return `${name}${extension ? '.' + extension : ''}`;
+    }
+
+    return name.substring(0, maxLength - 3) + '...' + (extension ? '.' + extension : '');
+  }
+
+  handleImageError(event: any) {
+    event.target.style.display = 'none';
   }
 }
