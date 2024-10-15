@@ -38,26 +38,38 @@ export class QuanhubComponent implements OnInit, OnDestroy{
   }
 
 
-  changeOrientation() {
-    try {
-      if ('orientation' in screen && screen.orientation.lock) {
-        if (this.isOriginalOrientation) {
-          screen.orientation.lock('landscape');
+    changeOrientation() {
+      try {
+        const orientation = screen.orientation as any;  // TypeScript casting
+
+        if (orientation.lock) {
+          if (this.isOriginalOrientation) {
+            orientation.lock('landscape');  // Lock to landscape
+          } else {
+            orientation.lock('portrait');   // Lock to portrait
+          }
+          this.isOriginalOrientation = !this.isOriginalOrientation;
         } else {
-          screen.orientation.lock('portrait');
+          console.warn('Screen Orientation API not supported');
         }
-        this.isOriginalOrientation = !this.isOriginalOrientation;
-      } else {
-        console.warn('Screen Orientation API not supported');
+      } catch (error) {
+        console.error('Error changing orientation:', error);
       }
-    } catch (error) {
-      console.error('Error changing orientation:', error);
     }
-  }
+
 
 
   toggleModal() {
     this.isChatModalOpen = !this.isChatModalOpen;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    // Check if the Enter key is pressed and the input field is focused
+    if (event.key === 'Enter' && document.activeElement === this.messageInput?.nativeElement) {
+      this.sendMessage();  // Call the sendMessage function
+      event.preventDefault();  // Prevent default behavior like submitting forms
+    }
   }
 
   @HostListener('document:fullscreenchange', ['$event'])
@@ -477,7 +489,7 @@ meetingInfo:any;
   }
 
   getURL(file:string){
-    return file;
+    return this.API.getURL( file);
   }
 
   leaveMeeting(){
@@ -574,44 +586,40 @@ meetingInfo:any;
   }
 
 
-  handleStreamEnabled(
-    stream: any,
-    participant: any,
-    isLocal: any,
-  ) {
+  handleStreamEnabled(stream: any, participant: any, isLocal: boolean) {
     const mediaStream = new MediaStream();
     mediaStream.addTrack(stream.track);
+
     if (stream.kind == "video") {
-      if(participant.metaData.who == '0'){
-       if(this.activeParticipants.has(participant.id)){
-        this.activeParticipants.set(participant.id,new ParticipantObject(participant.displayName, mediaStream))
-       }else{
-        this.participants.set(participant.id,new ParticipantObject(participant.displayName, mediaStream))
-       }
-      }else{
+      if (participant.metaData.who == '0') {
+        if (this.activeParticipants.has(participant.id)) {
+          this.activeParticipants.set(participant.id, new ParticipantObject(participant.displayName, mediaStream));
+        } else {
+          this.participants.set(participant.id, new ParticipantObject(participant.displayName, mediaStream));
+        }
+      } else {
         this.mainSrc = new ParticipantObject(participant.displayName, mediaStream);
       }
-      if(participant.id == this.particpantID){
+      if (participant.id == this.particpantID) {
         this.webCamLoading = false;
         this.isWebCamOn = true;
       }
       this.showScreen = 2;
     }
-    if (stream.kind == "audio"){
-      if(participant.id != this.particpantID){
-        this.participantsAudio.set(participant.id,new ParticipantObject(participant.displayName, mediaStream))
-      }else{
+
+    if (stream.kind == "audio") {
+      if (participant.id != this.particpantID) {
+        this.participantsAudio.set(participant.id, new ParticipantObject(participant.displayName, mediaStream));
+      } else {
         this.micLoading = false;
         this.isMicOn = true;
       }
-
     }
-    if(stream.kind == 'share'){
-      if(!this.isSharingScreen){
-        if(participant.id == this.particpantID){
-        //  if(participant.metaData.who =='1'){
-        //   this.meeting.disableWebcam();
-        //  }
+
+    // Handle screen share video
+    if (stream.kind == "share") {
+      if (!this.isSharingScreen) {
+        if (participant.id == this.particpantID) {
           this.isSharingScreen = true;
         }
         this.shareSrc = new ParticipantObject(participant.displayName, mediaStream);
@@ -623,6 +631,14 @@ meetingInfo:any;
       this.shareScreenLoading = false;
     }
 
+    // Handle screen share audio
+    if (stream.kind == "shareAudio") {
+      const audioElement = new Audio();
+      audioElement.srcObject = mediaStream;
+      audioElement.play().catch(error => {
+        console.error("Error playing shared audio:", error);
+      });
+    }
   }
 
   handleStreamDisabled(
