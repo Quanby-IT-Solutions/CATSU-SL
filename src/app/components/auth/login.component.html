@@ -1,21 +1,15 @@
 <div class="flex flex-col h-screen content gradint animate-wave lg:flex-row">
   <!-- Left section (Image and text) -->
-  <div
-    class="box-border flex-1 hidden p-8 bg-cover custom:hidden lg:block lg:w-3/5 my-div lg:p-20"
-  >
+  <div class="box-border flex-1 hidden p-8 bg-cover custom:hidden lg:block lg:w-3/5 my-div lg:p-20">
     <div class="text">
       <!-- Main title -->
-      <div
-        class="mx-auto mt-6 ml-4 text-2xl text-white overlock-i title font-Overlock-i lg:text-5xl lg:mt-20 lg:ml-10"
-      >
+      <div class="mx-auto mt-6 ml-4 text-2xl text-white overlock-i title font-Overlock-i lg:text-5xl lg:mt-20 lg:ml-10">
         <h2>{{ pageTitle }}</h2>
         <h2 *ngFor="let subtitle of pageSubtitles">{{ subtitle }}</h2>
       </div>
 
       <!-- Training program title -->
-      <div
-        class="mx-auto mt-6 ml-4 text-4xl text-white overlock-r title font-Overlock-i lg:text-3xl lg:mt-20 lg:ml-10"
-      >
+      <div class="mx-auto mt-6 ml-4 text-4xl text-white overlock-r title font-Overlock-i lg:text-3xl lg:mt-20 lg:ml-10">
         <h4 class="titleB">{{ trainingProgramTitle }}</h4>
       </div>
 
@@ -29,47 +23,28 @@
   </div>
 
   <!-- Right section (Login form) -->
-  <div
-    class="flex items-center justify-center flex-1 p-4 lg:bg-slate-100 lg:mt-0 lg:p-8 z-2"
-  >
+  <div class="flex items-center justify-center flex-1 p-4 lg:bg-slate-100 lg:mt-0 lg:p-8 z-2">
     <div class="flex items-center justify-center flex-1 w-full mt-4 lg:w-2/5 lg:mt-0 lg:p-8 z-2">
       <div class="h-auto p-2 bg-white floating rounded-3xl lg:p-4 shadow-boxz w-au lg:w-3/4">
         <!-- Logo (Dynamic) -->
         <div class="relative flex items-center justify-center qlab">
-          <img
-            [src]="imageSrc"
-            [alt]="imageAlt"
-            [ngClass]="imageClass"
-          />
+          <img [src]="imageSrc" [alt]="imageAlt" [ngClass]="imageClass" />
         </div>
 
         <!-- Login form -->
-        <div class="pt-2 qlab-desc lg:pt-4">
+        <form class="pt-2 qlab-desc lg:pt-4">
           <p class="overlock-r tex text-md lg:text-xl">{{ welcomeText }}</p>
 
           <!-- Input fields -->
           <div class="mt-2 input-div lg:mt-4 poppins-r">
-            <input
-              name="email"
-              type="email"
-              [(ngModel)]="username"
-              class="w-full p-2 mb-2 border rounded poppins-r"
-              [placeholder]="emailPlaceholder"
-            />
+            <input name="email" type="email" [(ngModel)]="username" class="w-full p-2 mb-2 border rounded poppins-r"
+              [placeholder]="emailPlaceholder" />
             <div class="relative">
-              <input
-                [type]="showPassword ? 'text' : 'password'"
-                [(ngModel)]="password"
-                name="password"
-                class="relative w-full p-2 border rounded poppins-r"
-                [placeholder]="passwordPlaceholder"
-              />
-              <i
-                (click)="toggleShowPassword()"
+              <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+                class="relative w-full p-2 border rounded poppins-r" [placeholder]="passwordPlaceholder" />
+              <i (click)="toggleShowPassword()"
                 class="text-gray-500 absolute right-2.5 top-3 cursor-pointer password-icon fas"
-                [ngClass]="{ 'fa-eye': showPassword, 'fa-eye-slash': !showPassword }"
-                aria-hidden="true"
-              ></i>
+                [ngClass]="{ 'fa-eye': showPassword, 'fa-eye-slash': !showPassword }" aria-hidden="true"></i>
             </div>
           </div>
 
@@ -81,10 +56,8 @@
 
           <!-- Submit button -->
           <div class="mt-4 shadow-lg submit-btn lg:mt-6">
-            <button
-              (click)="login()"
-              class="w-full p-2 text-white border rounded-xl lg:p-3 gradient-color poppins-b"
-            >
+            <button type="submit" (click)="login()"
+              class="w-full p-2 text-white border rounded-xl lg:p-3 gradient-color poppins-b uppercase">
               {{ loginButtonText }}
             </button>
           </div>
@@ -96,7 +69,7 @@
               {{ registerHereText }}
             </a>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
