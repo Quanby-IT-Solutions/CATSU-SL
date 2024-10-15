@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit} from '@angular/core';
 import { APIService } from 'src/app/services/API/api.service';
 import Swal from 'sweetalert2';
 import { SurveyCertComponent } from 'src/app/components/student/student-modals/survey-cert/survey-cert.component';
@@ -22,63 +22,38 @@ interface Notification {
   templateUrl: './notificationbox.component.html',
   styleUrls: ['./notificationbox.component.css']
 })
-export class NotificationboxComponent implements OnInit, OnDestroy {
-  @Input() set notifications(value: Notification[]) {
-    this._notifications = value.map(notif => ({
-      ...notif,
-      clientTimestamp: Date.now() // Add current timestamp when notifications are set
-    }));
-    this.refreshTimestamps();
-  }
-  get notifications(): Notification[] {
-    return this._notifications;
-  }
 
-  private _notifications: Notification[] = [];
-  private refreshSubscription: Subscription | undefined;
-
+export class NotificationboxComponent {
+  @Input() notifications:any = [];
   constructor(
     private API: APIService,
     private modalService: NgbModal,
-    private cdr: ChangeDetectorRef
   ) {}
 
 
   ngOnInit() {
     this.markAllasInbox();
-    this.refreshTimestamps();
-    this.refreshSubscription = interval(60000).subscribe(() => {
-      this.refreshTimestamps();
-    });
   }
 
-
-  ngOnDestroy() {
-    if (this.refreshSubscription) {
-      this.refreshSubscription.unsubscribe();
-    }
-  }
-
-  refreshTimestamps() {
-    const now = Date.now();
-    this._notifications = this._notifications.map(notif => ({
-      ...notif,
-      timeAgo: this.getTimeAgo(notif.clientTimestamp || now, now)
-    }));
-    this.cdr.detectChanges();
-  }
-
-  getTimeAgo(timestamp: number, now: number): string {
-    const seconds = Math.floor((now - timestamp) / 1000);
-
-    if (seconds < 60) return 'Just now';
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
-    if (seconds < 2592000) return `${Math.floor(seconds / 86400)} days ago`;
-    return new Date(timestamp).toLocaleDateString();
-  }
   getNotifications() {
     return this.notifications;
+  }
+
+  clearAllNotifications() {
+    this.API.clearAllNotifications().subscribe(
+      (response) => {
+        if (response.success) {
+          this.notifications = [];
+          this.API.successSnackbar('All notifications have been cleared');
+        } else {
+          this.API.failedSnackbar('Failed to clear notifications');
+        }
+      },
+      (error) => {
+        console.error('Error clearing notifications:', error);
+        this.API.failedSnackbar('An error occurred while clearing notifications');
+      }
+    );
   }
 
   isUrgent(notif: string) {
@@ -93,16 +68,18 @@ export class NotificationboxComponent implements OnInit, OnDestroy {
     return notif.split('[COURSEID]')[0];
   }
 
-  markAllAsRead() {
-    if (this.API.inbox <= 0) {
+
+
+  markAllAsRead(){
+    this.API.markAllAsRead();
+    for(let notification of this.notifications){
+      if(notification.status != 'seen') notification.status = 'seen';
+    }
+    if(this.API.inbox <= 0){
       this.API.justSnackbar('You have no new notifications to be marked as read');
       return;
     }
-    this.API.markAllAsRead();
-    this.notifications.forEach(notification => {
-      if (notification.status !== 'seen') notification.status = 'seen';
-    });
-    this.API.inbox = 0;
+    this.API.inbox =0 ;
     this.API.successSnackbar('All notifications have been marked as read');
   }
 
@@ -112,6 +89,11 @@ export class NotificationboxComponent implements OnInit, OnDestroy {
 
   markAsRead(notification: Notification) {
     this.API.markAsRead(notification.id);
+  }
+
+  parseDate(date:string){
+    // return this.API.parseDateTime(date)
+    return this.API.parseDateFromNow(date);
   }
 
   certInfo: any;

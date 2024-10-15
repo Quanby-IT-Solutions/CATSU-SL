@@ -26,22 +26,21 @@ export class AssignmentComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private API: APIService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
-    const newDate = new Date(2025, 7, 25);
     this.API.showLoader();
     this.getAssignment$ = this.API.studentGetAssignments().subscribe(data => {
       const tasks: any = [];
       for (let task of data.output) {
         task.type = 'assignment';
-                  task.done = Number(task.done);
-
-        task.deadline = newDate; // Temporarily using static deadline
+        task.done = Number(task.done);
+        // Ensure the deadline is in the correct format (date string)
+        task.deadline = new Date(task.deadline); // Converts to Date object for consistency
         tasks.push(task);
       }
       this.getQuizzes$ = this.API.studentGetQuizzes().subscribe(data => {
         for (let task of data.output) {
           task.type = 'quiz';
-           task.done = Number(task.done);
-            task.deadline = this.parseDate(task.deadline);
+          task.done = Number(task.done);
+          task.deadline = new Date(task.deadline);
           tasks.push(task);
         }
         this.getQuizPoints$ = this.API.studentQuizPoints().subscribe(data => {
@@ -50,10 +49,16 @@ export class AssignmentComponent implements OnInit, OnDestroy {
           }
         });
         this.API.hideLoader();
-        tasks.sort((b: any, a: any) => new Date(a.time).getTime() - new Date(b.time).getTime());
+        // Sort tasks by their due date or time created
+        tasks.sort((a: any, b: any) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
         this.tasks = tasks;
       });
     });
+  }
+
+  parseDate(date: Date | string): string {
+    const dateObj = new Date(date);
+    return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
   ngOnDestroy(): void {
@@ -63,9 +68,9 @@ export class AssignmentComponent implements OnInit, OnDestroy {
     this.checkScreenWidth();
   }
 
-  parseDate(date: string) {
-    return new Date(date).toDateString();
-  }
+  // parseDate(date: string) {
+  //   return new Date(date).toDateString();
+  // }
 
   switchTag(type: string) {
     switch (type) {
