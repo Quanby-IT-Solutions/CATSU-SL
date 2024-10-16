@@ -20,7 +20,7 @@ export class AlabComponent implements OnInit {
   speechLabs:any[] = []
   speechLabSelected:number = 0;
 
-  
+
 
   async ngOnInit() {
     [this.row1,this.row2, this.row3, this.row4, this.row5, this.row6]= await this.API.loadComputers();
@@ -46,7 +46,7 @@ export class AlabComponent implements OnInit {
       }
       this.loadAssignedAddresses();
       obs$.unsubscribe();
-    })  
+    })
   }
 
   selectLab(index:number){
@@ -70,12 +70,12 @@ export class AlabComponent implements OnInit {
         }
         this.API.hideLoader();
         obs$.unsubscribe();
-      })  
+      })
     }else{
       this.API.showLoader();
       this.API.failedSnackbar('Failed loading speechlabs')
     }
-   
+
   }
 
 
@@ -160,8 +160,8 @@ export class AlabComponent implements OnInit {
     }else{
       this.API.failedSnackbar('There was an error loading speech labs');
     }
-    
+
   }
 
-  
+
 }

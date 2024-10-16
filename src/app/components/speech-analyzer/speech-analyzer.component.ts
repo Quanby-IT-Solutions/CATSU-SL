@@ -46,6 +46,9 @@ interface AnalysisResult {
   ]
 })
 export class SpeechAnalyzerComponent implements OnInit {
+
+  isLoading: boolean = false;
+
   recording: boolean = false;
   mediaRecorder: any;
   audioChunks: any[] = [];
@@ -80,15 +83,23 @@ export class SpeechAnalyzerComponent implements OnInit {
   getUserAccountType(): number | null {
     return this.apiService.getUserAccountType();
   }
-  async initialize(){
+  async initialize() {
+    this.isLoading = true;
     this.apiService.showLoader();
-    if(this.getUserAccountType() == 0){
-      await this.loadStudentCourses();
-    }else{
-      await this.loadClasses();
+    try {
+      if (this.getUserAccountType() == 0) {
+        await this.loadStudentCourses();
+      } else {
+        await this.loadClasses();
+      }
+    } catch (error) {
+      this.apiService.failedSnackbar('Failed to initialize. Please try again.', 3000);
+    } finally {
+      this.isLoading = false;
+      this.apiService.hideLoader();
     }
-    this.apiService.hideLoader();
   }
+
 
   createID32(): string {
     return this.apiService.createID32();
@@ -99,18 +110,31 @@ export class SpeechAnalyzerComponent implements OnInit {
       const response = await this.apiService.getEnrolledCourses().toPromise();
       if (response.success) {
         this.classes = response.output;
+      } else {
+        throw new Error('Failed to load student courses');
       }
     } catch (error) {
       console.error('Error loading student courses:', error);
+      this.apiService.failedSnackbar('Failed to load courses. Please try again.', 3000);
     }
   }
 
 
   semiLoading = false;
 
+
   async selectClass(classId: string) {
-    this.selectedStudentClass = classId;
-    await this.loadSpeeches(classId);
+    this.isLoading = true;
+    this.apiService.showLoader();
+    try {
+      this.selectedStudentClass = classId;
+      await this.loadSpeeches(classId);
+    } catch (error) {
+      this.apiService.failedSnackbar('Failed to load class speeches. Please try again.', 3000);
+    } finally {
+      this.isLoading = false;
+      this.apiService.hideLoader();
+    }
   }
 
 
@@ -131,9 +155,12 @@ export class SpeechAnalyzerComponent implements OnInit {
       const response = await this.apiService.getSpeechesInClass(classId).toPromise();
       if (response.success) {
         this.classSpeeches = response.output;
+      } else {
+        throw new Error('Failed to load speeches');
       }
     } catch (error) {
       console.error('Error loading speeches:', error);
+      this.apiService.failedSnackbar('Failed to load speeches. Please try again.', 3000);
     }
   }
 
@@ -147,18 +174,19 @@ export class SpeechAnalyzerComponent implements OnInit {
           await this.loadSavedSpeeches();
         }
       } else {
-        this.apiService.failedSnackbar('Unable to connect to the server.', 3000);
+        throw new Error('Failed to load classes');
       }
     } catch (error) {
       console.error('Error loading classes:', error);
-      this.apiService.failedSnackbar('Error loading classes.', 3000);
+      this.apiService.failedSnackbar('Failed to load classes. Please try again.', 3000);
     }
   }
 
 
-
   loadSavedSpeeches() {
     if (this.selectedClass) {
+      this.isLoading = true;
+      this.apiService.showLoader();
       this.apiService.getSpeechesInClass(this.selectedClass).subscribe(
         (response) => {
           if (response.success) {
@@ -170,11 +198,14 @@ export class SpeechAnalyzerComponent implements OnInit {
         (error) => {
           console.error('Error loading saved speeches:', error);
           this.apiService.failedSnackbar('Error loading saved speeches.', 3000);
+        },
+        () => {
+          this.isLoading = false;
+          this.apiService.hideLoader();
         }
       );
     }
   }
-
   clearSentence() {
     this.sentenceHolderText = '';
     this.editingIndex = null;
@@ -187,6 +218,8 @@ export class SpeechAnalyzerComponent implements OnInit {
   }
 
   deleteSpeech(id: number) {
+    this.isLoading = true;
+    this.apiService.showLoader();
     this.apiService.post('delete_entry', {
       data: JSON.stringify({
         tables: 'speech_analyzer_items',
@@ -208,11 +241,17 @@ export class SpeechAnalyzerComponent implements OnInit {
       error: (error) => {
         console.error('Error deleting speech:', error);
         this.apiService.failedSnackbar('Error deleting speech.', 3000);
+      },
+      complete: () => {
+        this.isLoading = false;
+        this.apiService.hideLoader();
       }
     });
   }
   saveSentence() {
     if (this.sentenceHolderText.trim() && this.selectedClass) {
+      this.isLoading = true;
+      this.apiService.showLoader();
       const id = this.editingIndex !== null ? this.savedSpeeches[this.editingIndex].id : this.apiService.generateManualId();
 
       this.apiService.createSpeechSentence(id, Number(this.selectedClass), this.sentenceHolderText).subscribe({
@@ -228,6 +267,10 @@ export class SpeechAnalyzerComponent implements OnInit {
         error: (error) => {
           console.error('Error saving sentence:', error);
           this.apiService.failedSnackbar('Error saving the sentence. Please try again.', 3000);
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.apiService.hideLoader();
         }
       });
     } else {
@@ -236,13 +279,13 @@ export class SpeechAnalyzerComponent implements OnInit {
   }
   async generateNewSpeechSample() {
     this.isGenerating = true;
+    this.apiService.showLoader();
     const prompt = "Generate a unique and inspiring statement for speech practice, between 10 and 20 words. Do not include the name of the author, and do not enclose the sentence in quotation marks.";
 
     try {
       let generatedSample = await this.apiService.generateSpeechToRead(prompt);
       generatedSample = generatedSample.replace(/^"|"$/g, '').trim();
       this.speechSample = generatedSample;
-
       this.sentenceHolderText = this.speechSample;
 
       if (this.speechSample.toLowerCase() === "the quick brown fox jumps over the lazy dog." || !this.speechSample.trim()) {
@@ -252,8 +295,10 @@ export class SpeechAnalyzerComponent implements OnInit {
       console.error('Error generating speech sample:', error);
       this.speechSample = "The quick brown fox jumps over the lazy dog.";
       this.sentenceHolderText = this.speechSample;
+      this.apiService.failedSnackbar('Failed to generate a new speech sample. Using default sentence.', 3000);
     } finally {
       this.isGenerating = false;
+      this.apiService.hideLoader();
     }
   }
 
@@ -275,7 +320,10 @@ export class SpeechAnalyzerComponent implements OnInit {
       this.mediaRecorder.ondataavailable = (event: any) => {
         this.audioChunks.push(event.data);
       };
-    }).catch((err) => console.error('Microphone access denied:', err));
+    }).catch((err) => {
+      console.error('Microphone access denied:', err);
+      this.apiService.failedSnackbar('Microphone access denied. Please check your browser settings.', 3000);
+    });
   }
 
   stopRecording() {
@@ -326,6 +374,7 @@ export class SpeechAnalyzerComponent implements OnInit {
 
   async processAudio(audioFile: File) {
     this.isAnalyzing = true;
+    this.apiService.showLoader();
     try {
       const filename = `speech_${Date.now()}.wav`;
       await this.apiService.uploadFileWithProgressNoSnackbar(audioFile, filename);
@@ -334,6 +383,8 @@ export class SpeechAnalyzerComponent implements OnInit {
       const audioId = this.apiService.generateManualId();
       const audioFileResponse = await lastValueFrom(this.apiService.createAudioFileWithId(audioId, fileUrl));
       const fullUrl = this.apiService.getURL(fileUrl);
+
+      this.apiService.justSnackbar('Analyzing speech...', 3000);
       const transcript = await this.analyzeSpeech(fullUrl);
 
       this.transcriptText = transcript.text || 'No transcription available';
@@ -344,17 +395,21 @@ export class SpeechAnalyzerComponent implements OnInit {
       if (this.analysisResult) {
         await this.createSpeechAnalyzerResultEntry(audioId, this.analysisResult);
         this.calculateAverageScore();
+        this.apiService.successSnackbar('Speech analysis completed successfully!', 3000);
       }
 
     } catch (error) {
       console.error('Error processing audio:', error);
       this.analysisResult = null;
       this.summary = 'An error occurred while processing the audio.';
+      this.apiService.failedSnackbar('Failed to analyze speech. Please try again.', 3000);
     } finally {
       this.isAnalyzing = false;
       this.uploadProgress = 0;
+      this.apiService.hideLoader();
     }
   }
+
 
   async analyzeSpeech(fileUrl: string): Promise<any> {
     const transcript = await client.transcripts.create({ audio_url: fileUrl });
@@ -450,7 +505,7 @@ parseAnalysisResult(analysisJson: string) {
 
       const summaryItem = parsedResult.find(item => item.summary);
       if (summaryItem && summaryItem.summary) {
-        this.summary = summaryItem.summary.areas_for_improvement || ''; 
+        this.summary = summaryItem.summary.areas_for_improvement || '';
         if (typeof this.summary === 'string') {
           this.improvementPoints = this.summary.split('-')
             .map(point => point.replace(/\*\*/g, '').trim())
