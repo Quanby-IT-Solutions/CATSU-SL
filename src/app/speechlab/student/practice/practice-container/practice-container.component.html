@@ -1,5 +1,5 @@
-<div class="container w-full h-full mx-auto">
-  <div class="flex items-center justify-start px-10 mt-4">
+<div class="container w-full h-full mx-auto ">
+  <div class="flex items-center justify-start sm:p-8 py-4 mt-4">
     <!-- Back Button Container -->
     <div class="p-3 bg-gray-200 rounded-xl">
       <!-- Add Back Button -->
@@ -10,10 +10,10 @@
   </div>
 
   <!-- Grid for Items -->
-  <div class="grid gap-4 mt-8 mb-8 md:px-10 sm:px-12 xs:px-3 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-2">
+  <div class="grid gap-4 sm:p-8 py-4 xs:px-3 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 xs:grid-cols-2 pb-[5dvh]">
     <div *ngFor="let item of array; let i = index">
       <div *ngIf="item.title && item.image">
-        <div class="flex items-center justify-center w-full px-0 bg-white border shadow-xl lg:h-72 xs:h-52 supertiti:h-72 rounded-xl ">
+        <div class="flex items-center justify-center w-full px-0 bg-white border shadow-xl h-fit min-h-[25rem] rounded-xl ">
           <div class="p-8 space-y-1 overflow-hidden">
             <h1 class="text-center uppercase font-extrabold bg-gradient-to-r from-[--secondary-color] to-[--primary-color] bg-clip-text text-transparent">{{item.title}}</h1>
             <img alt="picture" src="{{item.image}}" class="lg:w-[80%] py-2 text mx-auto">
