@@ -88,114 +88,112 @@
       </div>
     </div>
 
-    <!-- Updated Seat Layout with Space Between Groups -->
-    <div class="flex flex-col items-start justify-center w-full gap-8 md:flex-row md:gap-0">
-      <!-- First Group: Display All Rows with 4 Items -->
-      <div class="space-y-6 w-fit">
-        <ng-container *ngFor="let row of [row1, row2, row3, row4, row5, row6]; let i = index">
-          <div class="grid w-full grid-cols-4 gap-10 md:gap-4 lg:gap-4 xl:gap-8">
-            <ng-container *ngFor="let item of row.slice(0, 4)">
-              <div
-                class="flex flex-col items-center p-6 transition-transform transform bg-white rounded-lg shadow-md h-fit w-fit hover:-translate-y-1">
-                <!-- Computer Icon -->
-                <div>
-                  <p class="my-2 text-5xl font-thin text-center text-[--secondary-color] lg:text-6xl" *ngIf="layout">
-                    <i class="fa-solid fa-tv"></i>
-                  </p>
-                  <!-- Solo Selection -->
-                  <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="editedLayout"
-                    [ngClass]="{ 'text-amber-300': getSolo() == item, 'animate-bounce' : getSolo() == item }">
-                    <i class="fa-solid fa-tv"></i>
-                  </p>
-                  <!-- Group Selection -->
-                  <p class="my-2 text-5xl font-thin text-center lg:text-6xl" *ngIf="editedLayoutGroupings"
-                    [ngClass]="{ 'text-amber-300': groupColor === 'blue' && groupingItems.includes(item) }">
-                    <i class="fa-solid fa-tv"></i>
-                  </p>
-                  <!-- Button for 1v1 Selection -->
-                  <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="solo">
-                    <button [ngClass]="{
-                    'hover:text-amber-300': getAssignedName(item) != 'None',
-                    'text-amber-300': getSolo() == item
-                  }" [disabled]="getAssignedName(item) === 'None'" (click)="soloGropings(item)">
-                      <i class="fa-solid fa-tv"></i>
-                    </button>
-                  </p>
-                  <!-- Button for Group Selection -->
-                  <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="groupings">
-                    <button [ngClass]="{
-                    'text-amber-300': groupColor === 'blue' && groupingItems.includes(item)
-                  }" [disabled]="getAssignedName(item) === 'None'" (click)="dakolGroupings(item)">
-                      <i class="fa-solid fa-tv"></i>
-                    </button>
-                  </p>
-                </div>
-                <!-- Student Name -->
-                <span
-                  class="font-bold w-full text-center h-8 my-2 {{ getAssignedName(item) != 'None' ? 'text-green-500' : 'text-red-500' }}">
-                  {{ getAssignedName(item) }}
-                </span>
-              </div>
-            </ng-container>
+<!-- Updated Seat Layout with Space Between Groups -->
+<div class="flex flex-col items-start justify-center w-full gap-8 md:flex-row md:gap-0">
+  <!-- First Group: Display All Rows with 4 Items -->
+  <div class="space-y-6 w-fit">
+    <ng-container *ngFor="let row of [row1, row2, row3, row4, row5, row6]; let i = index">
+      <div class="grid w-full grid-cols-4 gap-10 md:gap-4 lg:gap-4 xl:gap-8">
+        <ng-container *ngFor="let item of row.slice(0, 4)">
+          <div
+            class="flex flex-col items-center p-6 transition-transform transform bg-white rounded-lg shadow-md h-fit w-fit hover:-translate-y-1">
+            <!-- Computer Icon -->
+            <div>
+              <p class="my-2 text-5xl font-thin text-center text-[--secondary-color] lg:text-6xl" *ngIf="layout">
+                <i class="fa-solid fa-tv"></i>
+              </p>
+              <!-- Solo Selection -->
+              <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="editedLayout"
+                [ngClass]="{ 'text-amber-300': getSolo() == item, 'animate-bounce' : getSolo() == item }">
+                <i class="fa-solid fa-tv"></i>
+              </p>
+              <!-- Group Selection -->
+              <p class="my-2 text-5xl font-thin text-center lg:text-6xl" *ngIf="editedLayoutGroupings"
+                [ngClass]="{ 'text-amber-300': groupColor === 'blue' && groupingItems.includes(item) }">
+                <i class="fa-solid fa-tv"></i>
+              </p>
+              <!-- Button for 1v1 Selection -->
+              <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="solo">
+                <button [ngClass]="{
+                'hover:text-amber-300': getAssignedName(item) != 'None',
+                'text-amber-300': getSolo() == item
+              }" [disabled]="getAssignedName(item) === 'None'" (click)="soloGropings(item)">
+                  <i class="fa-solid fa-tv"></i>
+                </button>
+              </p>
+              <!-- Button for Group Selection -->
+              <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="groupings">
+                <button [ngClass]="{
+                'text-amber-300': groupColor === 'blue' && groupingItems.includes(item)
+              }" [disabled]="getAssignedName(item) === 'None'" (click)="dakolGroupings(item)">
+                  <i class="fa-solid fa-tv"></i>
+                </button>
+              </p>
+            </div>
+            <!-- Student Name -->
+            <span class="font-bold w-full text-center h-8 my-2 {{ getAssignedName(item) != 'None' ? 'text-green-500' : 'text-red-500' }}">
+              {{ getAssignedName(item) }}
+            </span>
           </div>
         </ng-container>
       </div>
+    </ng-container>
+  </div>
 
-      <!-- invisible gap -->
-      <div class="hidden md:w-10 lg:w-16 xl:w-24 md:block"></div>
+  <!-- invisible gap -->
+  <div class="hidden md:w-10 lg:w-16 xl:w-24 md:block"></div>
 
-      <!-- Second Group: Display All Rows with 3 Items -->
-      <div class="w-full space-y-6 md:w-fit">
-        <ng-container *ngFor="let row of [row1, row2, row3, row4, row5, row6]; let i = index">
-          <div class="grid grid-cols-3 gap-10 mx-auto md:gap-4 lg:gap-4 xl:gap-8 w-fit">
-            <ng-container *ngFor="let item of row.slice(4, 7)">
-              <div
-                class="flex flex-col items-center p-4 transition-transform transform bg-white rounded-lg shadow-md h-fit w-fit hover:-translate-y-1">
-                <!-- Computer Icon -->
-                <div>
-                  <p class="my-2 text-5xl font-thin text-center text-[--secondary-color] lg:text-6xl" *ngIf="layout">
-                    <i class="fa-solid fa-tv"></i>
-                  </p>
-                  <!-- Solo Selection -->
-                  <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="editedLayout"
-                    [ngClass]="{ 'text-amber-300': getSolo() == item, '' : getSolo() == item }">
-                    <i class="fa-solid fa-tv"></i>
-                  </p>
-                  <!-- Group Selection -->
-                  <p class="my-2 text-5xl font-thin text-center lg:text-6xl" *ngIf="editedLayoutGroupings"
-                    [ngClass]="{ 'text-amber-300': groupColor === 'blue' && groupingItems.includes(item) }">
-                    <i class="fa-solid fa-tv"></i>
-                  </p>
-                  <!-- Button for 1v1 Selection -->
-                  <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="solo">
-                    <button [ngClass]="{
-                    'hover:text-amber-300': getAssignedName(item) != 'None',
-                    'text-amber-300': getSolo() == item
-                  }" [disabled]="getAssignedName(item) === 'None'" (click)="soloGropings(item)">
-                      <i class="fa-solid fa-tv"></i>
-                    </button>
-                  </p>
-                  <!-- Button for Group Selection -->
-                  <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="groupings">
-                    <button [ngClass]="{
-                    'text-amber-300': groupColor === 'blue' && groupingItems.includes(item)
-                  }" [disabled]="getAssignedName(item) === 'None'" (click)="dakolGroupings(item)">
-                      <i class="fa-solid fa-tv"></i>
-                    </button>
-                  </p>
-                </div>
-                <!-- Student Name -->
-                <span
-                  class="font-bold w-full text-center h-8 my-2 {{ getAssignedName(item) != 'None' ? 'text-green-500' : 'text-red-500' }}">
-                  {{ getAssignedName(item) }}
-                </span>
-              </div>
-            </ng-container>
+  <!-- Second Group: Display All Rows with 3 Items -->
+  <div class="w-full space-y-6 md:w-fit">
+    <ng-container *ngFor="let row of [row1, row2, row3, row4, row5, row6]; let i = index">
+      <div class="grid grid-cols-3 gap-10 mx-auto md:gap-4 lg:gap-4 xl:gap-8 w-fit">
+        <ng-container *ngFor="let item of row.slice(4, 7)">
+          <div
+            class="flex flex-col items-center p-4 transition-transform transform bg-white rounded-lg shadow-md h-fit w-fit hover:-translate-y-1">
+            <!-- Computer Icon -->
+            <div>
+              <p class="my-2 text-5xl font-thin text-center text-[--secondary-color] lg:text-6xl" *ngIf="layout">
+                <i class="fa-solid fa-tv"></i>
+              </p>
+              <!-- Solo Selection -->
+              <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="editedLayout"
+                [ngClass]="{ 'text-amber-300': getSolo() == item, '' : getSolo() == item }">
+                <i class="fa-solid fa-tv"></i>
+              </p>
+              <!-- Group Selection -->
+              <p class="my-2 text-5xl font-thin text-center lg:text-6xl" *ngIf="editedLayoutGroupings"
+                [ngClass]="{ 'text-amber-300': groupColor === 'blue' && groupingItems.includes(item) }">
+                <i class="fa-solid fa-tv"></i>
+              </p>
+              <!-- Button for 1v1 Selection -->
+              <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="solo">
+                <button [ngClass]="{
+                'hover:text-amber-300': getAssignedName(item) != 'None',
+                'text-amber-300': getSolo() == item
+              }" [disabled]="getAssignedName(item) === 'None'" (click)="soloGropings(item)">
+                  <i class="fa-solid fa-tv"></i>
+                </button>
+              </p>
+              <!-- Button for Group Selection -->
+              <p class="my-2 text-5xl font-thin text-center text-gray-100 lg:text-6xl" *ngIf="groupings">
+                <button [ngClass]="{
+                'text-amber-300': groupColor === 'blue' && groupingItems.includes(item)
+              }" [disabled]="getAssignedName(item) === 'None'" (click)="dakolGroupings(item)">
+                  <i class="fa-solid fa-tv"></i>
+                </button>
+              </p>
+            </div>
+            <!-- Student Name -->
+            <span
+              class="font-bold w-full text-center h-8 my-2 {{ getAssignedName(item) != 'None' ? 'text-green-500' : 'text-red-500' }}">
+              {{ getAssignedName(item) }}
+            </span>
           </div>
         </ng-container>
       </div>
-    </div>
-
+    </ng-container>
+  </div>
+</div>
 
 
     <!-- Select Module Button -->
@@ -207,14 +205,12 @@
     <!-- If No Meeting, Show Meeting Options -->
     <div *ngIf="!hasMeet()" class="absolute inset-0 top-0 left-0 z-10 bg-opacity-50 backdrop-filter backdrop-blur">
       <div class="flex items-center justify-center h-full gap-x-4">
-        <button *ngIf="!showStartMeetingButton && speechLabs.length > 0" (click)="showStartMeeting(0)"
-          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
-          <p class="text-lg font-semibold">Speech Lab 1</p>
-        </button>
-        <button *ngIf="!showStartMeetingButton && speechLabs.length > 0" (click)="showStartMeeting(1)"
-          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
-          <p class="text-lg font-semibold">Speech Lab 2</p>
-        </button>
+        <ng-container *ngFor="let lab of speechLabs" >
+          <button *ngIf="!showStartMeetingButton" (click)="showStartMeeting(lab.id)"
+            class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
+            <p class="text-lg font-semibold">{{lab.course}} - <span class="font-medium">{{lab.class}}</span></p>
+          </button>
+        </ng-container>
         <button *ngIf="showStartMeetingButton"
           class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white"
           (click)="startClass()">

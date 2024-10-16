@@ -1749,6 +1749,37 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
+  getClassFromCode(course_id:string,code:string) {
+    const postObject = {
+      selectors: ['*'],
+      tables: 'classes',
+      conditions: {
+        WHERE: {
+          'ClassCode': code,
+          'courseid' : course_id,
+        },
+      },
+    };
+    return this.post('get_entries', {
+      data: JSON.stringify(postObject),
+    });
+  }
+
+  createSpeechlab(
+    class_id: string,
+  ) {
+    const postObject = {
+      tables: 'speech_labs',
+      values: {
+        name: 'Auto Generated',
+        class_id : class_id
+      },
+    };
+    return this.post('create_entry', {
+      data: JSON.stringify(postObject),
+    });
+  }
+
   editClass(
     classID: string,
     className: string,
@@ -1886,6 +1917,9 @@ export class APIService implements OnDestroy, OnInit {
     getStudents() {
       const postObject = {
         selectors: [
+          'classes.id as class_id',
+          'classes.*',
+          'courses.*',
           'students.ID',
           'students.FirstName',
           'students.LastName',
@@ -1899,6 +1933,12 @@ export class APIService implements OnDestroy, OnInit {
           'students.lastseen',
         ],
         tables: 'students',
+        conditions:{
+          'LEFT JOIN student_classes':' ON student_classes.studentid = students.id',
+          'LEFT JOIN classes':' ON student_classes.classid = classes.id',
+          'LEFT JOIN courses ':' ON classes.courseid = courses.id',
+
+        }
       };
       return this.post('get_entries', {
         data: JSON.stringify(postObject),
@@ -3538,6 +3578,34 @@ export class APIService implements OnDestroy, OnInit {
       data: JSON.stringify(postObject),
     }).subscribe(() => observable$.unsubscribe());
   }
+
+  studentUpdateAssignment(assignmentId: string, comments?: string, attachments?: string) {
+    const id = this.getUserData().id;
+    const postObject: any = {
+      tables: 'student_assignments',
+      values: {},
+      conditions: {
+        WHERE: {
+          AssignmentID: assignmentId,
+          StudentID: id
+        }
+      }
+    };
+
+    if (comments !== undefined) {
+      postObject.values.Comments = comments;
+    }
+
+    if (attachments !== undefined) {
+      postObject.values.Attachments = attachments;
+    }
+
+    return this.post('update_entry', {
+      data: JSON.stringify(postObject)
+    });
+  }
+
+
 
   loadMeetingSessions() {
     const month = new Date().getMonth();
@@ -5612,8 +5680,15 @@ export class APIService implements OnDestroy, OnInit {
 
   loadSpeechLabs() {
     const postObject = {
-      selectors: ['*'],
-      tables: 'speech_labs',
+      selectors: ['teachers.* ,classes.class as class, courses.id as course_id, courses.*,  speech_labs.*'],
+      tables: 'speech_labs, classes, courses, teachers',
+      conditions: {
+        WHERE : {
+          'speech_labs.class_id': 'classes.id',
+          'classes.courseid' : 'courses.id',
+          'teachers.id' : 'courses.teacherid',
+        }
+      }
     };
     return this.post('get_entries', {
       data: JSON.stringify(postObject),

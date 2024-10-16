@@ -158,10 +158,10 @@ getURL(arg0: string) {
 
 
 
- selectedLab:number = 0;
+ selectedLab?:string ;
 
-showStartMeeting(index:number) {
-  this.selectedLab = index;
+showStartMeeting(id:string) {
+  this.selectedLab = id;
   this.showStartMeetingButton = true;
 }
 
@@ -244,13 +244,14 @@ async initMeeting() {
 
   startClass() {
     this.startMeet = !false;
-    this.API.startLab(this.speechLabs[this.selectedLab].id)
-    this.API.labID = this.speechLabs[this.selectedLab].id;
+    this.API.startLab(this.selectedLab!)
+    this.API.labID = this.selectedLab;
     this.loadLabs();
   }
   endClass() {
     this.API.leaveSpeechMeeting();
     this.startMeet = false;
+    this.showStartMeetingButton = false;
   }
 
   // saveGroupings(color: string) {
@@ -395,26 +396,28 @@ async initMeeting() {
 
   loadedAddresses:Map<string,any>= new Map();
 
-  loadAssignedAddresses(){
-    if(this.speechLabs.length > 0){
-      const obs$ = this.API.loadComputerAddresses().subscribe(data=>{
-        if(data.success){
-          const assignMap = new Map<string,any>( data.output.filter((e:any)=>e.labid ==this.API.labID).map((entry:any)=> [entry.name, entry]))
-          this.loadedAddresses = new Map<string,any>( data.output.map((entry:any)=> [entry.address, entry]))
-          for(let pc of [...this.row1, ...this.row2, ...this.row3]){
+  loadAssignedAddresses() {
+    if (this.speechLabs.length > 0) {
+      const obs$ = this.API.loadComputerAddresses().subscribe(data => {
+        if (data.success) {
+          const assignMap = new Map<string, any>(data.output
+            .filter((e: any) => e.labid == this.API.labID)
+            .map((entry: any) => [entry.name, entry]));
+
+          for (let pc of [...this.row1, ...this.row2, ...this.row3, ...this.row4, ...this.row5, ...this.row6]) {
             pc.ip = assignMap.get(pc.label)?.address ?? '';
             pc.id = assignMap.get(pc.label)?.id ?? null;
           }
         }
         this.API.hideLoader();
         obs$.unsubscribe();
-      })
-    }else{
+      });
+    } else {
       this.API.showLoader();
-      this.API.failedSnackbar('Failed loading speechlabs')
+      this.API.failedSnackbar('Failed loading speechlabs');
     }
-
   }
+
 
   getParticipants(){
     return this.API.participantsAudio;

@@ -17,10 +17,11 @@ export class AlabComponent implements OnInit {
   row6:any[] = [];
 
   students:any[]= [];
+  filteredStudents:any[]= [];
   speechLabs:any[] = []
   speechLabSelected:number = 0;
-
   
+
 
   async ngOnInit() {
     [this.row1,this.row2, this.row3, this.row4, this.row5, this.row6]= await this.API.loadComputers();
@@ -43,14 +44,16 @@ export class AlabComponent implements OnInit {
     const obs$ = this.API.loadSpeechLabs().subscribe(data=>{
       if(data.success){
         this.speechLabs = data.output;
+        this.selectLab(0);
       }
       this.loadAssignedAddresses();
       obs$.unsubscribe();
-    })  
+    })
   }
 
   selectLab(index:number){
     this.speechLabSelected = index;
+    this.filteredStudents = this.filterStudentByLab(this.speechLabs[this.speechLabSelected].class_id)
     this.loadAssignedAddresses();
   }
 
@@ -70,12 +73,12 @@ export class AlabComponent implements OnInit {
         }
         this.API.hideLoader();
         obs$.unsubscribe();
-      })  
+      })
     }else{
       this.API.showLoader();
       this.API.failedSnackbar('Failed loading speechlabs')
     }
-   
+
   }
 
 
@@ -86,6 +89,13 @@ export class AlabComponent implements OnInit {
     const pcs = [...this.row1, ...this.row2, ...this.row3 , ...this.row4 , ...this.row5 , ...this.row6];
     const found = pcs.find((pc)=> pc.ip == student.visibleid);
     return found;
+  }
+
+  filterStudentByLab(class_id:string){
+    return this.students.filter(student=> {
+      console.log(student)
+      return student.class_id == class_id
+    });
   }
 
   checkIfAssignedOnOtherLab(student:string){
@@ -160,8 +170,8 @@ export class AlabComponent implements OnInit {
     }else{
       this.API.failedSnackbar('There was an error loading speech labs');
     }
-    
+
   }
 
-  
+
 }
