@@ -41,5 +41,6 @@ export const environment = {
   // new
 
   speech: '1b9759691ec9459182d10a47606a1309',
+  administrators: 'a1b2c3d4e5f6g7h8i9j0klmnopqrst12',
   app: 'catsu'
 };

@@ -205,14 +205,12 @@
     <!-- If No Meeting, Show Meeting Options -->
     <div *ngIf="!hasMeet()" class="absolute inset-0 top-0 left-0 z-10 bg-opacity-50 backdrop-filter backdrop-blur">
       <div class="flex items-center justify-center h-full gap-x-4">
-        <button *ngIf="!showStartMeetingButton && speechLabs.length > 0" (click)="showStartMeeting(0)"
-          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
-          <p class="text-lg font-semibold">Speech Lab 1</p>
-        </button>
-        <button *ngIf="!showStartMeetingButton && speechLabs.length > 0" (click)="showStartMeeting(1)"
-          class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
-          <p class="text-lg font-semibold">Speech Lab 2</p>
-        </button>
+        <ng-container *ngFor="let lab of speechLabs" >
+          <button *ngIf="!showStartMeetingButton" (click)="showStartMeeting(lab.id)"
+            class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white">
+            <p class="text-lg font-semibold">{{lab.course}} - <span class="font-medium">{{lab.class}}</span></p>
+          </button>
+        </ng-container>
         <button *ngIf="showStartMeetingButton"
           class="flex items-center justify-center w-1/6 px-6 py-3 text-gray-800 transition-transform transform bg-white rounded-lg shadow-md hover:-translate-y-1 hover:bg-[--secondary-color] hover:text-white"
           (click)="startClass()">

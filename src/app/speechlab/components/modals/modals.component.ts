@@ -158,10 +158,10 @@ getURL(arg0: string) {
 
 
 
- selectedLab:number = 0;
+ selectedLab?:string ;
 
-showStartMeeting(index:number) {
-  this.selectedLab = index;
+showStartMeeting(id:string) {
+  this.selectedLab = id;
   this.showStartMeetingButton = true;
 }
 
@@ -244,13 +244,14 @@ async initMeeting() {
 
   startClass() {
     this.startMeet = !false;
-    this.API.startLab(this.speechLabs[this.selectedLab].id)
-    this.API.labID = this.speechLabs[this.selectedLab].id;
+    this.API.startLab(this.selectedLab!)
+    this.API.labID = this.selectedLab;
     this.loadLabs();
   }
   endClass() {
     this.API.leaveSpeechMeeting();
     this.startMeet = false;
+    this.showStartMeetingButton = false;
   }
 
   // saveGroupings(color: string) {

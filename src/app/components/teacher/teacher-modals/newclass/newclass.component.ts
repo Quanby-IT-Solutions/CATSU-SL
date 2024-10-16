@@ -186,6 +186,7 @@
 
   import { Component, Input, OnInit } from '@angular/core';
   import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { firstValueFrom } from 'rxjs';
   import { APIService } from 'src/app/services/API/api.service';
 
   @Component({
@@ -216,7 +217,7 @@
       }
     }
 
-    manageClass() {
+    async manageClass() {
       if (
         !this.className.trim() ||
         !this.classCode.trim() ||
@@ -228,20 +229,38 @@
 
       const schedule = 'M, T, W, Th, F, Sa, Su'; // Default schedule
       const action = this.data == null ? 'Creating' : 'Updating';
-
+      const data =  await firstValueFrom(this.API.getClassFromCode(this.course,this.classCode));  
+      if(data.success){
+        if(data.output.length > 0){
+          this.API.failedSnackbar('Class code is already assigned to one of your previous classes.');
+          return;
+        }
+      }else{
+        throw new Error();
+      }
       this.API.justSnackbar(`${action} class ....`);
 
       if (this.data == null) {
-        this.API.createClass(
+       try{
+        await firstValueFrom(this.API.createClass(
           this.course,
           this.className,
           this.classCode,
           schedule,
-          this.duration
-        ).subscribe(() => {
-          this.API.successSnackbar('Class created successfully');
-          this.closeModal('update');
-        });
+          this.duration))
+        
+        const data =  await firstValueFrom(this.API.getClassFromCode(this.course,this.classCode));  
+        if(data.success && data.output.length){
+          await firstValueFrom(this.API.createSpeechlab(data.output[0].id));
+        }else{
+          throw new Error();
+        }
+        this.API.successSnackbar('Class created successfully');
+        this.closeModal('update');
+       }catch(e){
+        this.API.failedSnackbar('Error creating class.. Try again.');
+       }
+        
       } else {
         this.API.editClass(
           this.classID,
