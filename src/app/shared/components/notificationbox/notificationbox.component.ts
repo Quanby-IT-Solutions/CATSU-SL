@@ -1,50 +1,74 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit} from '@angular/core';
 import { APIService } from 'src/app/services/API/api.service';
 import Swal from 'sweetalert2';
 import { SurveyCertComponent } from 'src/app/components/student/student-modals/survey-cert/survey-cert.component';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval, Subscription } from 'rxjs';
 import * as jspdf from 'jspdf';
 import html2canvas from 'html2canvas';
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  timestamp: string | number;
+  status: 'seen' | 'unseen';
+  clientTimestamp?: number;
+  timeAgo?: string;
+}
+
 @Component({
   selector: 'app-notificationbox',
   templateUrl: './notificationbox.component.html',
   styleUrls: ['./notificationbox.component.css']
 })
+
 export class NotificationboxComponent {
   @Input() notifications:any = [];
-  constructor(private API :APIService, private modalService: NgbModal,){}
-  originalText: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua";
+  constructor(
+    private API: APIService,
+    private modalService: NgbModal,
+  ) {}
 
-  shortenedText!: string;
 
   ngOnInit() {
-    // Set the maximum length you want for the text
-    const maxLength = 20;
-
-    // Shorten the text
-    this.shortenedText = this.originalText.length > maxLength
-      ? this.originalText.substring(0, maxLength) + '...'
-      : this.originalText;
-
     this.markAllasInbox();
   }
 
-
-  getNotifications(){
-    return this.API.notifications;
-  }
-  isUrgent(notif:string){
-    return (notif.includes('[Urgent]'))
+  getNotifications() {
+    return this.notifications;
   }
 
-  removeTag(notif:string){
+  clearAllNotifications() {
+    this.API.clearAllNotifications().subscribe(
+      (response) => {
+        if (response.success) {
+          this.notifications = [];
+          this.API.successSnackbar('All notifications have been cleared');
+        } else {
+          this.API.failedSnackbar('Failed to clear notifications');
+        }
+      },
+      (error) => {
+        console.error('Error clearing notifications:', error);
+        this.API.failedSnackbar('An error occurred while clearing notifications');
+      }
+    );
+  }
+
+  isUrgent(notif: string) {
+    return notif.includes('[Urgent]');
+  }
+
+  removeTag(notif: string) {
     return notif.replace('[Urgent]', '').replace('[BROADCAST]','').replace('[ALERT]', '').replace('[CERT]', '');
   }
 
-  removeBodyTags(notif:string){
-    return notif.split('[COURSEID]')[0]
+  removeBodyTags(notif: string) {
+    return notif.split('[COURSEID]')[0];
   }
+
+
 
   markAllAsRead(){
     this.API.markAllAsRead();
@@ -59,11 +83,11 @@ export class NotificationboxComponent {
     this.API.successSnackbar('All notifications have been marked as read');
   }
 
-  markAllasInbox(){
+  markAllasInbox() {
     this.API.markAllAsInbox();
   }
 
-  markAsRead(notification:any){
+  markAsRead(notification: Notification) {
     this.API.markAsRead(notification.id);
   }
 
@@ -72,58 +96,56 @@ export class NotificationboxComponent {
     return this.API.parseDateFromNow(date);
   }
 
-  certInfo:any
+  certInfo: any;
 
-  async openMial(notification:any, index:number){
-    if(this.notifications.status !='seen'){
-      this.API.inbox -= 1;
+  async openMial(notification: Notification, index: number) {
+    if (this.notifications[index].status !== 'seen') {
+      this.API.inbox = Math.max(0, (this.API.inbox || 0) - 1);
     }
     this.notifications[index].status = 'seen';
     this.markAsRead(notification);
-    if(notification.title.includes('[CERT]')){
-      var courseID = notification.message.split("[COURSEID]")[1];
-      var survey = await this.API.getAnsweredSurveyStudent(courseID);
-      this.certInfo =  await this.API.getSurveyEntryStudent(courseID);
+    if (notification.title.includes('[CERT]')) {
+      const courseID = notification.message.split("[COURSEID]")[1];
+      const survey = await this.API.getAnsweredSurveyStudent(courseID);
+      this.certInfo = await this.API.getSurveyEntryStudent(courseID);
       Swal.fire({
         title: this.removeTag(notification.title),
         html: this.removeBodyTags(notification.message),
-        icon: 'question', // Default icon, you can remove this line if you don't want the default icon
-        iconHtml: '<img  src="assets/Notificationbox/mail_fill.png" alt="Custom Icon" style="width: 40px; height: 40px;">',
-        confirmButtonText:  survey.length > 0 ? 'Claim Certificate' : 'Complete Survey',
+        icon: 'question',
+        iconHtml: '<img src="assets/Notificationbox/mail_fill.png" alt="Custom Icon" style="width: 40px; height: 40px;">',
+        confirmButtonText: survey.length > 0 ? 'Claim Certificate' : 'Complete Survey',
         cancelButtonText: 'Close',
         showCancelButton: true,
-      }).then( async (result)=>{
-        if(result.isConfirmed){
-            const modalOptions: NgbModalOptions = {
-              centered: false,
-              // You can add other options here if needed
-            };
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const modalOptions: NgbModalOptions = {
+            centered: false,
+          };
 
-            if(survey.length <= 0 ){
-              const modalRef = this.modalService.open(
-                SurveyCertComponent,
-                modalOptions
-              );
-              modalRef.componentInstance.certInfo  = this.certInfo
-            }else{
-              await this.showCertificateModal(this.certInfo)
-            }
+          if (survey.length <= 0) {
+            const modalRef = this.modalService.open(
+              SurveyCertComponent,
+              modalOptions
+            );
+            modalRef.componentInstance.certInfo = this.certInfo;
+          } else {
+            await this.showCertificateModal(this.certInfo);
           }
+        }
       });
-    }else{
+    } else {
       Swal.fire({
         title: this.removeTag(notification.title),
         html: this.removeBodyTags(notification.message),
-        icon: 'question', // Default icon, you can remove this line if you don't want the default icon
-        iconHtml: '<img  src="assets/Notificationbox/mail_fill.png" alt="Custom Icon" style="width: 40px; height: 40px;">'
+        icon: 'question',
+        iconHtml: '<img src="assets/Notificationbox/mail_fill.png" alt="Custom Icon" style="width: 40px; height: 40px;">'
       });
     }
-
-}
+  }
 
 async showCertificateModal(course: any) {
   console.log(course);
-  const imageUrl = 'assets/cert/catsu-cert.png'; 
+  const imageUrl = 'assets/cert/catsu-cert.png';
   const teacherSign = course.esign;
   console.log(teacherSign);
   const response = await firstValueFrom(this.API.getCNSCPresident());

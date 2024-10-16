@@ -63,12 +63,22 @@
             <div class="mb-4">
               <label for="grading" class="block text-sm font-medium text-[var(--secondary-color)] mb-1">Grade</label>
               <div class="flex items-center">
-                <input [(ngModel)]="gradingText" type="text" id="grading" name="grading"
-                  class="block w-20 rounded-md border-gray-300 shadow-sm focus:border-[var(--accent-color)] focus:ring focus:ring-[var(--accent-color)] focus:ring-opacity-50 text-center"
-                  placeholder="Grade">
+                <input [(ngModel)]="gradingText"
+                       (input)="enforceGradeLimit($event)"
+                       type="text"
+                       id="grading"
+                       name="grading"
+                       class="block w-20 rounded-md border-gray-300 shadow-sm focus:border-[var(--accent-color)] focus:ring focus:ring-[var(--accent-color)] focus:ring-opacity-50 text-center"
+                       placeholder="Grade"
+                       inputmode="numeric">
                 <span class="ml-2 text-sm text-gray-500">/ 100</span>
               </div>
+              <!-- Display an error message if the input is not within the range -->
+              <div *ngIf="toNumber(gradingText) < 1 || toNumber(gradingText) > 100" class="text-red-500 text-sm mt-1">
+                Please enter a number between 1 and 100.
+              </div>
             </div>
+
 
             <!-- Comment Section -->
             <div class="mb-4">

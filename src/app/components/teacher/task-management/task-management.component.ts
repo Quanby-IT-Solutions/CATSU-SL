@@ -29,15 +29,21 @@ export class TaskManagementComponent implements OnInit {
     this.API.showLoader();
     const currentDate = new Date();
     this.currentDate = currentDate.toISOString().split('T')[0];
+
+    // Load Courses
     this.API.teacherAllCourses().subscribe((data) => {
       for (let course of data.output) {
         this.courses.set(course.id, course);
       }
       this.API.hideLoader();
     });
+
+    // Load Submissions
     this.API.teacherGetAllSubmissions().subscribe((data) => {
       this.submissions = data.output;
     });
+
+    // Load Tasks
     this.loadTasks();
   }
 
@@ -63,6 +69,28 @@ export class TaskManagementComponent implements OnInit {
         this.loadTasks();
       }
     });
+  }
+
+  editTask(task: any) {
+    const modalRef = this.modalService.open(TaskcreationComponent);
+    modalRef.componentInstance.task = task; // Pass the task data to the modal for editing
+    modalRef.componentInstance.courses = Array.from(this.courses.values());
+    modalRef.closed.subscribe((data) => {
+      if (data != undefined) {
+        this.loadTasks();
+      }
+    });
+  }
+
+  deleteTask(task: any) {
+    if (confirm(`Are you sure you want to delete the task titled "${task.title}"?`)) {
+      this.API.teacherDeleteTask(task.id).subscribe(() => {
+        this.tasks = this.tasks.filter((t: any) => t.id !== task.id);
+        this.API.successSnackbar('Task deleted successfully.');
+      }, error => {
+        this.API.failedSnackbar('Failed to delete the task.');
+      });
+    }
   }
 
   createfeedback() {

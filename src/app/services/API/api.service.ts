@@ -646,20 +646,59 @@ export class APIService implements OnDestroy, OnInit {
   }
 
   parseDateFromNow(date: string) {
-    const timepassed = new Date().getTime() - new Date(date).getTime();
-    // if(timepassed)
-    const seconds = timepassed / 1000;
-    if (seconds < 60) return 'Just now';
+    const timePassed = new Date().getTime() - new Date(date).getTime();
+    const seconds = timePassed / 1000;
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60)
-      return minutes == 1 ? '1 minute ago' : `${minutes} minutes ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return hours == 1 ? '1 hour ago' : `${hours} hours ago`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return days == 1 ? '1 day ago' : `${days} days ago`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 4) return weeks == 1 ? '1 week ago' : `${weeks} weeks ago`;
+
+    // 8 hours = 480 minutes
+    const minutesToSubtract = 8 * 60;
+    const adjustedMinutes = minutes - minutesToSubtract;
+
+    // If the adjusted time is less than or equal to 0, show "Just now"
+    if (adjustedMinutes <= 0) {
+      return 'Just now';
+    }
+
+    // Display time in minutes if less than 60 minutes after the adjustment
+    if (adjustedMinutes < 60) {
+      return adjustedMinutes === 1 ? '1 minute ago' : `${adjustedMinutes} minutes ago`;
+    }
+
+    // Display time in hours if less than 24 hours after the adjustment
+    const adjustedHours = Math.floor(adjustedMinutes / 60);
+    if (adjustedHours < 24) {
+      return adjustedHours === 1 ? '1 hour ago' : `${adjustedHours} hours ago`;
+    }
+
+    // Display time in days if more than 24 hours but less than 7 days after the adjustment
+    const adjustedDays = Math.floor(adjustedHours / 24);
+    if (adjustedDays < 7) {
+      return adjustedDays === 1 ? '1 day ago' : `${adjustedDays} days ago`;
+    }
+
+    // Display time in weeks if more than 7 days after the adjustment
+    const adjustedWeeks = Math.floor(adjustedDays / 7);
+    if (adjustedWeeks < 4) {
+      return adjustedWeeks === 1 ? '1 week ago' : `${adjustedWeeks} weeks ago`;
+    }
+
     return 'A long time ago';
+  }
+
+
+  clearAllNotifications(): Observable<any> {
+    const id = this.getUserData().id;
+    const postObject = {
+      tables: 'notifications',
+      conditions: {
+        WHERE: {
+          RecipientID: id
+        }
+      }
+    };
+    return this.post('delete_entry', {
+      data: JSON.stringify(postObject)
+    });
   }
 
   failedSnackbar(message: string, timer?: number) {
@@ -3756,6 +3795,59 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
+  // Method for editing a task
+  editTask(
+    taskId: string,
+    title: string,
+    description: string,
+    deadline: string,
+    attachments?: string
+  ) {
+    var attach = {};
+    if (attachments != undefined) {
+      attach = { Attachments: attachments };
+    }
+
+    const postObject = {
+      tables: 'assignments',
+      values: Object.assign(
+        {},
+        {
+          Title: title,
+          Details: description,
+          Deadline: deadline,
+        },
+        attach
+      ),
+      conditions: {
+        WHERE: {
+          ID: taskId,
+        },
+      },
+    };
+
+    return this.post('update_entry', {
+      data: JSON.stringify(postObject),
+    });
+  }
+
+  // Method for deleting a task
+  teacherDeleteTask(taskId: string) {
+    const postObject = {
+      tables: 'assignments',
+      conditions: {
+        WHERE: {
+          ID: taskId,
+        },
+      },
+    };
+
+    return this.post('delete_entry', {
+      data: JSON.stringify(postObject),
+    });
+  }
+
+
   teacherGetTasks() {
     const id = this.getUserData().id;
     const postObject = {
@@ -4492,12 +4584,34 @@ export class APIService implements OnDestroy, OnInit {
       .replace(/'/g, '&#039;');
   }
 
-  pushNotifications(title: string, message: string, recipientID: string) {
+
+  async pushCertificateNotification(studentId: string, courseName: string, courseId: string) {
+    const title = `[CERT]Claim your certificate for '${courseName}'`;
+    const message = `<b>${this.getFullName()}</b> has distributed the certificate for <b>'${courseName}'</b>. Complete the survey to claim your certificate.[COURSEID]${courseId}`;
+
+    await this.pushNotifications(title, message, studentId);
+  }
+
+  async addSurveyEntryStudent(studentid: string, courseid: string) {
+    const postObject = {
+      tables: 'surveys',
+      values: {
+        StudentID: studentid,
+        CourseID: courseid,
+      },
+    };
+
+    await firstValueFrom(this.post('create_entry', {
+      data: JSON.stringify(postObject),
+    }));
+  }
+
+  pushNotifications(title: string, message: string, recipientID: string): Promise<void> {
     const id = this.getUserData()?.id;
     const postObject = {
       tables: 'notifications',
       values: {
-        SenderID: id?? 'Anonymous',
+        SenderID: id ?? 'Anonymous',
         RecipientID: recipientID,
         Title: title,
         Message: message,
@@ -4505,22 +4619,31 @@ export class APIService implements OnDestroy, OnInit {
       },
     };
 
-    const obs$ = this.post('create_entry', {
-      data: JSON.stringify(postObject),
-    }).subscribe((data: any) => {
-      this.socketSend({
-        app: 'quanlab',
-        type: 'notification',
-        sender: this.getUserData() != null ?
-          this.getUserData().firstname + ' ' + this.getUserData().lastname : 'Anonymous',
-        from:  id?? 'Anonymous',
-        to: recipientID,
-        title: title,
-        message: title,
+    return new Promise((resolve, reject) => {
+      this.post('create_entry', {
+        data: JSON.stringify(postObject),
+      }).subscribe({
+        next: (data: any) => {
+          this.socketSend({
+            app: 'quanlab',
+            type: 'notification',
+            sender: this.getUserData() != null ?
+              this.getUserData().firstname + ' ' + this.getUserData().lastname : 'Anonymous',
+            from:  id ?? 'Anonymous',
+            to: recipientID,
+            title: title,
+            message: title,
+          });
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error pushing notification:', err);
+          reject(err);
+        }
       });
-      obs$.unsubscribe();
     });
   }
+
 
   getNotifications() {
     var id = this.getUserData().id;
@@ -5955,46 +6078,40 @@ export class APIService implements OnDestroy, OnInit {
       data: JSON.stringify(postObject),
     }));
 
-    // return;
-
     if(!response.success) {
       this.failedSnackbar('Error distributing certificates!');
       return;
     };
+
     for(let student of response.output){
-      if(student.answered_survey > 0){
-        continue;
-      }
       const progress = Number((Number(student.sum) / (Number(student.lessons) * 100)).toFixed(4))*100;
       if(progress >= 100){
-        // push survey entry for students
-        this.addSurveyEntryStudent(student.studentid, courseid);
-        // student is legible for certificate
-        this.pushNotifications(
-          `[CERT]Claim your certificate for '${student.course}'`,
-          `<b>${this.getFullName()}</b> has distributed the certificate for <b>'${student.course}</b>', complete the survey below to claim your certificate.[COURSEID]${courseid}`,
-          student.studentid
-        )
+        // Check if the student has already answered the survey
+        if(student.answered_survey <= 0){
+          // Add survey entry for students who haven't answered yet
+          await this.addSurveyEntryStudent(student.studentid, courseid);
+        }
+
+        // Always send a notification, regardless of survey status
+        await this.pushCertificateNotification(student.studentid, student.course, courseid);
       }
     }
-
-
   }
 
-  addSurveyEntryStudent(studentid:string, courseid:string){
-    const postObject = {
-      tables: 'surveys',
-      values: {
-        StudentID: studentid,
-        CourseID: courseid,
-      },
-    };
-    const record$ = this.post('create_entry', {
-      data: JSON.stringify(postObject),
-    }).subscribe(() => {
-      record$.unsubscribe();
-    });
-  }
+  // addSurveyEntryStudent(studentid:string, courseid:string){
+  //   const postObject = {
+  //     tables: 'surveys',
+  //     values: {
+  //       StudentID: studentid,
+  //       CourseID: courseid,
+  //     },
+  //   };
+  //   const record$ = this.post('create_entry', {
+  //     data: JSON.stringify(postObject),
+  //   }).subscribe(() => {
+  //     record$.unsubscribe();
+  //   });
+  // }
 
  async getSurveyEntryStudent(courseid:string){
     const postObject = {
