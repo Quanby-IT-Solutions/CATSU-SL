@@ -3,18 +3,31 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { APIService } from 'src/app/services/API/api.service';
 import { Location } from '@angular/common';
 
+interface Attachment {
+  filePath: string;
+  fileName: string;
+}
+
+
+
 @Component({
   selector: 'app-materials',
   templateUrl: './materials.component.html',
   styleUrls: ['./materials.component.css']
 })
 export class MaterialsComponent implements OnInit {
+
+  newAttachments: Attachment[] = [];
+  existingAttachments: Attachment[] = []; // Track existing attachments
+  removedFiles: string[] = []; // Track removed files
+
+
   task: any;
   assignmentTitle: string = 'Your Assignment Title';
   dueDate: string = 'Date of Submission';
   description: string = 'You can fetch the actual data from your backend or set them dynamically';
   attachments: any[] = []; // Array to store the parsed attachments
-  teacherAttachments: { name: string, url: string }[] = []; // New: Teacher's attached files
+  teacherAttachments: Attachment[] = []; // Teacher's attached files
   uploadedFiles: string[] = []; // Array to store the files uploaded by the student
   selectedFiles: File[] = []; // Array to store files selected for upload
   comments: string = ''; // Student comments
@@ -26,6 +39,8 @@ export class MaterialsComponent implements OnInit {
   teachername: string = '';
   isDragging = false; // Drag state
   uploadingFiles: boolean = false; // Track if files are being uploaded
+  editMode: boolean = false; // New: Track if we're in edit mode
+  originalSubmission: any = null; // New: Store original submission for cancellation
 
   constructor(private API: APIService, private route: ActivatedRoute, private router: Router, private location: Location) {}
 
@@ -33,20 +48,22 @@ export class MaterialsComponent implements OnInit {
     const taskID = this.route.snapshot.paramMap.get('taskID');
     if (!taskID) {
       this.location.back();
+      return;
     }
 
     this.API.showLoader();
 
     // Fetch task and assignment details
-    this.API.studentGetAssignmentByID(taskID!).subscribe(data => {
+    this.API.studentGetAssignmentByID(taskID).subscribe(data => {
       if (data.output.length <= 0) {
         this.location.back();
+        return;
       }
       const taskData = data.output[0];
       this.teachername = `${taskData.firstname} ${taskData.lastname}`;
       this.task = taskData;
 
-      // Parse teacher's attachments only for display in the "Materials from Teacher" section
+      // Parse teacher's attachments
       this.teacherAttachments = this.parseFileList(taskData.attachments);
 
       // Fetch student submission details
@@ -54,14 +71,17 @@ export class MaterialsComponent implements OnInit {
         if (submissionData.output.length > 0) {
           const submission = submissionData.output[0];
 
-          // Only populate the uploadedFiles with files submitted by the student
-          this.uploadedFiles = this.parseFileList(submission.attachments).map(file => file.name);
+          // Parse and store existing attachments
+          this.existingAttachments = this.parseFileList(submission.attachments);
+          this.uploadedFiles = this.existingAttachments.map(att => att.fileName);
 
           this.comments = submission.comments;
           this.graded = submission.grade != null;
           this.grade = submission.grade;
           this.submitted = true;
           this.teacherComment = submission.feedback;
+
+          this.originalSubmission = { ...submission };
         }
         this.API.hideLoader();
       });
@@ -71,7 +91,6 @@ export class MaterialsComponent implements OnInit {
       this.description = this.task.details;
     });
   }
-
 
   parseDate(date: string): string {
     const dateObject = new Date(date);
@@ -83,23 +102,21 @@ export class MaterialsComponent implements OnInit {
     this.API.openFile(fileUrl);
   }
 
-  parseFileList(fileList: string): { name: string, url: string }[] {
-    if (!fileList) return [];
+  // parseFileList(fileList: string): { name: string, url: string }[] {
+  //   if (!fileList) return [];
 
-    // Split the file list on commas, then split each entry on '>'
-    return fileList.split(',').map(file => {
-      const [url, name] = file.split('>');
+  //   // Split the file list on commas, then split each entry on '>'
+  //   return fileList.split(',').map(file => {
+  //     const [url, name] = file.split('>');
 
-      // Ensure both URL and name are trimmed and valid
-      return {
-        url: url ? url.trim() : '',
-        name: name ? name.trim() : 'Unknown File'
-      };
-    });
-  }
+  //     // Ensure both URL and name are trimmed and valid
+  //     return {
+  //       url: url ? url.trim() : '',
+  //       name: name ? name.trim() : 'Unknown File'
+  //     };
+  //   });
+  // }
 
-
-  // Handle multiple file selection
   onFileSelected(event: Event): void {
     const inputElement = event.target as HTMLInputElement;
     if (inputElement.files) {
@@ -110,144 +127,192 @@ export class MaterialsComponent implements OnInit {
     }
   }
 
-  // Drag-over event handler
   onDragOver(event: DragEvent): void {
-    event.preventDefault(); // Prevent default behavior (open as link for some file types)
-    this.isDragging = true; // Highlight the drop zone
+    event.preventDefault();
+    this.isDragging = true;
   }
 
-  // Drag-leave event handler
   onDragLeave(event: DragEvent): void {
     event.preventDefault();
-    this.isDragging = false; // Remove highlight from drop zone
+    this.isDragging = false;
   }
 
-  // Drop event handler for multiple files
   onDrop(event: DragEvent): void {
     event.preventDefault();
-    this.isDragging = false; // Remove highlight from drop zone
+    this.isDragging = false;
 
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       Array.from(event.dataTransfer.files).forEach(file => {
-        this.selectedFiles.push(file); // Add each dropped file to the selectedFiles array
-        this.uploadedFiles.push(file.name); // Preview dropped file names
+        this.selectedFiles.push(file);
+        this.uploadedFiles.push(file.name);
       });
-      event.dataTransfer.clearData(); // Clear the drag data
+      event.dataTransfer.clearData();
     }
   }
 
-  // Remove a selected file from the list
   removeFile(index: number): void {
-    this.selectedFiles.splice(index, 1); // Remove the file from the array
-    this.uploadedFiles.splice(index, 1); // Remove the file name from the preview
+    this.selectedFiles.splice(index, 1);
+    this.uploadedFiles.splice(index, 1);
   }
 
-  // Submit assignment with multiple files
+  submitOrEdit(): void {
+    if (this.submitted && !this.editMode) {
+      this.editMode = true;
+      // Enable form fields for editing
+    } else {
+      this.submit();
+    }
+  }
+
+  cancelEdit(): void {
+    this.editMode = false;
+    // Restore original submission data
+    if (this.originalSubmission) {
+      this.existingAttachments = this.parseFileList(this.originalSubmission.attachments);
+      this.uploadedFiles = this.existingAttachments.map(file => file.fileName);
+      this.comments = this.originalSubmission.comments;
+      this.selectedFiles = []; // Clear any newly selected files
+      this.removedFiles = []; // Clear the list of removed files
+      this.newAttachments = []; // Clear any new attachments
+    }
+  }
+  removeUploadedFile(index: number): void {
+    const removedFile = this.uploadedFiles[index];
+    this.uploadedFiles.splice(index, 1);
+
+    this.removedFiles.push(removedFile);
+
+    // Also remove from existingAttachments if it's there
+    const existingIndex = this.existingAttachments.findIndex(att => att.fileName === removedFile);
+    if (existingIndex !== -1) {
+      this.existingAttachments.splice(existingIndex, 1);
+    }
+  }
+
   submit(): void {
-    if (this.submitted) {
+    if (this.submitted && !this.editMode) {
       this.API.successSnackbar('Task is already submitted!');
       return;
     }
 
-    if (this.selectedFiles.length === 0 && this.comments.trim() === '') {
+    if (!this.editMode && this.selectedFiles.length === 0 && this.comments.trim() === '') {
       this.API.failedSnackbar('Please insert at least a comment or upload files.');
       return;
     }
 
-    this.uploadingFiles = true; // Set flag to show that files are being uploaded
-    let attachments: { filePath: string, fileName: string }[] = []; // Store JSON structure with short names and original names
-    let comment: string | undefined = undefined;
+    this.uploadingFiles = true;
+    this.newAttachments = []; // Reset newAttachments
+    let comment: string | undefined = this.comments.trim() !== '' ? this.comments : undefined;
 
-    if (this.comments.trim() !== '') {
-      comment = this.comments;
-    }
+    this.API.justSnackbar(this.editMode ? 'Updating submission...' : 'Uploading files and submitting work...', 9999999);
 
-    this.API.justSnackbar('Uploading files and submitting work...', 9999999);
+    // Only upload new files if there are any selected
+    let uploadPromises = this.selectedFiles.length > 0 ?
+      this.selectedFiles.map(file => this.uploadFile(file)) :
+      [Promise.resolve()];
 
-    // Handle file uploads (multiple files)
-    let uploadPromises = this.selectedFiles.map(file => {
-      return new Promise<void>((resolve, reject) => {
-        const fileParts = file.name.split('.');
-        const fileExtension = fileParts[fileParts.length - 1]; // Get the file extension
-        const shortFileName = this.generateShortID(2) + '.' + fileExtension; // Generate a short 2-character ID for the filename
-
-        // Shorten the original filename to 10 characters (plus extension)
-        const shortenedOriginalName = this.shortenFileName(file.name, 10);
-
-        // Upload file with the newly generated short name
-        this.API.uploadFileWithProgress(file, shortFileName)
-          .then(() => {
-            const fileLocation = 'files/' + shortFileName;
-
-            // Store the short file path and shortened original name
-            attachments.push({ filePath: fileLocation, fileName: shortenedOriginalName });
-            resolve(); // Resolve when upload is complete
-          })
-          .catch((error) => {
-            console.error('Error uploading file:', file.name, error);  // Better error logging
-            this.API.failedSnackbar('Error uploading file: ' + file.name);
-            reject(); // Reject in case of an error
-          });
-      });
-    });
-
-    // Once all file uploads are done, submit the assignment
     Promise.all(uploadPromises)
       .then(() => {
-        // Convert attachments to a single concatenated string
-        const attachmentsString = attachments.map(att => `${att.filePath}>${att.fileName}`).join(',');
+        // Combine existing attachments (minus removed ones) with new attachments
+        const allAttachments: Attachment[] = [
+          ...this.existingAttachments,
+          ...this.newAttachments
+        ];
 
-        // Debugging log to verify what is being submitted
+        const attachmentsString = allAttachments.map(att => `${att.filePath}>${att.fileName}`).join(',');
+
         console.log('Attachments being submitted:', attachmentsString);
 
-        // Submit the assignment with comment and concatenated attachments string
-        this.API.studentSubmitAssignment(this.task.id, comment, attachmentsString).subscribe({
-          next: (response) => {
-            console.log('Submission response from the server:', response); // Log the backend response for debugging
+        const observable = this.editMode
+          ? this.API.studentUpdateAssignment(this.task.id, comment, attachmentsString)
+          : this.API.studentSubmitAssignment(this.task.id, comment, attachmentsString);
 
-            // Proceed only if the submission was successful
+        observable.subscribe({
+          next: (response: any) => {
+            console.log('Submission response from the server:', response);
+
             if (response.success) {
               this.submitted = true;
-              this.uploadingFiles = false; // Reset the uploading flag
+              this.editMode = false;
+              this.uploadingFiles = false;
 
-              // Debugging log to confirm successful submission
-              console.log('Submission successful. Attachments:', attachmentsString);
+              // Update uploadedFiles and existingAttachments
+              this.uploadedFiles = allAttachments.map(att => att.fileName);
+              this.existingAttachments = [...allAttachments];
 
-              // Update uploadedFiles immediately and avoid adding duplicates
-              this.uploadedFiles = attachments.map(att => att.fileName); // Extract filenames only for UI display
-
-              // Reset the form state
               this.selectedFiles = [];
-              this.comments = '';
+              this.removedFiles = []; // Reset removed files
+              this.newAttachments = []; // Reset new attachments
 
-              // Notify the teacher only if submission is truly successful
-              this.API.pushNotifications(
-                `${this.API.getFullName()} submitted a task`,
-                `${this.API.getFullName()} submitted a task titled <b>'${this.task.title}'</b> for checking. Kindly check your task submission list for new submissions.`,
-                this.task.teacherid
-              );
-              this.API.successSnackbar('Submitted output!');
+              this.originalSubmission = {
+                attachments: attachmentsString,
+                comments: comment
+              };
+
+              if (!this.editMode) {
+                this.API.pushNotifications(
+                  `${this.API.getFullName()} submitted a task`,
+                  `${this.API.getFullName()} submitted a task titled <b>'${this.task.title}'</b> for checking. Kindly check your task submission list for new submissions.`,
+                  this.task.teacherid
+                );
+              }
+              this.API.successSnackbar(this.editMode ? 'Submission updated!' : 'Submitted output!');
             } else {
-              // Handle backend errors, e.g., character limit exceeded
               console.error('Submission failed due to backend constraints:', response.output);
               this.API.failedSnackbar('Submission failed: ' + response.output);
-              this.uploadingFiles = false; // Reset the uploading flag on error
+              this.uploadingFiles = false;
             }
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Submission error:', error);
             this.API.failedSnackbar('Failed to submit assignment. Please try again.');
-            this.uploadingFiles = false; // Reset the uploading flag on error
+            this.uploadingFiles = false;
           }
         });
       })
       .catch(() => {
         this.API.failedSnackbar('Failed to upload all files. Please try again.');
-        this.uploadingFiles = false; // Reset the uploading flag on error
+        this.uploadingFiles = false;
       });
   }
 
-  // Helper function to generate a short ID
+  uploadFile(file: File): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const fileParts = file.name.split('.');
+      const fileExtension = fileParts[fileParts.length - 1];
+      const shortFileName = this.generateShortID(2) + '.' + fileExtension;
+      const shortenedOriginalName = this.shortenFileName(file.name, 10);
+
+      this.API.uploadFileWithProgress(file, shortFileName)
+        .then(() => {
+          const fileLocation = 'files/' + shortFileName;
+          this.newAttachments.push({ filePath: fileLocation, fileName: shortenedOriginalName });
+          resolve();
+        })
+        .catch((error) => {
+          console.error('Error uploading file:', file.name, error);
+          this.API.failedSnackbar('Error uploading file: ' + file.name);
+          reject(error);
+        });
+    });
+  }
+
+  parseFileList(fileList: string): Attachment[] {
+    if (!fileList) return [];
+
+    return fileList.split(',').map(file => {
+      const [filePath, fileName] = file.split('>');
+      return {
+        filePath: filePath.trim(),
+        fileName: fileName.trim()
+      };
+    });
+  }
+
+
+
+
+
   generateShortID(length: number): string {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -257,58 +322,18 @@ export class MaterialsComponent implements OnInit {
     return result;
   }
 
-  // Helper function to shorten a filename while keeping its extension
   shortenFileName(fileName: string, maxLength: number): string {
     const fileParts = fileName.split('.');
-    const extension = fileParts.pop(); // Get the file extension
-    const baseName = fileParts.join('.'); // Get the base name without extension
+    const extension = fileParts.pop();
+    const baseName = fileParts.join('.');
 
     if (baseName.length > maxLength) {
       return baseName.substring(0, maxLength) + (extension ? '.' + extension : '');
     }
-    return fileName; // If the base name is already short enough, return as is
+    return fileName;
   }
-
 
   navigateBack(): void {
     this.router.navigate(['student/to-do']);
   }
 }
-
-
-  //   if( this.fileUpload != undefined){
-  //     var fileparse =  this.fileUpload.name.split(".");
-  //     var serverLocation = this.API.createID36()+ '.' + fileparse[fileparse.length-1];
-  //     this.API.uploadFile( this.fileUpload, serverLocation);
-  //     var filelocation = 'files/' + serverLocation;
-  //     var filename =  this.fileUpload.name;
-  //     attachments = filelocation+'>'+filename;
-  //   }
-  //   console.log(comment);
-  //   this.API.studentSubmitAssignment(this.task.id, comment, attachments).subscribe(data=>{
-  //     this.submitted= true;
-  //     this.uploaded =attachments;
-  //     this.API.successSnackbar('Submitted output!');
-  //   });
-  // }
-
-
-  // You can fetch the actual data from your backend or set them dynamically
-  // based on your application logic.
-
-  // For example, if you have an API call, you can fetch the data in ngOnInit:
-  // ngOnInit() {
-  //   this.fetchAssignmentData();
-  // }
-
-  // fetchAssignmentData() {
-  //   // Assuming you have a service to fetch data
-  //   this.materialsService.getAssignmentData().subscribe(data => {
-  //     this.assignmentTitle = data.title;
-  //     this.dueDate = data.dueDate;
-  //     this.description = data.description;
-  //     this.instructions = data.instructions;
-  //     this.attachments = data.attachments;
-  //   });
-  // }
-// }

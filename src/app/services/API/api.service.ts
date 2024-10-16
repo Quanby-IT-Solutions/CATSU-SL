@@ -3579,6 +3579,34 @@ export class APIService implements OnDestroy, OnInit {
     }).subscribe(() => observable$.unsubscribe());
   }
 
+  studentUpdateAssignment(assignmentId: string, comments?: string, attachments?: string) {
+    const id = this.getUserData().id;
+    const postObject: any = {
+      tables: 'student_assignments',
+      values: {},
+      conditions: {
+        WHERE: {
+          AssignmentID: assignmentId,
+          StudentID: id
+        }
+      }
+    };
+
+    if (comments !== undefined) {
+      postObject.values.Comments = comments;
+    }
+
+    if (attachments !== undefined) {
+      postObject.values.Attachments = attachments;
+    }
+
+    return this.post('update_entry', {
+      data: JSON.stringify(postObject)
+    });
+  }
+
+
+
   loadMeetingSessions() {
     const month = new Date().getMonth();
     const postObject = {
