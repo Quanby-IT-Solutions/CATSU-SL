@@ -1,87 +1,88 @@
-<div class="main-container">
-  <div class="button-container">
-    <button class="poppins-b delete" (click)="delete()" *ngIf="selectedOption === 'Students' || selectedOption === 'Teachers' || selectedOption === 'Administrators'">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="mr-2 icon">
+<div class="w-full flex flex-col gap-6 max-w-[95%] overflow-hidden mx-auto">
+  <div class="w-full h-fit p-2 flex gap-4 items-center justify-end">
+    <button class="poppins-b  w-full lg:w-44 py-2.5 bg-white text-yellow-600 gap-2 flex justify-center items-center rounded-lg shadow-boxz delete" (click)="delete()" *ngIf="selectedOption === 'Students' || selectedOption === 'Teachers' || selectedOption === 'Administrators'">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class=" icon">
         <path d="M3 6h18v2H3V6zm2 2v14h12V8H5zm4 2h2v10H9V10zm4 0h2v10h-2V10z"/>
         <path fill="none" d="M0 0h24v24H0z"/>
       </svg>
       <span>Delete</span>
     </button>
-    <button class="poppins-b" *ngIf="selectedOption === 'Teachers'" (click)="addTeachers()">
+    <button class="poppins-b  w-full lg:w-44 py-2.5 bg-white text-yellow-600 gap-2 flex justify-center items-center rounded-lg shadow-boxz" *ngIf="selectedOption === 'Teachers'" (click)="addTeachers()">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
         <path fill="none" d="M0 0h24v24H0z"/>
       </svg>
       <span>Add Teacher</span>
     </button>
-    <button class="poppins-b" *ngIf="selectedOption === 'Administrators'" (click)="addPrincipal()">
+    <button class="poppins-b  w-full lg:w-44 py-2.5 bg-white text-yellow-600 gap-2 flex justify-center items-center rounded-lg shadow-boxz" *ngIf="selectedOption === 'Administrators'" (click)="addPrincipal()">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
         <path fill="none" d="M0 0h24v24H0z"/>
       </svg>      <span>Add Admin</span>
     </button>
 
-    <!-- <button class="poppins-b" *ngIf="selectedOption === 'Students'" (click)="addStudents()">
+    <!-- <button class="poppins-b  w-full lg:w-44 py-2.5 bg-white text-yellow-600 gap-2 flex justify-center items-center rounded-lg shadow-boxz" *ngIf="selectedOption === 'Students'" (click)="addStudents()">
       <img src="assets/add.png" alt="Add Icon" />
       <span>Add Student</span>
     </button> -->
 
-    <button class="poppins-b add2" *ngIf="selectedOption === 'Teachers'" (click)="editDetailsTeacher()">
+    <button class="poppins-b  w-full lg:w-44 py-2.5 bg-white text-yellow-600 gap-2 flex justify-center items-center rounded-lg shadow-boxz add2" *ngIf="selectedOption === 'Teachers'" (click)="editDetailsTeacher()">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
         <path d="M3 17.25V21h3.75l11.07-11.07-3.75-3.75L3 17.25zm18-11.66l-2.34-2.34a1.03 1.03 0 00-1.46 0l-2.34 2.34 3.75 3.75 2.34-2.34a1.03 1.03 0 000-1.46z"/>
       </svg>      <span>Edit</span>
     </button>
-    <button class="poppins-b add2" *ngIf="selectedOption === 'Students'" (click)="editDetailsStudent()">
+    <button class="poppins-b  w-full lg:w-44 py-2.5 bg-white text-yellow-600 gap-2 flex justify-center items-center rounded-lg shadow-boxz add2" *ngIf="selectedOption === 'Students'" (click)="editDetailsStudent()">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
         <path d="M3 17.25V21h3.75l11.07-11.07-3.75-3.75L3 17.25zm18-11.66l-2.34-2.34a1.03 1.03 0 00-1.46 0l-2.34 2.34 3.75 3.75 2.34-2.34a1.03 1.03 0 000-1.46z"/>
       </svg>      <span>Edit</span>
     </button>
-    <button class="poppins-b add2" *ngIf="selectedOption === 'Administrators'" (click)="editDetailsPrincipal()">
+    <button class="poppins-b  w-full lg:w-44 py-2.5 bg-white text-yellow-600 gap-2 flex justify-center items-center rounded-lg shadow-boxz add2" *ngIf="selectedOption === 'Administrators'" (click)="editDetailsPrincipal()">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
         <path d="M3 17.25V21h3.75l11.07-11.07-3.75-3.75L3 17.25zm18-11.66l-2.34-2.34a1.03 1.03 0 00-1.46 0l-2.34 2.34 3.75 3.75 2.34-2.34a1.03 1.03 0 000-1.46z"/>
       </svg>      <span>Edit</span>
     </button>
 
-    <div class="button-container dropdown">
+    <div class="relative inline-block text-left your-dropdown-class">
       <button
-        class="poppins-b"
         (click)="toggleDropdown()"
-        [ngClass]="{ active: isDropdownOpen }"
+        [ngClass]="{ 'ring-2 ring-yellow-500': isDropdownOpen }"
+        class="poppins-b  w-full lg:w-44 py-2.5 px-4 bg-white text-yellow-600 flex justify-between items-center rounded-lg shadow-boxz hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-150"
       >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" class="icon">
-        <path d="M7 10l5 5 5-5H7z"/>
-      </svg>        <span *ngIf="selectedOption === 'Students'">Students</span>
-        <span *ngIf="selectedOption === 'Teachers'">Teachers</span>
-        <span *ngIf="selectedOption === 'Administrators'">Admin</span>
-        <div *ngIf="isDropdownOpen" class="dropdown-content">
-          <button
-            class="dropdown-value poppins"
-            (click)="selectOption('Students')"
-          >
-            Students
-          </button>
-          <button
-            class="dropdown-value poppins"
-            (click)="selectOption('Teachers')"
-          >
-            Teachers
-          </button>
-          <button
-          class="dropdown-value poppins"
-          (click)="selectOption('Administrators')"
-        >
-          Admin
-        </button>
-        </div>
+        <span class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" 
+               class="mr-2 transform transition-transform duration-200" [ngClass]="{ 'rotate-180': isDropdownOpen }">
+            <path d="M7 10l5 5 5-5H7z"/>
+          </svg>
+          <span *ngIf="selectedOption === 'Students'">Students</span>
+          <span *ngIf="selectedOption === 'Teachers'">Teachers</span>
+          <span *ngIf="selectedOption === 'Administrators'">Admin</span>
+        </span>
       </button>
+    
+      <div *ngIf="isDropdownOpen" 
+           class="origin-top-right absolute right-0 mt-2  w-full lg:w-44 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+           role="menu" 
+           aria-orientation="vertical" 
+           aria-labelledby="options-menu">
+        <div class="py-1" role="none">
+          <button
+            *ngFor="let option of ['Students', 'Teachers', 'Administrators']"
+            (click)="selectOption(option)"
+            class="w-full text-left px-4 py-2 your-dropdown-class text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-600 focus:outline-none focus:bg-yellow-50 focus:text-yellow-600 transition-colors duration-150"
+            role="menuitem"
+          >
+            {{ option === 'Administrators' ? 'Admin' : option }}
+          </button>
+        </div>
+      </div>
     </div>
+    
   </div>
-
-  <div class="table-container">
-    <table>
-
-        <ng-container *ngIf="selectedOption == 'Students' else ifOption">
-          <thead class="poppins-b">
+ 
+  <div class="table-container w-full h-full max-h-[70vh] rounded-lg overflow-auto">
+    <table class="rounded-lg w-full">
+        <ng-container class="w-full" *ngIf="selectedOption == 'Students' else ifOption">
+          <thead class="poppins-b sticky top-0 w-full">
             <tr>
               <th>Student ID</th>
               <th>Last Name</th>
@@ -116,7 +117,7 @@
 
         <ng-template  #ifOption>
         <ng-container *ngIf="selectedOption === 'Administrators'; else showTeachers">
-          <thead class="poppins-b">
+          <thead class="poppins-b sticky top-0 w-full bg-primary-2">
             <tr>
               <th>Role</th>
               <th>Last Name</th>
@@ -138,7 +139,7 @@
         </ng-container>
       </ng-template>
         <ng-template #showTeachers>
-          <thead class="poppins-b">
+          <thead class="poppins-b sticky top-0 w-full bg-primary-2">
             <tr>
               <th>Student ID</th>
               <th>Last Name</th>

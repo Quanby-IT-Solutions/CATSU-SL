@@ -4,26 +4,40 @@ import { APIService } from 'src/app/services/API/api.service';
 import { UploadDrillComponent } from '../modal/upload-drill/upload-drill.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-drills',
   templateUrl: './drills.component.html',
-  styleUrls: ['./drills.component.css']
+  styleUrls: ['./drills.component.css'],
+  animations: [
+    trigger('openClose', [
+      state('void', style({
+        opacity: 0,
+      })),
+      transition('void => *', [
+        animate('300ms ease-in-out', style({ opacity: 1 }))
+      ]),
+      transition('* => void', [
+        animate('300ms ease-in-out', style({ opacity: 0 }))
+      ]),
+    ]),
+  ],
 })
 export class DrillsComponent {
   private unsubscribe$ = new Subject<void>();
   showForm = false;
   practiceName = '';
 
-    // Pagination parameters for practices
-    practicePage = 1;
-    practicePageSize = 10;
+  // Pagination parameters for practices
+  practicePage = 1;
+  practicePageSize = 10;
 
-    // Pagination parameters for drills
+  // Pagination parameters for drills
   drillPage = 1;
   drillPageSize = 10;
 
-  constructor(private modalService:NgbModal, private API:APIService){}
+  constructor(private modalService: NgbModal, private API: APIService) { }
 
   ngOnInit(): void {
     this.loadModules();
@@ -34,8 +48,8 @@ export class DrillsComponent {
     this.unsubscribe$.complete();
   }
 
-  practices:any[] =[];
-  drills:any[] =[];
+  practices: any[] = [];
+  drills: any[] = [];
 
   loadModules() {
     this.API.showLoader();
@@ -123,8 +137,8 @@ export class DrillsComponent {
     const modalRef = this.modalService.open(UploadDrillComponent);
     modalRef.componentInstance.practices = this.practices;
     modalRef.componentInstance.drills = this.drills;
-    const obs$= modalRef.dismissed.subscribe(data=>{
-      if(data == 'saved'){
+    const obs$ = modalRef.dismissed.subscribe(data => {
+      if (data == 'saved') {
         this.API.successSnackbar('Drill Added')
         this.loadLessons();
       }
@@ -132,8 +146,8 @@ export class DrillsComponent {
     })
   }
 
-  savePractice(practice:any){
-    const obs=  this.API.editSpeechModule(practice.id , practice.name, true ).subscribe(data=>{
+  savePractice(practice: any) {
+    const obs = this.API.editSpeechModule(practice.id, practice.name, true).subscribe(data => {
       this.API.successSnackbar("Practice Updated!")
       obs.unsubscribe();
       this.loadModules();
@@ -145,9 +159,9 @@ export class DrillsComponent {
     // modalRef.componentInstance.isModule = true;
   }
 
-  addModule(){
+  addModule() {
 
-    const obs=  this.API.createSpeechModule(`Practice ${this.practices.length+1}`, true ).subscribe(data=>{
+    const obs = this.API.createSpeechModule(`Practice ${this.practices.length + 1}`, true).subscribe(data => {
       this.API.successSnackbar("Practice Added!")
       obs.unsubscribe();
       this.loadModules();
@@ -155,32 +169,68 @@ export class DrillsComponent {
 
   }
 
-  deleteModule(practiceID:string){
-    if(!confirm("Are you sure you want to delete this practice")) return;
-    const obs=  this.API.deleteSpeechModule(practiceID, true).subscribe(data=>{
+  practiceUid: string = ''; // Stores the currently selected practice ID
+  modalPractice: { [key: string]: boolean } = {};
+  // Opens the delete modal and stores the practice ID
+  deleteModal(practiceID: string) {
+    this.modalPractice[practiceID] = true; // Open modal for this practice ID
+    this.practiceUid = practiceID; // Set the current practice ID
+  }
+
+  // Closes the modal for the specific practice ID
+  modalClose() {
+    this.modalPractice[this.practiceUid] = false; // Close modal for the current practice ID
+    this.practiceUid = ''; // Reset the practice ID
+  }
+
+  deleteModule(practiceID: string) {
+    const obs = this.API.deleteSpeechModule(practiceID, true).subscribe(data => {
       this.API.successSnackbar("Practice deleted!")
       obs.unsubscribe();
       this.loadModules();
-    })
-  }
-  deleteLesson(drill:any){
-    if(!confirm("Are you sure you want to delete this drill")) return;
-    const obs=  this.API.deleteSpeechLesson(drill.id,true).subscribe(data=>{
-      this.API.deleteFile(drill.drillfile.split(">")[0])
-      this.API.deleteFile(drill.audiofile.split(">")[0])
-      this.API.successSnackbar("Drill deleted!")
-      obs.unsubscribe();
-      this.loadLessons();
+      this.modalClose();
     })
   }
 
-  editLesson(drill:any){
+
+
+  drillUid: string = '';
+  modalDrill: { [key: string]: boolean } = {};
+  selectedDrill: any = null;  // Store the selected drill object
+
+  deleteModalDrill(drill: any) {
+    this.modalDrill[drill.id] = true;
+    this.drillUid = drill.id;
+    this.selectedDrill = drill;  // Save the selected drill for deletion
+  }
+
+  modalCloseDrill() {
+    this.modalDrill[this.drillUid] = false;
+    this.drillUid = '';
+    this.selectedDrill = null;  // Reset the selected drill
+  }
+
+  deleteLesson() {
+    if (!this.selectedDrill) return;
+
+    const obs = this.API.deleteSpeechLesson(this.selectedDrill.id, true).subscribe(data => {
+      this.API.deleteFile(this.selectedDrill.drillfile.split(">")[0]);
+      this.API.deleteFile(this.selectedDrill.audiofile.split(">")[0]);
+      this.API.successSnackbar("Drill deleted!");
+      obs.unsubscribe();
+      this.loadLessons();
+      this.modalCloseDrill();  // Close the modal after deleting
+    });
+  }
+
+
+  editLesson(drill: any) {
     const modalRef = this.modalService.open(UploadDrillComponent);
     modalRef.componentInstance.practices = this.practices;
     modalRef.componentInstance.drills = this.drills;
     modalRef.componentInstance.drill = drill;
-    const obs$= modalRef.dismissed.subscribe(data=>{
-      if(data == 'saved'){
+    const obs$ = modalRef.dismissed.subscribe(data => {
+      if (data == 'saved') {
         this.API.successSnackbar('Drill Updated')
         this.loadLessons();
       }

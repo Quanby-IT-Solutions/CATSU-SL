@@ -25,21 +25,22 @@ interface SidebarItem {
     trigger('openClose', [
       state('void', style({
         opacity: 0,
-        marginLeft: '0px',
+        transform: 'translateX(-100%)',
       })),
       transition('void => *', [
-        style({ opacity: 1, marginLeft: '-100px' }),
-        animate('300ms ease-in-out', style({ opacity: 1, marginLeft: '0px' }))
+        animate('300ms ease-in-out', style({ opacity: 1, transform: 'translateX(0)' }))
       ]),
       transition('* => void', [
-        animate('250ms ease-in-out', style({ opacity: 0.3, marginLeft: '-100px' }))
+        animate('250ms ease-in-out', style({ opacity: 0, transform: 'translateX(-100%)' }))
       ]),
     ]),
   ],
+  
 
 
 })
 export class HeaderzComponent implements OnInit, OnDestroy {
+
   title: string = 'CATSU SpeechLab'; // Dynamically set title
   isMenuVisible: boolean = false;
   profile?:string;
