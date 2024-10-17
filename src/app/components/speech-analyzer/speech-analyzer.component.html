@@ -59,7 +59,7 @@
             "{{ speechSample }}"
           </blockquote>
 
-          <button (click)="toggleRecording()" [disabled]="isAnalyzing"
+          <!-- <button (click)="toggleRecording()" [disabled]="isAnalyzing"
             class="w-20 h-20 transition-all duration-300 ease-in-out transform rounded-full focus:outline-none focus:ring-4 focus:ring-offset-2 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             [ngClass]="{'bg-blue-500 hover:bg-blue-600 focus:ring-blue-300': !recording, 'bg-red-500 hover:bg-red-600 focus:ring-red-300': recording}">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,7 +68,25 @@
           </button>
           <p class="mt-4 text-gray-600">
             {{ recording ? 'Recording... Click to stop' : 'Click to start recording' }}
-          </p>
+          </p> -->
+
+          <button (click)="toggleRecording()" [disabled]="isAnalyzing"
+          class="w-20 h-20 transition-all duration-300 ease-in-out transform rounded-full focus:outline-none focus:ring-4 focus:ring-offset-2 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          [ngClass]="{'bg-blue-500 hover:bg-blue-600 focus:ring-blue-300': !recording, 'bg-red-500 hover:bg-red-600 focus:ring-red-300': recording}">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          </svg>
+        </button>
+        <p class="mt-4 text-gray-600">
+          {{ recording ? 'Recording... Click to stop' : 'Click to start recording' }}
+        </p>
+        <!-- Error message and retry button -->
+        <div *ngIf="summary && !analysisResult" class="mt-8">
+          <p class="text-red-500">{{ summary }}</p>
+          <button (click)="tryAgain()" class="px-4 py-2 mt-4 text-white transition-colors duration-300 rounded-md bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Try Again
+          </button>
+        </div>
         </div>
 
         <!-- Analysis Result Section -->

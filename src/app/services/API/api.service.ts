@@ -1816,6 +1816,7 @@ export class APIService implements OnDestroy, OnInit {
         },
       },
     };
+    console.log('calle');
     return this.post('delete_entry', {
       data: JSON.stringify(postObject),
     });
