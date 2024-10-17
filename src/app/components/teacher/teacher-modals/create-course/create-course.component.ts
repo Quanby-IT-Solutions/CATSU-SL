@@ -76,6 +76,13 @@ export class CreateCourseComponent {
       }
     }
 
+    deleteLesson(index: number) {
+      if (this.lessons.length > 1) {
+        this.lessons.splice(index, 1);
+      } else {
+        this.API.failedSnackbar('You must have at least one lesson');
+      }
+    }
 
   onSelectAudience(option: string) {
     if (this.selectedAudience.includes(option)) {

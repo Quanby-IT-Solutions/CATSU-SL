@@ -77,15 +77,21 @@
             <div *ngIf="lesson.topics && lesson.topics.length > 0; else noTopics">
               <!-- Enhanced topic display -->
               <div *ngFor="let topic of lesson.topics; let idx = index"
-                class="p-4 mb-3 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <div class="flex items-center justify-between mb-2">
-                  <strong class="text-amber-700">Topic #{{ idx + 1 }}: {{ topic.title }}</strong>
-                  <button class="text-sm text-amber-500 hover:text-amber-700"
+              class="p-4 mb-3 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <strong class="text-amber-700">Topic #{{ idx + 1 }}: {{ topic.title }}</strong>
+                <div>
+                  <button class="mr-2 text-sm text-amber-500 hover:text-amber-700"
                     (click)="openTopicModal(true, topic, lesson.id)">
                     <i class="fas fa-edit"></i>
                   </button>
+                  <button class="text-sm text-red-500 hover:text-red-700"
+                    (click)="deleteTopic(topic, lesson)">
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </div>
-                <p class="text-gray-700">{{ topic.details }}</p>
+              </div>
+              <p class="text-gray-700">{{ topic.details }}</p>
 
                 <!-- Display Attachments -->
                <!-- Display Attachments -->
