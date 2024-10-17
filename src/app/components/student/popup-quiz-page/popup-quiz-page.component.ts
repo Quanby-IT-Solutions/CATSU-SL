@@ -35,7 +35,7 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
   backtracking = true;
   review = true;
   randomize = true;
-  title: string = 'Welcome to the Geria Quiz!';
+  title: string = 'Welcome to the Popup Quiz!';
   description: string = 'Enhance your communication skills at Speechlab and master the art of delivering clear, confident speech for every audience.';
   generating = false;
   isButtonDisabled = false;
