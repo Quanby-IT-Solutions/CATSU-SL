@@ -372,41 +372,93 @@ export class SpeechAnalyzerComponent implements OnInit {
     return iconMap[area.toLowerCase()] || 'https://cdn.builder.io/api/v1/image/assets/TEMP/placeholder_icon';
   }
 
+  // async processAudio(audioFile: File) {
+  //   this.isAnalyzing = true;
+  //   this.apiService.showLoader();
+  //   try {
+  //     const filename = `speech_${Date.now()}.wav`;
+  //     await this.apiService.uploadFileWithProgressNoSnackbar(audioFile, filename);
+
+  //     const fileUrl = `files/${filename}`;
+  //     const audioId = this.apiService.generateManualId();
+  //     const audioFileResponse = await lastValueFrom(this.apiService.createAudioFileWithId(audioId, fileUrl));
+  //     const fullUrl = this.apiService.getURL(fileUrl);
+
+  //     this.apiService.justSnackbar('Analyzing speech...', 3000);
+  //     const transcript = await this.analyzeSpeech(fullUrl);
+
+  //     this.transcriptText = transcript.text || 'No transcription available';
+
+  //     const analysisJson = await this.processTranscript(transcript);
+
+  //     this.parseAnalysisResult(analysisJson);
+  //     if (this.analysisResult) {
+  //       await this.createSpeechAnalyzerResultEntry(audioId, this.analysisResult);
+  //       this.calculateAverageScore();
+  //       this.apiService.successSnackbar('Speech analysis completed successfully!', 3000);
+  //     }
+
+  //   } catch (error) {
+  //     console.error('Error processing audio:', error);
+  //     this.analysisResult = null;
+  //     this.summary = 'An error occurred while processing the audio.';
+  //     this.apiService.failedSnackbar('Failed to analyze speech. Please try again.', 3000);
+  //   } finally {
+  //     this.isAnalyzing = false;
+  //     this.uploadProgress = 0;
+  //     this.apiService.hideLoader();
+  //   }
+  // }
+
   async processAudio(audioFile: File) {
     this.isAnalyzing = true;
     this.apiService.showLoader();
     try {
       const filename = `speech_${Date.now()}.wav`;
       await this.apiService.uploadFileWithProgressNoSnackbar(audioFile, filename);
-
+  
       const fileUrl = `files/${filename}`;
       const audioId = this.apiService.generateManualId();
       const audioFileResponse = await lastValueFrom(this.apiService.createAudioFileWithId(audioId, fileUrl));
       const fullUrl = this.apiService.getURL(fileUrl);
-
+  
       this.apiService.justSnackbar('Analyzing speech...', 3000);
       const transcript = await this.analyzeSpeech(fullUrl);
-
-      this.transcriptText = transcript.text || 'No transcription available';
-
+  
+      if (!transcript.text || transcript.text.trim() === '') {
+        throw new Error('No speech detected');
+      }
+  
+      this.transcriptText = transcript.text;
+  
       const analysisJson = await this.processTranscript(transcript);
-
+  
       this.parseAnalysisResult(analysisJson);
       if (this.analysisResult) {
         await this.createSpeechAnalyzerResultEntry(audioId, this.analysisResult);
         this.calculateAverageScore();
         this.apiService.successSnackbar('Speech analysis completed successfully!', 3000);
       }
-
+  
     } catch (error) {
       console.error('Error processing audio:', error);
       this.analysisResult = null;
-      this.summary = 'An error occurred while processing the audio.';
-      this.apiService.failedSnackbar('Failed to analyze speech. Please try again.', 3000);
+      this.summary = 'Please speak clearly and try again.';
+      this.apiService.failedSnackbar('Please speak clearly and try again.', 3000);
+      this.resetRecording();
     } finally {
       this.isAnalyzing = false;
       this.uploadProgress = 0;
       this.apiService.hideLoader();
+    }
+  }
+  
+  // Add this new method to reset the recording state
+  resetRecording() {
+    this.recording = false;
+    this.audioChunks = [];
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop();
     }
   }
 
