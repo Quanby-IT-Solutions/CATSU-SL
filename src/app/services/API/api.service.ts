@@ -1570,20 +1570,48 @@ export class APIService implements OnDestroy, OnInit {
   }
 
 
-  deleteTopicAttachments(topicId: string): Observable<any> {
-    const postObject = {
-      tables: 'attachments',
-      conditions: {
-        WHERE: {
-          topicid: topicId,
-        },
-      },
-    };
+  // deleteTopicAttachments(topicId: string): Observable<any> {
+  //   const postObject = {
+  //     tables: 'attachments',
+  //     conditions: {
+  //       WHERE: {
+  //         topicid: topicId,
+  //       },
+  //     },
+  //   };
+  //   return this.post('delete_entry', {
+  //     data: JSON.stringify(postObject),
+  //   });
+  // }
+
+
+  deleteTopicWithAttachments(topicId: string): Observable<any> {
+    return this.deleteTopicAttachments(topicId).pipe(
+      switchMap(() => this.deleteTopic(topicId)),
+      catchError(error => {
+        console.error('Error deleting topic:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
+  }
+
+  public deleteTopicAttachments(topicId: string): Observable<any> {
     return this.post('delete_entry', {
-      data: JSON.stringify(postObject),
+      data: JSON.stringify({
+        tables: 'attachments',
+        conditions: { WHERE: { topicid: topicId } }
+      })
     });
   }
 
+  public deleteTopic(topicId: string): Observable<any> {
+    return this.post('delete_entry', {
+      data: JSON.stringify({
+        tables: 'topics',
+        conditions: { WHERE: { topicid: topicId } }
+      })
+    });
+  }
 
 
 
@@ -4447,18 +4475,30 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
-  deleteLesson(lessonID: string) {
+  deleteLesson(lessonId: string): Observable<any> {
     const postObject = {
       tables: 'lessons',
       conditions: {
         WHERE: {
-          ID: lessonID,
+          ID: lessonId,
         },
       },
     };
     return this.post('delete_entry', {
       data: JSON.stringify(postObject),
-    });
+    }).pipe(
+      map(response => {
+        if (response.success) {
+          return { success: true };
+        } else {
+          throw new Error('Failed to delete lesson');
+        }
+      }),
+      catchError(error => {
+        console.error('Error deleting lesson:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   deleteQuiz(quizID: string) {
