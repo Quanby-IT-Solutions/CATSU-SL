@@ -272,6 +272,7 @@ export class ManageclassComponent implements OnInit {
             text: "Your file has been deleted.",
             icon: "success"
           });
+       
           this.API.deleteClass(classID).subscribe(data=>{
             this.loadClasses();
           });

@@ -28,7 +28,7 @@ export class DictionaryComponent {
     this.definitions = [];
     this.API.getWord(this.word.trim().toLowerCase()
     ).subscribe(data=>{
-      if(data.output.length <= 0){
+      if(true){
         this.API.fetchDictionaryAPI(this.word.trim().toLowerCase()).pipe(
           catchError(()=>{
             this.API.failedSnackbar("Can't fetch the word from dictionary right now.");
