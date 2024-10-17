@@ -444,6 +444,48 @@ saveNonInteractiveFile(): void {
 }
 
 
+
+deleteTopic(topic: any, lesson: any) {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.API.showLoader(); // Show loading indicator
+
+      this.API.deleteTopicWithAttachments(topic.topicid).subscribe(
+        (response) => {
+          this.API.hideLoader(); // Hide loading indicator
+          if (response.success) {
+            const topicIndex = lesson.topics.findIndex((t: any) => t.topicid === topic.topicid);
+            if (topicIndex > -1) {
+              lesson.topics.splice(topicIndex, 1);
+            }
+            this.API.successSnackbar('Topic deleted successfully');
+            Swal.fire(
+              'Deleted!',
+              'The topic has been deleted.',
+              'success'
+            );
+          } else {
+            this.API.failedSnackbar('Failed to delete topic');
+          }
+        },
+        (error) => {
+          this.API.hideLoader(); // Hide loading indicator
+          console.error('Error deleting topic:', error);
+          this.API.failedSnackbar('An error occurred while deleting the topic');
+        }
+      );
+    }
+  });
+}
+
 deleteAttachment(index: number): void {
   if (this.editingTopic && this.newTopic.topicId) {
     // If we're editing an existing topic, we need to delete the attachment from the server
@@ -788,10 +830,9 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
   }
 
   deleteQueue: any = [];
-
   delete(lesson: any) {
     if (this.lessons.length <= 1) {
-      this.API.failedSnackbar('This course should at least have one lesson');
+      this.API.failedSnackbar('This course should have at least one lesson');
       return;
     }
 
@@ -802,23 +843,38 @@ openTopicModal(editing: boolean = false, topic?: any, lessonId?: string): void {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Remove it!"
+      confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        this.deleteQueue.push(lesson.id);
-        const index = this.lessons.indexOf(lesson);
-        if (index > -1) {
-          this.lessons.splice(index, 1);
-        }
-        Swal.fire({
-          title: "Removed!",
-          text: "Your file has been deleted.",
-          icon: "success"
-        });
+        this.API.showLoader(); // Show loading indicator
+
+        this.API.deleteLesson(lesson.id).subscribe(
+          (response) => {
+            this.API.hideLoader(); // Hide loading indicator
+            if (response.success) {
+              const index = this.lessons.findIndex(l => l.id === lesson.id);
+              if (index > -1) {
+                this.lessons.splice(index, 1);
+              }
+              this.API.successSnackbar('Lesson deleted successfully');
+              Swal.fire(
+                'Deleted!',
+                'The lesson has been deleted.',
+                'success'
+              );
+            } else {
+              this.API.failedSnackbar('Failed to delete lesson');
+            }
+          },
+          (error) => {
+            this.API.hideLoader(); // Hide loading indicator
+            console.error('Error deleting lesson:', error);
+            this.API.failedSnackbar('An error occurred while deleting the lesson');
+          }
+        );
       }
     });
   }
-
   getGradient(): string {
     return 'linear-gradient(to right, #ff9a9e, #fad0c4)';
   }

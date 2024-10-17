@@ -311,19 +311,52 @@ export class SpeechAnalyzerComponent implements OnInit {
     }
   }
 
+  // startRecording() {
+  //   navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+  //     this.mediaRecorder = new MediaRecorder(stream);
+  //     this.mediaRecorder.start();
+  //     this.recording = true;
+
+  //     this.mediaRecorder.ondataavailable = (event: any) => {
+  //       this.audioChunks.push(event.data);
+  //     };
+  //   }).catch((err) => {
+  //     console.error('Microphone access denied:', err);
+  //     this.apiService.failedSnackbar('Microphone access denied. Please check your browser settings.', 3000);
+  //   });
+  // }
+
+
   startRecording() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       this.mediaRecorder = new MediaRecorder(stream);
       this.mediaRecorder.start();
       this.recording = true;
-
+  
       this.mediaRecorder.ondataavailable = (event: any) => {
         this.audioChunks.push(event.data);
+      };
+  
+      this.mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+        this.audioChunks = [];
+  
+        const audioFile = new File([audioBlob], 'speech.wav', {
+          type: 'audio/wav',
+        });
+  
+        await this.processAudio(audioFile);
       };
     }).catch((err) => {
       console.error('Microphone access denied:', err);
       this.apiService.failedSnackbar('Microphone access denied. Please check your browser settings.', 3000);
     });
+  }
+  
+
+  tryAgain() {
+    this.resetRecording();
+    this.startRecording();
   }
 
   stopRecording() {
@@ -372,43 +405,101 @@ export class SpeechAnalyzerComponent implements OnInit {
     return iconMap[area.toLowerCase()] || 'https://cdn.builder.io/api/v1/image/assets/TEMP/placeholder_icon';
   }
 
+  // async processAudio(audioFile: File) {
+  //   this.isAnalyzing = true;
+  //   this.apiService.showLoader();
+  //   try {
+  //     const filename = `speech_${Date.now()}.wav`;
+  //     await this.apiService.uploadFileWithProgressNoSnackbar(audioFile, filename);
+
+  //     const fileUrl = `files/${filename}`;
+  //     const audioId = this.apiService.generateManualId();
+  //     const audioFileResponse = await lastValueFrom(this.apiService.createAudioFileWithId(audioId, fileUrl));
+  //     const fullUrl = this.apiService.getURL(fileUrl);
+
+  //     this.apiService.justSnackbar('Analyzing speech...', 3000);
+  //     const transcript = await this.analyzeSpeech(fullUrl);
+
+  //     this.transcriptText = transcript.text || 'No transcription available';
+
+  //     const analysisJson = await this.processTranscript(transcript);
+
+  //     this.parseAnalysisResult(analysisJson);
+  //     if (this.analysisResult) {
+  //       await this.createSpeechAnalyzerResultEntry(audioId, this.analysisResult);
+  //       this.calculateAverageScore();
+  //       this.apiService.successSnackbar('Speech analysis completed successfully!', 3000);
+  //     }
+
+  //   } catch (error) {
+  //     console.error('Error processing audio:', error);
+  //     this.analysisResult = null;
+  //     this.summary = 'An error occurred while processing the audio.';
+  //     this.apiService.failedSnackbar('Failed to analyze speech. Please try again.', 3000);
+  //   } finally {
+  //     this.isAnalyzing = false;
+  //     this.uploadProgress = 0;
+  //     this.apiService.hideLoader();
+  //   }
+  // }
+
   async processAudio(audioFile: File) {
     this.isAnalyzing = true;
     this.apiService.showLoader();
     try {
       const filename = `speech_${Date.now()}.wav`;
       await this.apiService.uploadFileWithProgressNoSnackbar(audioFile, filename);
-
+  
       const fileUrl = `files/${filename}`;
       const audioId = this.apiService.generateManualId();
       const audioFileResponse = await lastValueFrom(this.apiService.createAudioFileWithId(audioId, fileUrl));
       const fullUrl = this.apiService.getURL(fileUrl);
-
+  
       this.apiService.justSnackbar('Analyzing speech...', 3000);
       const transcript = await this.analyzeSpeech(fullUrl);
-
-      this.transcriptText = transcript.text || 'No transcription available';
-
+  
+      if (!transcript.text || transcript.text.trim() === '') {
+        throw new Error('No speech detected');
+      }
+  
+      this.transcriptText = transcript.text;
+  
       const analysisJson = await this.processTranscript(transcript);
-
+  
       this.parseAnalysisResult(analysisJson);
       if (this.analysisResult) {
         await this.createSpeechAnalyzerResultEntry(audioId, this.analysisResult);
         this.calculateAverageScore();
         this.apiService.successSnackbar('Speech analysis completed successfully!', 3000);
       }
-
+  
     } catch (error) {
       console.error('Error processing audio:', error);
       this.analysisResult = null;
-      this.summary = 'An error occurred while processing the audio.';
-      this.apiService.failedSnackbar('Failed to analyze speech. Please try again.', 3000);
+      this.summary = 'Please speak clearly and try again.';
+      this.apiService.failedSnackbar('Please speak clearly and try again.', 3000);
+      this.resetRecording();
     } finally {
       this.isAnalyzing = false;
       this.uploadProgress = 0;
       this.apiService.hideLoader();
     }
   }
+  
+ 
+  resetRecording() {
+    this.recording = false;
+    this.audioChunks = [];
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop();
+    }
+    this.analysisResult = null;
+    this.summary = '';
+    this.improvementPoints = [];
+    this.averageScore = 0;
+    this.averageScoreLabel = '';
+      }
+
 
 
   async analyzeSpeech(fileUrl: string): Promise<any> {
@@ -416,11 +507,69 @@ export class SpeechAnalyzerComponent implements OnInit {
     return transcript;
   }
 
+  // async processTranscript(transcript: any): Promise<string> {
+  //   const prompt = `The following is a transcription of the student's reading: "${transcript.text}".
+  //   The original sentence to be read was: "${this.speechSample}".
+  //   Please analyze the reading and provide a JSON output with the following format for each aspect:
+
+  //   [
+  //     {
+  //       "area": "pronunciation",
+  //       "score": 1-100,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "area": "intonation",
+  //       "score": 1-100,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "area": "fluency",
+  //       "score": 1-100,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "area": "grammar",
+  //       "score": 1-100,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "area": "vocabulary",
+  //       "score": 1-100,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "summary": {
+  //         "areas_for_improvement": "Provide areas for improvement in bullet points",
+  //         "overall_score": "average of the scores above"
+  //       }
+  //     }
+  //   ]`;
+
+
+  //   try {
+  //     const analysisResult = await this.apiService.analyzeSpeech(prompt);
+  //     return analysisResult;
+  //   } catch (error) {
+  //     console.error('Error during analysis:', error);
+  //     throw error;
+  //   }
+  // }
+
+
   async processTranscript(transcript: any): Promise<string> {
+    // First, let's check the similarity between the transcribed text and the original sample
+    const similarity = this.calculateSimilarity(transcript.text, this.speechSample);
+    
+    // If the similarity is below a certain threshold (e.g., 0.7 or 70%), don't proceed with the analysis
+    if (similarity < 0.7) {
+      throw new Error('The spoken text does not match the original sample closely enough. Please try again and speak more clearly.');
+    }
+  
     const prompt = `The following is a transcription of the student's reading: "${transcript.text}".
     The original sentence to be read was: "${this.speechSample}".
     Please analyze the reading and provide a JSON output with the following format for each aspect:
-
+  
     [
       {
         "area": "pronunciation",
@@ -454,8 +603,7 @@ export class SpeechAnalyzerComponent implements OnInit {
         }
       }
     ]`;
-
-
+  
     try {
       const analysisResult = await this.apiService.analyzeSpeech(prompt);
       return analysisResult;
@@ -464,7 +612,48 @@ export class SpeechAnalyzerComponent implements OnInit {
       throw error;
     }
   }
-
+  
+  // Add this new method to calculate similarity using Levenshtein distance
+  calculateSimilarity(str1: string, str2: string): number {
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+    const longerLength = longer.length;
+  
+    if (longerLength === 0) {
+      return 1.0;
+    }
+  
+    const levenshteinDistance = this.levenshteinDistance(longer, shorter);
+    return (longerLength - levenshteinDistance) / longerLength;
+  }
+  
+  levenshteinDistance(str1: string, str2: string): number {
+    const matrix = [];
+  
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+  
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+  
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+  
+    return matrix[str2.length][str1.length];
+  }
 
 //   parseAnalysisResult(analysisJson: string) {
 //     try {
@@ -495,6 +684,7 @@ export class SpeechAnalyzerComponent implements OnInit {
 //     }
 // }
 
+
 parseAnalysisResult(analysisJson: string) {
   try {
     const cleanJson = analysisJson.replace(/```json\n|\n```/g, '').trim();
@@ -524,10 +714,10 @@ parseAnalysisResult(analysisJson: string) {
   } catch (error) {
     console.error('Error parsing analysis result:', error);
     this.analysisResult = null;
-    this.summary = 'Error parsing analysis result.';
+    this.summary = 'Error analyzing speech. Please try again and speak clearly.';
+    this.resetRecording();
   }
 }
-
 
 
   improvementPoints: string[] = [];
