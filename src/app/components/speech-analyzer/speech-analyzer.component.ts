@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+  import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AssemblyAI } from 'assemblyai';
 import { APIService } from '../../services/API/api.service';
@@ -557,11 +557,63 @@ export class SpeechAnalyzerComponent implements OnInit {
   // }
 
 
+  // async processTranscript(transcript: any): Promise<string> {
+  //   const similarity = this.calculateSimilarity(transcript.text, this.speechSample);
+    
+  //   if (similarity < 0.7) {
+  //     throw new Error('The spoken text does not match the original sample closely enough. Please try again and speak more clearly.');
+  //   }
+  
+  //   const prompt = `The following is a transcription of the student's reading: "${transcript.text}".
+  //   The original sentence to be read was: "${this.speechSample}".
+  //   Please analyze the reading and provide a JSON output with the following format for each aspect:
+  
+  //   [
+  //     {
+  //       "area": "pronunciation",
+  //       "score": 1-95,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "area": "intonation",
+  //       "score": 1-95,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "area": "fluency",
+  //       "score": 1-95,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "area": "grammar",
+  //       "score": 1-95,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "area": "vocabulary",
+  //       "score": 1-95,
+  //       "feedback": "brief explanation for the score"
+  //     },
+  //     {
+  //       "summary": {
+  //         "areas_for_improvement": "Provide areas for improvement in bullet points",
+  //         "overall_score": "average of the scores above"
+  //       }
+  //     }
+  //   ]`;
+  
+  //   try {
+  //     const analysisResult = await this.apiService.analyzeSpeech(prompt);
+  //     return analysisResult;
+  //   } catch (error) {
+  //     console.error('Error during analysis:', error);
+  //     throw error;
+  //   }
+  // }
+
   async processTranscript(transcript: any): Promise<string> {
-    // First, let's check the similarity between the transcribed text and the original sample
     const similarity = this.calculateSimilarity(transcript.text, this.speechSample);
     
-    // If the similarity is below a certain threshold (e.g., 0.7 or 70%), don't proceed with the analysis
     if (similarity < 0.7) {
       throw new Error('The spoken text does not match the original sample closely enough. Please try again and speak more clearly.');
     }
@@ -573,17 +625,17 @@ export class SpeechAnalyzerComponent implements OnInit {
     [
       {
         "area": "pronunciation",
-        "score": 1-100,
+        "score": 1-95,
         "feedback": "brief explanation for the score"
       },
       {
         "area": "intonation",
-        "score": 1-100,
+        "score": 1-95,
         "feedback": "brief explanation for the score"
       },
       {
         "area": "fluency",
-        "score": 1-100,
+        "score": 1-95,
         "feedback": "brief explanation for the score"
       },
       {
@@ -593,7 +645,7 @@ export class SpeechAnalyzerComponent implements OnInit {
       },
       {
         "area": "vocabulary",
-        "score": 1-100,
+        "score": 1-95,
         "feedback": "brief explanation for the score"
       },
       {
@@ -602,7 +654,23 @@ export class SpeechAnalyzerComponent implements OnInit {
           "overall_score": "average of the scores above"
         }
       }
-    ]`;
+    ]
+  
+    Important scoring guidelines:
+    1. The maximum score for pronunciation, intonation, fluency, and vocabulary is 95.
+    2. The maximum score for grammar is 100.
+    3. For areas with a max score of 95:
+       - Scores between 91 and 95 should be extremely rare, given only to exceptional performances that are nearly indistinguishable from a native speaker's.
+       - A score of 91 or above should only be given to about 0.1% of readings, representing true mastery and near-perfect execution.
+    4. For grammar (max score 100):
+       - Scores between 96 and 100 should be extremely rare, given only to flawless grammatical performances.
+       - A score of 96 or above in grammar should only be given to about 0.1% of readings, representing perfect grammatical execution.
+    5. Most good to very good performances should score between 80 and 90 (85-95 for grammar).
+    6. Average performances should score between 60 and 79 (65-84 for grammar).
+    7. Below average performances should score between 40 and 59 (45-64 for grammar).
+    8. Poor performances should score below 40 (below 45 for grammar).
+    9. Ensure that the feedback for each area is constructive and specific, especially for high scores, explaining why the performance was exceptional or what tiny improvements could still be made.
+    10. When calculating the overall score, consider the different maximum scores for grammar vs. other areas.`;
   
     try {
       const analysisResult = await this.apiService.analyzeSpeech(prompt);
