@@ -328,7 +328,7 @@ saveInteractiveVideoSettings() {
       return;
     }
 
-    if (!this.courseImagePreview) {  // Add this check for required image
+    if (!this.courseImagePreview) { 
       this.API.failedSnackbar('Please upload a Course Photo / Background!');
       return;
     }
@@ -348,11 +348,11 @@ saveInteractiveVideoSettings() {
       }
     }
 
-    const genID = this.API.createID32();
+    const genID = this.API.createID32(); //api call
     this.API.justSnackbar('Creating course, Please Wait...', 99999999999999);
 
     try {
-      // Call createCourse API with properly formatted input fields
+      // call for api
       const response = await lastValueFrom(
         this.API.createCourse(
           genID,
