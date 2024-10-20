@@ -362,12 +362,12 @@ saveInteractiveVideoSettings() {
           languageId,
           this.courseImageURL,
           this.courseObjective,
-          this.selectedAudience,  // Pass array directly
-          this.selectedRequirements  // Pass array directly
+          this.selectedAudience, 
+          this.selectedRequirements  
         )
       );
       console.log(response);
-
+//logic
       for (let lesson of this.lessons) {
         let attachments: string | undefined = undefined;
         let imageupload: string | undefined = undefined;
@@ -384,7 +384,6 @@ saveInteractiveVideoSettings() {
           const filename = lesson.fileupload.name;
           attachments = filelocation + '>' + filename;
         }
-
         if (lesson.coverImage) {
           const fileparse = lesson.coverImage.name.split('.');
           const serverLocation = uuidv4() + '.' + fileparse[fileparse.length - 1];
