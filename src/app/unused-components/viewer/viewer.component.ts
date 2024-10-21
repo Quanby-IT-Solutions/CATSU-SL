@@ -81,7 +81,7 @@ export class ViewerComponent implements AfterContentInit {
         console.log('Score data for student:', scoreData);
         
         if (scoreData.takenpoints !== null) {
-          this.apiService.failedSnackbar(
+          this.apiService.successSnackbar(
             `You have already completed this quiz. Score: ${scoreData.takenpoints}/${scoreData.totalpoints}`
           );
           return;
