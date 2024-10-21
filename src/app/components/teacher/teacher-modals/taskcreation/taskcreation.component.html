@@ -23,11 +23,12 @@
     </div>
 
     <div class="relative inline-block w-full">
-      <select [(ngModel)]="course" name="course" id="course"
+      <select [(ngModel)]="course" name="course" id="course" (change)="onCourseChange(course)"
         class="appearance-none w-full bg-gray-200 outline-none text-gray-700 py-2.5 px-4 pr-8 rounded-full leading-tight focus:outline-none transition-colors duration-200 ease-in-out cursor-pointer">
         <option value="" disabled selected hidden>Select Course</option>
-        <option *ngFor="let _course of courses" [value]="_course.id">{{_course.course}}</option>
+        <option *ngFor="let _course of courses" [value]="_course.id">{{ _course.course }}</option>
       </select>
+
       <div class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
         <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
           <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
@@ -35,7 +36,20 @@
       </div>
     </div>
 
-    <!-- Display existing attachment if in edit mode -->
+    <div class="relative inline-block w-full">
+      <select [(ngModel)]="class" name="class" id="class"
+        class="appearance-none w-full bg-gray-200 outline-none text-gray-700 py-2.5 px-4 pr-8 rounded-full leading-tight focus:outline-none transition-colors duration-200 ease-in-out cursor-pointer">
+        <option value="" disabled selected hidden>Select Class</option>
+        <option *ngFor="let _class of classes" [value]="_class.id">{{ _class.name }}</option>
+      </select>
+
+      <div class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
+        <svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+        </svg>
+      </div>
+    </div>
+
     <div *ngIf="existingAttachment" class="mt-2 text-sm text-gray-600">
       <span>Current Attachment:</span>
       <a class="text-blue-500 underline" (click)="openAttachment(existingAttachment.split('>')[0])">
@@ -50,6 +64,8 @@
       {{ isEditMode ? 'Update' : 'Save' }}
     </button>
     <button (click)="closeModal()"
-      class="bg-red-500 w-full py-2.5 hover:scale-105 duration-300 poppins text-white font-semibold rounded-lg">Cancel</button>
+      class="bg-red-500 w-full py-2.5 hover:scale-105 duration-300 poppins text-white font-semibold rounded-lg">
+      Cancel
+    </button>
   </div>
 </div>

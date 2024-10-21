@@ -17,8 +17,9 @@ export class TaskManagementComponent implements OnInit {
   tasks: any = [];
   filterCourse: string = '';
   submissions: any = [];
+  classes: any[] = []; // Store classes for the selected course
+  currentCourse: any;
 
-  // Add Router to the constructor
   constructor(
     private modalService: NgbModal,
     private API: APIService,
@@ -47,6 +48,30 @@ export class TaskManagementComponent implements OnInit {
     this.loadTasks();
   }
 
+  getTeacherClasses() {
+    if (this.filterCourse) {
+      this.API.teacherGetClassesByCourse(this.filterCourse).subscribe(
+        (data: any) => {
+          if (data.success) {
+            this.classes = data.output.map((_class: any) => ({
+              id: _class.id,
+              name: _class.class,
+              courseId: _class.courseid,
+            }));
+          } else {
+            this.API.failedSnackbar('Failed loading classes');
+          }
+        },
+        (error) => {
+          console.error('Error loading classes:', error);
+          this.API.failedSnackbar('Error loading classes');
+        }
+      );
+    } else {
+      this.classes = [];
+    }
+  }
+
   loadTasks() {
     this.API.teacherGetTasks().subscribe((data) => {
       this.tasks = data.output;
@@ -55,6 +80,8 @@ export class TaskManagementComponent implements OnInit {
 
   selectCourse(courseid: string) {
     this.filterCourse = courseid;
+    this.currentCourse = this.courses.get(courseid);
+    this.getTeacherClasses(); // Load classes when a course is selected
   }
 
   openFile(file: string) {
@@ -73,7 +100,7 @@ export class TaskManagementComponent implements OnInit {
 
   editTask(task: any) {
     const modalRef = this.modalService.open(TaskcreationComponent);
-    modalRef.componentInstance.task = task; // Pass the task data to the modal for editing
+    modalRef.componentInstance.task = task;
     modalRef.componentInstance.courses = Array.from(this.courses.values());
     modalRef.closed.subscribe((data) => {
       if (data != undefined) {
@@ -84,12 +111,15 @@ export class TaskManagementComponent implements OnInit {
 
   deleteTask(task: any) {
     if (confirm(`Are you sure you want to delete the task titled "${task.title}"?`)) {
-      this.API.teacherDeleteTask(task.id).subscribe(() => {
-        this.tasks = this.tasks.filter((t: any) => t.id !== task.id);
-        this.API.successSnackbar('Task deleted successfully.');
-      }, error => {
-        this.API.failedSnackbar('Failed to delete the task.');
-      });
+      this.API.teacherDeleteTask(task.id).subscribe(
+        () => {
+          this.tasks = this.tasks.filter((t: any) => t.id !== task.id);
+          this.API.successSnackbar('Task deleted successfully.');
+        },
+        (error) => {
+          this.API.failedSnackbar('Failed to delete the task.');
+        }
+      );
     }
   }
 
@@ -97,10 +127,14 @@ export class TaskManagementComponent implements OnInit {
     const modalRef = this.modalService.open(CreateFeedbackComponent);
   }
 
-  navigateToTeacherView(submission:any): void {
-
-    this.router.navigate(['teacher/teacher-view',{sid: submission.id, aid:submission.assignmentid, s: submission.firstname + " " + submission.lastname }]);
+  navigateToTeacherView(submission: any): void {
+    this.router.navigate(['teacher/teacher-view', {
+      sid: submission.id,
+      aid: submission.assignmentid,
+      s: submission.firstname + " " + submission.lastname
+    }]);
   }
+
   navigateBack(): void {
     this.router.navigate(['teacher/t-home']);
   }

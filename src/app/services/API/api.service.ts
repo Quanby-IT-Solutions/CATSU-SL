@@ -3864,6 +3864,7 @@ export class APIService implements OnDestroy, OnInit {
 
   createTask(
     courseID: string,
+    classID: string,
     title: string,
     description: string,
     deadline: string,
@@ -3880,6 +3881,7 @@ export class APIService implements OnDestroy, OnInit {
         {},
         {
           CourseID: courseID,
+          ClassID: classID,
           Title: title,
           Details: description,
           Deadline: deadline,

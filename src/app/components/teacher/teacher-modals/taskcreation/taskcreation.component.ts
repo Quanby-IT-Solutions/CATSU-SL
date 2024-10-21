@@ -10,8 +10,10 @@ import { APIService } from 'src/app/services/API/api.service';
 export class TaskcreationComponent implements OnInit {
   @Input() task: any; // For editing an existing task
   @Input() courses: any = [];
+  @Input() classes: any = [];
 
   course: string = '';
+  class: string = '';
   deadline: string = '';
   title: string = '';
   description: string = '';
@@ -20,20 +22,54 @@ export class TaskcreationComponent implements OnInit {
   existingAttachment: string | undefined;
 
   constructor(
-    private API: APIService,  // Kept private for service logic
+    private API: APIService,  
     public activeModal: NgbActiveModal
   ) {}
 
   ngOnInit(): void {
     if (this.task) {
-      // Edit mode: pre-fill the form with the task details
       this.isEditMode = true;
       this.title = this.task.title;
       this.description = this.task.details;
       this.deadline = this.task.deadline;
       this.course = this.task.courseID;
+      this.class = this.task.classID;
       this.existingAttachment = this.task.attachments;
+
+      // Load classes for the selected course when editing
+      this.loadClasses(this.course);
     }
+  }
+
+  loadClasses(courseId: string) {
+    if (courseId) {
+      this.API.teacherGetClassesByCourse(courseId).subscribe(
+        (data: any) => {
+          if (data.success) {
+            this.classes = data.output.map((_class: any) => ({
+              id: _class.id,
+              name: _class.class,
+              courseId: _class.courseid,
+            }));
+          } else {
+            this.API.failedSnackbar('Failed loading classes');
+            this.classes = [];
+          }
+        },
+        (error) => {
+          console.error('Error loading classes:', error);
+          this.API.failedSnackbar('Error loading classes');
+          this.classes = [];
+        }
+      );
+    } else {
+      this.classes = [];
+    }
+  }
+
+  onCourseChange(courseId: string) {
+    this.class = ''; // Clear the selected class when a new course is selected
+    this.loadClasses(courseId);
   }
 
   onFileSelected(event: Event) {
@@ -67,7 +103,7 @@ export class TaskcreationComponent implements OnInit {
     }
 
     // Validate required fields
-    if (this.API.checkInputs([this.deadline, this.title, this.description, this.course])) {
+    if (this.API.checkInputs([this.deadline, this.title, this.description, this.course, this.class])) {
       if (this.isEditMode) {
         this.updateTask(attachments);
       } else {
@@ -79,7 +115,7 @@ export class TaskcreationComponent implements OnInit {
   }
 
   createTask(attachments?: string) {
-    this.API.createTask(this.course, this.title, this.description, this.deadline, attachments).subscribe(() => {
+    this.API.createTask(this.course, this.class, this.title, this.description, this.deadline, attachments).subscribe(() => {
       this.API.successSnackbar('Task created!');
       this.API.notifyStudentsInCourse(
         `${this.API.getFullName()} uploaded a new task.`,
