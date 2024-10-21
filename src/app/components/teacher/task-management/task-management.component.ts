@@ -78,7 +78,6 @@ export class TaskManagementComponent implements OnInit {
       console.log('Tasks data from API:', data.output); // Log the raw data from the API
   
       this.tasks = data.output.map((task: any) => {
-        // Map the class name from the classes array using classId
         const classData = this.classes.find((c: { id: string }) => c.id === task.classid);
         console.log('Mapping class name for task:', task, 'Found class:', classData);
   

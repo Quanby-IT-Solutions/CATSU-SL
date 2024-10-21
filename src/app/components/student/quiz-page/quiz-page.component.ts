@@ -12,6 +12,8 @@ import { APIService } from 'src/app/services/API/api.service';
 import { Japanese, English, French } from 'src/app/shared/MockData/selfstudy/model/models';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
 
 const japanese = new Japanese();
 const english = new English();
@@ -89,6 +91,8 @@ export class QuizPageComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private el: ElementRef,
     private snackBar: MatSnackBar,
+    public activeModal: NgbActiveModal
+
   ) {}
 
   ngOnInit() {
@@ -98,7 +102,7 @@ export class QuizPageComponent implements OnInit, OnDestroy {
     this.API.quizID = null;
 
     if (taskID == null) {
-      this.API.showLoader();
+      // this.API.showLoader();
       this.isPractice = true;
       const sessionObject = this.API.currentPractice;
       // set level
@@ -523,54 +527,71 @@ textToSpeech(){
 
   async checkAnswers() {
     this.API.showLoader();
-    for (let question of this.questions){
-      const correctAnswersSet = new Set(question.correctAnswers);
-        const selectedAnswersSet = new Set(question.selectedAnswers);
+    this.correctAnswers = 0;
+    const totalQuestions = this.getRealTotal();
 
-        if(question.type == 3){
-          const score = await this.geminiCheckAnswer(question);
-          if(score == null){
-            this.correctAnswers=0;
-            this.checkAnswers();
-            return;
-          }
-          this.correctAnswers += score!;
-        }else{
-          if (
-              this.setsAreEqual(correctAnswersSet, selectedAnswersSet) ||
-              this.matchText(question.selectedAnswers[0], question.correctAnswers[0])
-          ) {
-              this.correctAnswers++;
-          }
+    for (let question of this.questions) {
+      const correctAnswersSet = new Set(question.correctAnswers);
+      const selectedAnswersSet = new Set(question.selectedAnswers);
+
+      if (question.type === 3) {
+        // Essay question
+        const score = await this.geminiCheckAnswer(question);
+        if (score === null) {
+          this.correctAnswers = 0;
+          await this.checkAnswers(); // Retry if there's an error
+          return;
         }
+        this.correctAnswers += score;
+      } else {
+        // Multiple choice or true/false question
+        if (
+          this.setsAreEqual(correctAnswersSet, selectedAnswersSet) ||
+          this.matchText(question.selectedAnswers[0], question.correctAnswers[0])
+        ) {
+          this.correctAnswers++;
+        }
+      }
     }
 
     if (this.isPractice) {
-        this.API.recordAssessment(
-            this.practiceID!,
-            this.level! + 1,
-            this.correctAnswers,
-            this.getRealTotal(),
-            this.mode
-        );
-        if (this.correctAnswers >= this.getRealTotal()) {
-            this.API.updateLevel(this.practiceID!, this.level! + 1, this.mode);
-        }
+      this.API.recordAssessment(
+        this.practiceID!,
+        this.level! + 1,
+        this.correctAnswers,
+        totalQuestions,
+        this.mode
+      );
+      if (this.correctAnswers >= totalQuestions) {
+        this.API.updateLevel(this.practiceID!, this.level! + 1, this.mode);
+      }
     } else {
-        // Record quiz
-        this.API.updateQuizScore(this.quizID, this.correctAnswers);
-        this.API.pushNotifications(
-            `${this.API.getFullName()} finished a quiz`,
-            `${this.API.getFullName()} finished a quiz titled <b>'${
-            this.title
-        }'</b>. Their score has been successfully recorded.`,
-            this.teacherid
-        );
-
+      // Record quiz
+      console.log('Updating quiz score:', this.quizID, this.correctAnswers);
+      this.API.updateQuizScore(this.quizID, this.correctAnswers);
+      this.API.pushNotifications(
+        `${this.API.getFullName()} finished a quiz`,
+        `${this.API.getFullName()} finished a quiz titled <b>'${this.title}'</b>. Their score has been successfully recorded.`,
+        this.teacherid
+      );
     }
-    this.API.hideLoader();
-}
 
+    this.API.hideLoader();
+    this.showResult = true;
+    this.isButtonDisabled = true;
+
+    const resultMessage = `Quiz completed. Score: ${this.correctAnswers}/${totalQuestions}`;
+    this.snackBar.open(resultMessage, 'Close', { duration: 5000 });
+
+    // Close the modal after showing the result
+    setTimeout(() => {
+      this.closeModal();
+    }, 500);
+  }
+
+  closeModal() {
+    this.activeModal.close(this.correctAnswers);
+  }
 
 
   setsAreEqual(setA: Set<number>, setB: Set<number>): boolean {

@@ -39,8 +39,8 @@
       </div>
 
       <!-- Task Cards -->
-      <ng-container *ngFor="let task of filteredTasks()">
-        <div class="w-full fade-in">
+      <ng-container *ngFor="let task of filteredTasks()" >
+        <div *ngIf="task.settings != 'popup_quiz'" class="w-full fade-in">
           <div class="p-8 rounded-xl shadow-2xl bg-white h-[400px] flex flex-col transition-transform duration-300 hover:scale-[1.03] hover:shadow-3xl border-t-4"
             [ngStyle]="{
               'border-top-color': task.done ? '#f5a425' : '#1f2e4d',
@@ -50,7 +50,7 @@
             <!-- Card Header -->
             <div class="mb-6">
               <div class="flex items-center justify-between text-2xl font-semibold">
-                <span>
+                <span >
                   <i class="{{task.type == 'assignment' ? 'fas fa-book-open' : 'fas fa-question'}} mr-2"></i>
                   {{switchTag(task.type)}}: {{task.title}}
                 </span>

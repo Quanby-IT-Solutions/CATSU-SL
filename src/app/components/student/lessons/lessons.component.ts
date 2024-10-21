@@ -1,3 +1,5 @@
+// lessons.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { APIService } from 'src/app/services/API/api.service';
@@ -14,7 +16,9 @@ interface Lesson {
   details: string;
   progress: number;
   topics?: Topic[];
-  hasQuiz?: boolean; // for lesson quiz
+  hasQuiz?: boolean;
+  done?: boolean;
+  deadline?: Date;
 }
 
 interface Topic {
@@ -25,6 +29,8 @@ interface Topic {
   attachments: { file: string; type: string; timestamp?: number; quiz_id?: string }[];
   hasQuiz?: boolean;
   hasAttachmentQuiz?: boolean;
+  done?: boolean;
+  deadline?: Date;
 }
 
 @Component({
@@ -38,7 +44,6 @@ export class LessonsComponent implements OnInit {
 
   // Define Lottie options
   lottieOptions: AnimationOptions = {
-    // path: 'https://lottie.host/bd0cc3e3-bf04-4189-95d5-5f2141550864/OmuS6c5GpK.json', // Lottie animation URL
     path: 'https://lottie.host/e4f3816a-6637-4932-bf1a-c9b995936748/4ZuGelrs5m.json',
     autoplay: true,
     loop: true
@@ -108,12 +113,13 @@ export class LessonsComponent implements OnInit {
                   (attachmentsData) => {
                     if (attachmentsData.success) {
                       topic.attachments = attachmentsData.output.map((attachment: any) => ({
+                        deadline: attachment.deadline,
                         file: attachment.attachment,
                         type: attachment.type,
                         timestamp: attachment.timestamp || 0,
                         quiz_id: attachment.quiz_id
+
                       }));
-                      // If any attachment is interactive (quiz), set hasQuiz for topic
                       topic.hasAttachmentQuiz = topic.hasAttachmentQuiz || topic.attachments.some(att => att.type === 'interactive');
                     } else {
                       console.error(`Error fetching attachments for topic ${topic.topicid}:`, attachmentsData.error || 'Unknown error');
@@ -153,14 +159,22 @@ export class LessonsComponent implements OnInit {
     return new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5])).toLocaleString();
   }
 
+  
+
   handleFileClick(file: any, topic: any) {
     if (file.type === 'interactive') {
-      this.API.openFileInteractive(file.file, file.type, file.timestamp, file.quiz_id);
+      this.API.openFileInteractive(
+        file.file,
+        file.type,
+        file.timestamp,
+        file.quiz_id, 
+        new Date(file.deadline) 
+      );
     } else {
       this.API.openFile(file.file);
     }
   }
-
+  
 
 
  getOriginalFilename(file: any): string {

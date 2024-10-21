@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { APIService } from 'src/app/services/API/api.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
 
 interface QuizOption {
   id: number;
@@ -26,7 +27,7 @@ interface QuizItem {
   styleUrls: ['./popup-quiz-page.component.css'],
 })
 export class PopupQuizPageComponent implements OnInit, OnDestroy {
-  @Input() quizID: string = '';  // Receives quizID from parent component
+  @Input() quizID: string = '';
   questions: Array<QuizItem> = [];
   currentQuestionIndex = 0;
   correctAnswers = 0;
@@ -40,9 +41,16 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
   generating = false;
   isButtonDisabled = false;
   mode = 'reading';
-  lang = 'en'; // Example default language, adjust as needed
+  lang = 'en';
   timer: any;
-  quizCompleted = false; // Flag to prevent re-taking the quiz
+  quizCompleted = false;
+  dueDate: Date | undefined;
+  isPractice = false;
+  practiceID?: string;
+  level?: number;
+  teacherid = '';
+  totalPoints = 0;
+  analyzing = false;
 
   constructor(
     private API: APIService,
@@ -51,10 +59,45 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    if (this.quizID) {  // Ensure quizID is provided
-      this.checkIfQuizCompleted();
+    if (this.quizID) {
+      this.API.studentGetQuiz(this.quizID).subscribe(
+        (data) => {
+          if (data.success && data.output.length > 0) {
+            const quizData = data.output[0];
+  
+            this.dueDate = new Date(quizData.deadline);
+            this.quizCompleted = quizData.isDone === 1; 
+            this.correctAnswers = quizData.points || 0; 
+            this.totalPoints = quizData.totalpoints || 0;
+            this.title = quizData.title;
+            this.teacherid = quizData.teacherid;
+            this.description = quizData.details;
+            this.timeRemaining = quizData.timelimit * 60;
+  
+            if (this.quizCompleted) {
+              this.showResult = true;
+              this.displayCompletedQuizScore();
+            } else if (new Date() > this.dueDate) {
+              this.API.failedSnackbar('You cannot take the exam, it is already past the due date.');
+              this.closeModal();
+            } else {
+              this.loadQuiz();
+              this.startTimer();
+            }
+          } else {
+            this.API.failedSnackbar('Failed to load quiz data.');
+            this.closeModal();
+          }
+        },
+        (error) => {
+          console.error('Error loading quiz data:', error);
+          this.API.failedSnackbar('Error loading quiz data. Please try again.');
+          this.closeModal();
+        }
+      );
     } else {
       this.snackBar.open('Quiz ID is missing. Unable to load quiz.', 'Close', { duration: 3000 });
+      this.closeModal();
     }
   }
 
@@ -62,16 +105,16 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
     this.stopTimer();
   }
 
-  checkIfQuizCompleted() {
-    if (this.quizCompleted) {
-      this.snackBar.open('Quiz has already been completed.', 'Close', { duration: 3000 });
-      this.closeModal(); // Close the modal if the quiz is already completed
-    } else {
-      this.loadQuiz();
-      this.startTimer();
-    }
+  displayCompletedQuizScore() {
+    this.snackBar.open(
+      `You have already completed this quiz. Score: ${this.correctAnswers}/${this.totalPoints}`,
+      'Close',
+      { duration: 5000 }
+    );
+    setTimeout(() => {
+      this.closeModal();
+    }, 5000);
   }
-
 
   loadQuiz() {
     this.API.studentGetQuiz(this.quizID).subscribe(
@@ -89,7 +132,7 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
       }
     );
   }
-
+  
   prepareQuizItems(data: any[]): QuizItem[] {
     return data.map((item) => {
       const itemOptions: Array<QuizOption> = [];
@@ -137,32 +180,12 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
     const selectedIndex = question.selectedAnswers.indexOf(choiceId);
 
     if (question.type <= 1) {
-      question.selectedAnswers = [choiceId]; // For single-choice questions
+      question.selectedAnswers = [choiceId];
     } else if (selectedIndex === -1) {
-      question.selectedAnswers.push(choiceId); // Add choice if not selected
+      question.selectedAnswers.push(choiceId);
     } else {
-      question.selectedAnswers.splice(selectedIndex, 1); // Remove choice if already selected
+      question.selectedAnswers.splice(selectedIndex, 1);
     }
-  }
-
-  trackByFn(index: any, item: any) {
-    return index;
-  }
-
-  isAnswerCorrect(question: QuizItem, choiceId: number): boolean {
-    return question.correctAnswers.includes(choiceId);
-  }
-
-  isAnswerIncorrect(question: QuizItem, choiceId: number): boolean {
-    return !this.isAnswerCorrect(question, choiceId) && question.selectedAnswers.includes(choiceId);
-  }
-
-  isUserSelectedAnswer(question: QuizItem, choiceId: number): boolean {
-    return question.selectedAnswers.includes(choiceId);
-  }
-
-  isQuestionUnanswered(question: QuizItem): boolean {
-    return question.selectedAnswers.length === 0;
   }
 
   shuffleQuestions() {
@@ -176,7 +199,7 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
       this.currentQuestionIndex++;
       this.textToSpeech();
     } else {
-      this.finishQuiz();  // Call to finish the quiz
+      this.finishQuiz();
     }
   }
 
@@ -187,20 +210,21 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
   }
 
   finishQuiz() {
-    this.stopTimer(); // Stop the timer
-    this.checkAnswers(); // Calculate the results
-    this.showResult = true; // Show the result section
-    this.isButtonDisabled = true; // Disable further navigation
-    this.quizCompleted = true; // Mark the quiz as completed
-
-    // Close the modal after a short delay to allow user to see the result
-    setTimeout(() => {
-      this.closeModal();
-    }, 2000); // Adjust delay time if needed
+    this.stopTimer();
+    this.checkAnswers().then(() => {
+      this.showResult = true;
+      this.isButtonDisabled = true;
+      this.quizCompleted = true;
+      console.log('Quiz completed, score saved');
+      
+      setTimeout(() => {
+        this.closeModal();
+      }, 5000);
+    });
   }
 
   closeModal() {
-    this.activeModal.close(); // Close the modal
+    this.activeModal.close();
   }
 
   startTimer() {
@@ -248,10 +272,10 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
         const score = await this.geminiCheckAnswer(question);
         if (score == null) {
           this.correctAnswers = 0;
-          this.checkAnswers();
+          await this.checkAnswers();
           return;
         }
-        this.correctAnswers += score!;
+        this.correctAnswers += score;
       } else {
         if (
           this.setsAreEqual(correctAnswersSet, selectedAnswersSet) ||
@@ -262,7 +286,29 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
       }
     }
 
+    if (this.isPractice) {
+      this.API.recordAssessment(
+        this.practiceID!,
+        this.level! + 1,
+        this.correctAnswers,
+        this.getRealTotal(),
+        this.mode
+      );
+      if (this.correctAnswers >= this.getRealTotal()) {
+        this.API.updateLevel(this.practiceID!, this.level! + 1, this.mode);
+      }
+    } else {
+      console.log('Updating quiz score:', this.quizID, this.correctAnswers);
+      this.API.updateQuizScore(this.quizID, this.correctAnswers);
+      this.API.pushNotifications(
+        `${this.API.getFullName()} finished a quiz`,
+        `${this.API.getFullName()} finished a quiz titled <b>'${this.title}'</b>. Their score has been successfully recorded.`,
+        this.teacherid
+      );
+    }
+
     this.API.hideLoader();
+    this.snackBar.open(`Quiz completed. Score: ${this.correctAnswers}/${this.getRealTotal()}`, 'Close', { duration: 5000 });
   }
 
   matchText(target: any, src: any) {
@@ -289,7 +335,7 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
 
   getRealTotal(): number {
     return this.questions.reduce((acc: number, curr: QuizItem) => {
-      return curr.type === 3 ? acc + 5 : acc + 1; // Adjust scoring as needed
+      return curr.type === 3 ? acc + 5 : acc + 1;
     }, 0);
   }
 
@@ -319,5 +365,24 @@ export class PopupQuizPageComponent implements OnInit, OnDestroy {
       return null;
     }
   }
+
+  trackByFn(index: any, item: any) {
+    return index;
+  }
+
+  isAnswerCorrect(question: QuizItem, choiceId: number): boolean {
+    return question.correctAnswers.includes(choiceId);
+  }
+
+  isAnswerIncorrect(question: QuizItem, choiceId: number): boolean {
+    return !this.isAnswerCorrect(question, choiceId) && question.selectedAnswers.includes(choiceId);
+  }
+
+  isUserSelectedAnswer(question: QuizItem, choiceId: number): boolean {
+    return question.selectedAnswers.includes(choiceId);
+  }
+
+  isQuestionUnanswered(question: QuizItem): boolean {
+    return question.selectedAnswers.length === 0;
+  }
 }
- 

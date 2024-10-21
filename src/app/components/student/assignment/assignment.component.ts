@@ -1,3 +1,5 @@
+// assignment.component.ts
+
 import { Component, OnDestroy, OnInit, Renderer2, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -25,37 +27,6 @@ export class AssignmentComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router, private API: APIService, private renderer: Renderer2) {}
 
-  // ngOnInit(): void {
-  //   this.API.showLoader();
-  //   this.getAssignment$ = this.API.studentGetAssignments().subscribe(data => {
-  //     const tasks: any = [];
-  //     for (let task of data.output) {
-  //       task.type = 'assignment';
-  //       task.done = Number(task.done);
-  //       // Ensure the deadline is in the correct format (date string)
-  //       task.deadline = new Date(task.deadline); // Converts to Date object for consistency
-  //       tasks.push(task);
-  //     }
-  //     this.getQuizzes$ = this.API.studentGetQuizzes().subscribe(data => {
-  //       for (let task of data.output) {
-  //         task.type = 'quiz';
-  //         task.done = Number(task.done);
-  //         task.deadline = new Date(task.deadline);
-  //         tasks.push(task);
-  //       }
-  //       this.getQuizPoints$ = this.API.studentQuizPoints().subscribe(data => {
-  //         for (let quiz of data.output) {
-  //           this.quizPoints.set(quiz.assessmentid, quiz);
-  //         }
-  //       });
-  //       this.API.hideLoader();
-  //       // Sort tasks by their due date or time created
-  //       tasks.sort((a: any, b: any) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
-  //       this.tasks = tasks;
-  //     });
-  //   });
-  // }
-
   ngOnInit(): void {
     this.API.showLoader();
     this.getAssignment$ = this.API.studentGetAssignments().subscribe(data => {
@@ -63,8 +34,8 @@ export class AssignmentComponent implements OnInit, OnDestroy {
       for (let task of data.output) {
         task.type = 'assignment';
         task.done = Number(task.done);
-        task.deadline = new Date(task.deadline);
-        task.classname = task.classname || 'N/A'; // Ensure the class name is present or 'N/A'
+        // Ensure the deadline is in the correct format (date string)
+        task.deadline = new Date(task.deadline); // Converts to Date object for consistency
         tasks.push(task);
       }
       this.getQuizzes$ = this.API.studentGetQuizzes().subscribe(data => {
@@ -72,7 +43,6 @@ export class AssignmentComponent implements OnInit, OnDestroy {
           task.type = 'quiz';
           task.done = Number(task.done);
           task.deadline = new Date(task.deadline);
-          task.classname = task.classname || 'N/A';
           tasks.push(task);
         }
         this.getQuizPoints$ = this.API.studentQuizPoints().subscribe(data => {
@@ -81,6 +51,7 @@ export class AssignmentComponent implements OnInit, OnDestroy {
           }
         });
         this.API.hideLoader();
+        // Sort tasks by their due date or time created
         tasks.sort((a: any, b: any) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
         this.tasks = tasks;
       });
@@ -99,10 +70,7 @@ export class AssignmentComponent implements OnInit, OnDestroy {
     this.checkScreenWidth();
   }
 
-  // parseDate(date: string) {
-  //   return new Date(date).toDateString();
-  // }
-
+  
   switchTag(type: string) {
     switch (type) {
       case 'assignment':
@@ -118,7 +86,7 @@ export class AssignmentComponent implements OnInit, OnDestroy {
     this.router.navigate(['student/materials', { taskID: taskID }]);
   }
 
-  attemptQuiz(task: any) {
+attemptQuiz(task: any) {
     if (task.done) {
       this.API.successSnackbar("This quiz is submitted!");
       return;

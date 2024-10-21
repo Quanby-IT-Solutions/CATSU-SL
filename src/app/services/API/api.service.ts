@@ -1536,22 +1536,57 @@ export class APIService implements OnDestroy, OnInit {
   }
 
 
+  // getTopicAttachments(topicId: string): Observable<any> {
+  //   const postObject = {
+  //     selectors: [
+  //       'attachments.*',
+  //       'topics.title AS TopicTitle'
+  //     ],
+  //     tables: 'attachments',
+  //     conditions: {
+  //       'LEFT JOIN topics': 'ON topics.topicid = attachments.topicid', // Ensure this join condition is correct
+  //       WHERE: { 'attachments.topicid': topicId },  // Make sure topicId is correctly formatted
+  //       'ORDER BY': 'attachments.id ASC'
+  //     }
+  //   };
+
+  //   console.log('Fetching attachments with postObject:', postObject); // Add detailed logging for debugging
+
+  //   return this.post('get_entries', {
+  //     data: JSON.stringify(postObject)
+  //   }).pipe(
+  //     tap((response: any) => {
+  //       if (response.error || !response.success) {
+  //         console.error('Failed to fetch attachments from the database:', response.error || 'Unknown error');
+  //       } else {
+  //         console.log('Attachments fetched successfully from the database:', response);
+  //       }
+  //     }),
+  //     catchError((error) => {
+  //       console.error('Error fetching attachments:', error);
+  //       return of({ error: 'Failed to fetch attachments from the database.' });
+  //     })
+  //   );
+  // }
+
   getTopicAttachments(topicId: string): Observable<any> {
     const postObject = {
       selectors: [
         'attachments.*',
-        'topics.title AS TopicTitle'
+        'topics.title AS TopicTitle',
+        'assessments.deadline AS deadline'  // Include the deadline from assessments
       ],
       tables: 'attachments',
       conditions: {
-        'LEFT JOIN topics': 'ON topics.topicid = attachments.topicid', // Ensure this join condition is correct
-        WHERE: { 'attachments.topicid': topicId },  // Make sure topicId is correctly formatted
+        'LEFT JOIN topics': 'ON topics.topicid = attachments.topicid', 
+        'LEFT JOIN assessments': 'ON assessments.id = attachments.quiz_id', // Adjust the join condition based on the quiz_id relationship
+        WHERE: { 'attachments.topicid': topicId },
         'ORDER BY': 'attachments.id ASC'
       }
     };
-
+  
     console.log('Fetching attachments with postObject:', postObject); // Add detailed logging for debugging
-
+  
     return this.post('get_entries', {
       data: JSON.stringify(postObject)
     }).pipe(
@@ -1568,7 +1603,7 @@ export class APIService implements OnDestroy, OnInit {
       })
     );
   }
-
+  
 
   // deleteTopicAttachments(topicId: string): Observable<any> {
   //   const postObject = {
@@ -3209,6 +3244,37 @@ export class APIService implements OnDestroy, OnInit {
     });
   }
 
+  getMyQuizScores(assessmentID: string) {
+    const studentID = this.getUserData()?.id; // Fetch student ID using getUserData
+  
+    const postObject = {
+      selectors: ['*'], // Fetch all columns
+      tables: 'student_assessments',
+      conditions: {
+        WHERE: {
+          AssessmentID: assessmentID,
+          StudentID: studentID,
+        },
+      },
+    };
+  
+    console.log('Fetching quiz scores with postObject:', postObject); // Log the query object
+  
+    return this.post('get_entries', {
+      data: JSON.stringify(postObject),
+    }).toPromise()
+      .then(response => {
+        console.log('Fetched quiz scores:', response); // Log the response
+        return response;
+      })
+      .catch(error => {
+        console.error('Error fetching quiz scores:', error); // Log any errors
+        throw error;
+      });
+  }
+  
+  
+
   similarity(s1: string, s2: string) {
     var longer = s1;
     var shorter = s2;
@@ -3816,7 +3882,7 @@ export class APIService implements OnDestroy, OnInit {
     }
 
 
-    openFileInteractive(file: string, type: string, timestamp: number = 0, quizID: string) {
+    openFileInteractive(file: string, type: string, timestamp: number = 0, quizID: string, deadline: Date) {
       const modalOptions: NgbModalOptions = {
         centered: false,
         size: 'lg',
@@ -3828,6 +3894,7 @@ export class APIService implements OnDestroy, OnInit {
       modalRef.componentInstance.interactive = type === 'interactive'; // Determine if it is interactive
       modalRef.componentInstance.timestamp = timestamp; // Set the timestamp for interactive videos if needed
       modalRef.componentInstance.quizID = quizID; // Set the quizID for interactive videos
+      modalRef.componentInstance.deadline = deadline; // Pass the deadline to the ViewerComponent
 
     }
 
@@ -3947,25 +4014,8 @@ export class APIService implements OnDestroy, OnInit {
   }
 
 
-  // teacherGetTasks() {
-  //   const id = this.getUserData().id;
-  //   const postObject = {
-  //     selectors: ['assignments.*', 'courses.course'],
-  //     tables: 'assignments,courses',
-  //     conditions: {
-  //       WHERE: {
-  //         'courses.ID': 'assignments.CourseID',
-  //         'courses.TeacherID': id,
-  //       },
-  //     },
-  //   };
-  //   return this.post('get_entries', {
-  //     data: JSON.stringify(postObject),
-  //   });
-  // }
-
   teacherGetTasks() {
-  const id = this.getUserData().id;
+   const id = this.getUserData().id;
   const postObject = {
     selectors: ['assignments.*', 'courses.course', 'classes.class as className'],
     tables: 'assignments, courses, classes',
@@ -3982,39 +4032,6 @@ export class APIService implements OnDestroy, OnInit {
   });
 }
 
-
-  // studentGetAssignments() {
-  //   const id = this.getUserData().id;
-  //   const postObject = {
-  //     selectors: [
-  //       'assignments.*',
-  //       'languages.Language',
-  //       'COUNT(student_assignments.ID) as done',
-  //     ],
-  //     tables: 'assignments',
-  //     conditions: {
-  //       'LEFT JOIN courses': 'ON assignments.CourseID = courses.ID',
-  //       'LEFT JOIN languages': 'ON courses.LanguageID = languages.ID',
-  //       'LEFT JOIN classes': 'ON classes.CourseID = courses.ID',
-  //       'LEFT JOIN student_classes': 'ON student_classes.ClassID = classes.ID',
-  //       'LEFT JOIN student_assignments': `ON student_assignments.StudentID = '${id}' AND student_assignments.AssignmentID = assignments.ID`,
-
-  //       WHERE: {
-  //         // 'courses.ID' :'assignments.CourseID',
-  //         // 'courses.LanguageID' : 'languages.ID',
-  //         // 'classes.CourseID' : 'courses.ID',
-  //         // 'student_classes.ClassID': 'classes.ID',
-  //         'student_classes.StudentID': id,
-  //       },
-  //       'GROUP BY':
-  //         'assignments.ID, courses.ID, languages.ID,classes.ID, student_classes.ID',
-  //     },
-  //   };
-  //   return this.post('get_entries', {
-  //     data: JSON.stringify(postObject),
-  //   });
-  // }
-
   studentGetAssignments() {
     const id = this.getUserData().id;
     const postObject = {
@@ -4030,20 +4047,29 @@ export class APIService implements OnDestroy, OnInit {
       conditions: {
         'LEFT JOIN courses': 'ON assignments.CourseID = courses.ID',
         'LEFT JOIN languages': 'ON courses.LanguageID = languages.ID',
+        // 'LEFT JOIN classes': 'ON classes.CourseID = courses.ID',
+        // 'LEFT JOIN student_classes': 'ON student_classes.ClassID = classes.ID',
         'LEFT JOIN classes': 'ON classes.ID = assignments.classid',
         'LEFT JOIN student_classes': `ON student_classes.ClassID = classes.ID AND student_classes.StudentID = '${id}'`,
         'LEFT JOIN student_assignments': `ON student_assignments.StudentID = '${id}' AND student_assignments.AssignmentID = assignments.ID`,
+
         WHERE: {
-          'student_classes.StudentID': id, // Ensure that only assignments for enrolled classes are fetched
+          // 'courses.ID' :'assignments.CourseID',
+          // 'courses.LanguageID' : 'languages.ID',
+          // 'classes.CourseID' : 'courses.ID',
+          // 'student_classes.ClassID': 'classes.ID',
+          'student_classes.StudentID': id,
         },
+        // 'GROUP BY':
+        //   'assignments.ID, courses.ID, languages.ID,classes.ID, student_classes.ID',
         'GROUP BY': 'assignments.ID, courses.ID, languages.ID, classes.ID',
+
       },
     };
     return this.post('get_entries', {
       data: JSON.stringify(postObject),
     });
   }
-  
 
   studentGetAssignmentByID(taskID: string) {
     const id = this.getUserData().id;
