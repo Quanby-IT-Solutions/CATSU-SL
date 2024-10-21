@@ -5,6 +5,9 @@ import { APIService } from '../../services/API/api.service';
 import { first, firstValueFrom, lastValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+
 
 const client = new AssemblyAI({
   apiKey: environment.speech,
@@ -99,6 +102,8 @@ export class SpeechAnalyzerComponent implements OnInit {
       this.apiService.hideLoader();
     }
   }
+
+  
 
 
   createID32(): string {
@@ -310,21 +315,6 @@ export class SpeechAnalyzerComponent implements OnInit {
       this.startRecording();
     }
   }
-
-  // startRecording() {
-  //   navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-  //     this.mediaRecorder = new MediaRecorder(stream);
-  //     this.mediaRecorder.start();
-  //     this.recording = true;
-
-  //     this.mediaRecorder.ondataavailable = (event: any) => {
-  //       this.audioChunks.push(event.data);
-  //     };
-  //   }).catch((err) => {
-  //     console.error('Microphone access denied:', err);
-  //     this.apiService.failedSnackbar('Microphone access denied. Please check your browser settings.', 3000);
-  //   });
-  // }
 
 
   startRecording() {
@@ -715,4 +705,80 @@ parseAnalysisResult(analysisJson: string) {
       console.error('Error creating speech analyzer result:', error);
     }
   }
+
+ 
+  downloadResult() {
+    const userData = this.apiService.getUserData();
+    
+    if (!userData) {
+      this.apiService.failedSnackbar('User data not available. Please log in again.');
+      return;
+    }
+  
+    const fullName = `${userData.firstname} ${userData.lastname}`;
+    const selectedClass = this.selectedStudentClass ? this.classes.find(cls => cls.class_id === this.selectedStudentClass)?.class : 'N/A';
+
+  
+    if (this.analysisResult && this.analysisResult.length > 0) {
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'pt',
+        format: 'a4',
+      });
+  
+      // Add Title
+      doc.setFontSize(18);
+      doc.setTextColor(40);
+      doc.text('Speech Analysis Result', doc.internal.pageSize.getWidth() / 2, 40, { align: 'center' });
+  
+      // Add User Info
+      doc.setFontSize(12);
+      doc.setTextColor(60);
+      doc.text(`Student: ${fullName}`, 40, 80);
+      doc.text(`Class: ${selectedClass}`, 40, 100);
+
+      // Add Date
+      doc.text(`Analysis Date: ${this.currentDate || 'N/A'}`, 40, 120);
+  
+      // Add Overall Score
+      doc.setFontSize(14);
+      doc.setTextColor(40);
+      doc.text(`Overall Speaking Score: ${this.averageScoreLabel || 'N/A'} (${this.averageScore || 'N/A'}%)`, 40, 140);
+  
+      // Add Score Breakdown Table
+      const scoreData = this.analysisResult.map(result => [
+        result.area,
+        `${result.score}%`,
+        this.getLabel(result.score),
+        result.feedback
+      ]);
+  
+      (doc as any).autoTable({
+        startY: 150,
+        head: [['Area', 'Score', 'Level', 'Feedback']],
+        body: scoreData,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 102, 204] },
+        styles: { fontSize: 10, cellPadding: 5, overflow: 'linebreak' },
+        tableWidth: 'auto', // Adjust the table width automatically to fill the page
+        columnStyles: {
+          0: { cellWidth: 80 },  // Adjust the width of the "Area" column
+          1: { cellWidth: 60, halign: 'center' },  // Adjust the width of the "Score" column
+          2: { cellWidth: 80, halign: 'center' },  // Adjust the width of the "Level" column
+          3: { cellWidth: 'auto' },  // The "Feedback" column will use the remaining space
+        },
+      });
+  
+      // Save the PDF
+      doc.save(`Speech_Analysis_Result_${new Date().toISOString().split('T')[0]}.pdf`);
+    } else {
+      this.apiService.failedSnackbar('No analysis result to download.');
+    }
+  }
+  
+  
+  
+
+  
+  
 }
