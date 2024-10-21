@@ -111,47 +111,52 @@
 
       <!-- Task List Table -->
      <!-- Task List Table -->
-<div class="overflow-x-auto">
-  <table class="min-w-full table-auto">
-    <thead>
-      <tr class="text-white bg-[var(--secondary-color)]">
-        <th class="px-6 py-3 text-sm font-semibold text-left">Task Title</th>
-        <th class="px-6 py-3 text-sm font-semibold text-left">Due Date</th>
-        <th class="px-6 py-3 text-sm font-semibold text-left">Course</th>
-        <th class="px-6 py-3 text-sm font-semibold text-left">Actions</th>
-      </tr>
-    </thead>
-    <tbody class="bg-gray-50">
-      <ng-container *ngFor="let task of tasks">
-        <tr *ngIf="task.courseid === filterCourse || filterCourse === ''" class="transition hover:bg-gray-100">
-          <td class="px-6 py-4 text-sm text-gray-700">{{ task.title }}</td>
-          <td class="px-6 py-4 text-sm text-gray-700">{{ task.deadline | date:'mediumDate' }}</td>
-          <td class="px-6 py-4 text-sm text-gray-700">{{ task.course }}</td>
-          <td class="px-6 py-4 text-sm text-gray-700">
-            <div class="flex items-center space-x-2">
-              <!-- Edit Button -->
-              <button
-                class="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded-md shadow hover:bg-blue-600"
-                (click)="editTask(task)"
-                aria-label="Edit Task"
-              >
-                Edit
-              </button>
-              <!-- Delete Button -->
-              <button
-                class="px-3 py-1 text-sm font-medium text-white bg-red-500 rounded-md shadow hover:bg-red-600"
-                (click)="deleteTask(task)"
-                aria-label="Delete Task"
-              >
-                Delete
-              </button>
-            </div>
-          </td>
-        </tr>
-      </ng-container>
-    </tbody>
-  </table>
-</div>
+     <div class="overflow-x-auto">
+      <table class="min-w-full table-auto">
+        <thead>
+          <tr class="text-white bg-[var(--secondary-color)]">
+            <th class="px-6 py-3 text-sm font-semibold text-left">Task Title</th>
+            <th class="px-6 py-3 text-sm font-semibold text-left">Due Date</th>
+            <th class="px-6 py-3 text-sm font-semibold text-left">Course</th>
+            <th class="px-6 py-3 text-sm font-semibold text-left">Class</th> 
+
+            <th class="px-6 py-3 text-sm font-semibold text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-gray-50">
+          <ng-container *ngFor="let task of tasks">
+            <tr *ngIf="task.courseid === filterCourse || filterCourse === ''" class="transition hover:bg-gray-100">
+              <td class="px-6 py-4 text-sm text-gray-700">{{ task.title }}</td>
+              <td class="px-6 py-4 text-sm text-gray-700">{{ task.deadline | date:'mediumDate' }}</td>
+              <td class="px-6 py-4 text-sm text-gray-700">{{ task.course }}</td>
+              <td class="px-6 py-4 text-sm text-gray-700">{{ task.classname || 'N/A' }}</td>
+              <td class="px-6 py-4 text-sm text-gray-700">
+                <div class="flex items-center space-x-2">
+                  <!-- Edit Button -->
+                  <button
+                    class="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded-md shadow hover:bg-blue-600"
+                    (click)="editTask(task)"
+                    aria-label="Edit Task"
+                  >
+                    Edit
+                  </button>
+                  <!-- Delete Button -->
+                  <button
+                    class="px-3 py-1 text-sm font-medium text-white bg-red-500 rounded-md shadow hover:bg-red-600"
+                    (click)="deleteTask(task)"
+                    aria-label="Delete Task"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+        
+      </table>
+    </div>
+    
 
     </div>
   </div>

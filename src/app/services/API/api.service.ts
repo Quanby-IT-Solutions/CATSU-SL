@@ -3947,22 +3947,73 @@ export class APIService implements OnDestroy, OnInit {
   }
 
 
+  // teacherGetTasks() {
+  //   const id = this.getUserData().id;
+  //   const postObject = {
+  //     selectors: ['assignments.*', 'courses.course'],
+  //     tables: 'assignments,courses',
+  //     conditions: {
+  //       WHERE: {
+  //         'courses.ID': 'assignments.CourseID',
+  //         'courses.TeacherID': id,
+  //       },
+  //     },
+  //   };
+  //   return this.post('get_entries', {
+  //     data: JSON.stringify(postObject),
+  //   });
+  // }
+
   teacherGetTasks() {
-    const id = this.getUserData().id;
-    const postObject = {
-      selectors: ['assignments.*', 'courses.course'],
-      tables: 'assignments,courses',
-      conditions: {
-        WHERE: {
-          'courses.ID': 'assignments.CourseID',
-          'courses.TeacherID': id,
-        },
+  const id = this.getUserData().id;
+  const postObject = {
+    selectors: ['assignments.*', 'courses.course', 'classes.class as className'],
+    tables: 'assignments, courses, classes',
+    conditions: {
+      WHERE: {
+        'courses.ID': 'assignments.CourseID',
+        'classes.id': 'assignments.classid',
+        'courses.TeacherID': id,
       },
-    };
-    return this.post('get_entries', {
-      data: JSON.stringify(postObject),
-    });
-  }
+    },
+  };
+  return this.post('get_entries', {
+    data: JSON.stringify(postObject),
+  });
+}
+
+
+  // studentGetAssignments() {
+  //   const id = this.getUserData().id;
+  //   const postObject = {
+  //     selectors: [
+  //       'assignments.*',
+  //       'languages.Language',
+  //       'COUNT(student_assignments.ID) as done',
+  //     ],
+  //     tables: 'assignments',
+  //     conditions: {
+  //       'LEFT JOIN courses': 'ON assignments.CourseID = courses.ID',
+  //       'LEFT JOIN languages': 'ON courses.LanguageID = languages.ID',
+  //       'LEFT JOIN classes': 'ON classes.CourseID = courses.ID',
+  //       'LEFT JOIN student_classes': 'ON student_classes.ClassID = classes.ID',
+  //       'LEFT JOIN student_assignments': `ON student_assignments.StudentID = '${id}' AND student_assignments.AssignmentID = assignments.ID`,
+
+  //       WHERE: {
+  //         // 'courses.ID' :'assignments.CourseID',
+  //         // 'courses.LanguageID' : 'languages.ID',
+  //         // 'classes.CourseID' : 'courses.ID',
+  //         // 'student_classes.ClassID': 'classes.ID',
+  //         'student_classes.StudentID': id,
+  //       },
+  //       'GROUP BY':
+  //         'assignments.ID, courses.ID, languages.ID,classes.ID, student_classes.ID',
+  //     },
+  //   };
+  //   return this.post('get_entries', {
+  //     data: JSON.stringify(postObject),
+  //   });
+  // }
 
   studentGetAssignments() {
     const id = this.getUserData().id;
@@ -3971,31 +4022,28 @@ export class APIService implements OnDestroy, OnInit {
         'assignments.*',
         'courses.course',
         'languages.Language',
+        'classes.class as classname',
+        'classes.ID as classid',
         'COUNT(student_assignments.ID) as done',
       ],
       tables: 'assignments',
       conditions: {
         'LEFT JOIN courses': 'ON assignments.CourseID = courses.ID',
         'LEFT JOIN languages': 'ON courses.LanguageID = languages.ID',
-        'LEFT JOIN classes': 'ON classes.CourseID = courses.ID',
-        'LEFT JOIN student_classes': 'ON student_classes.ClassID = classes.ID',
+        'LEFT JOIN classes': 'ON classes.ID = assignments.classid',
+        'LEFT JOIN student_classes': `ON student_classes.ClassID = classes.ID AND student_classes.StudentID = '${id}'`,
         'LEFT JOIN student_assignments': `ON student_assignments.StudentID = '${id}' AND student_assignments.AssignmentID = assignments.ID`,
-
         WHERE: {
-          // 'courses.ID' :'assignments.CourseID',
-          // 'courses.LanguageID' : 'languages.ID',
-          // 'classes.CourseID' : 'courses.ID',
-          // 'student_classes.ClassID': 'classes.ID',
-          'student_classes.StudentID': id,
+          'student_classes.StudentID': id, // Ensure that only assignments for enrolled classes are fetched
         },
-        'GROUP BY':
-          'assignments.ID, courses.ID, languages.ID,classes.ID, student_classes.ID',
+        'GROUP BY': 'assignments.ID, courses.ID, languages.ID, classes.ID',
       },
     };
     return this.post('get_entries', {
       data: JSON.stringify(postObject),
     });
   }
+  
 
   studentGetAssignmentByID(taskID: string) {
     const id = this.getUserData().id;

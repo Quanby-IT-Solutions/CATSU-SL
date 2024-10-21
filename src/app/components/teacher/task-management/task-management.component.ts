@@ -14,11 +14,10 @@ import { TeacherViewComponent } from '../teacher-view/teacher-view.component';
 export class TaskManagementComponent implements OnInit {
   currentDate!: string;
   courses: Map<string, any> = new Map();
-  tasks: any = [];
+  tasks: any[] = [];
   filterCourse: string = '';
-  submissions: any = [];
-  classes: any[] = []; // Store classes for the selected course
-  currentCourse: any;
+  submissions: any[] = [];
+  classes: { id: string, name: string }[] = []; // Define the classes property
 
   constructor(
     private modalService: NgbModal,
@@ -39,6 +38,9 @@ export class TaskManagementComponent implements OnInit {
       this.API.hideLoader();
     });
 
+    // Load Classes
+    this.getTeacherClasses();
+
     // Load Submissions
     this.API.teacherGetAllSubmissions().subscribe((data) => {
       this.submissions = data.output;
@@ -56,7 +58,6 @@ export class TaskManagementComponent implements OnInit {
             this.classes = data.output.map((_class: any) => ({
               id: _class.id,
               name: _class.class,
-              courseId: _class.courseid,
             }));
           } else {
             this.API.failedSnackbar('Failed loading classes');
@@ -74,13 +75,25 @@ export class TaskManagementComponent implements OnInit {
 
   loadTasks() {
     this.API.teacherGetTasks().subscribe((data) => {
-      this.tasks = data.output;
+      console.log('Tasks data from API:', data.output); // Log the raw data from the API
+  
+      this.tasks = data.output.map((task: any) => {
+        // Map the class name from the classes array using classId
+        const classData = this.classes.find((c: { id: string }) => c.id === task.classid);
+        console.log('Mapping class name for task:', task, 'Found class:', classData);
+  
+        return {
+          ...task,
+        };
+      });
+  
+      console.log('Mapped tasks:', this.tasks); // Log the final mapped tasks
     });
   }
+  
 
   selectCourse(courseid: string) {
     this.filterCourse = courseid;
-    this.currentCourse = this.courses.get(courseid);
     this.getTeacherClasses(); // Load classes when a course is selected
   }
 
